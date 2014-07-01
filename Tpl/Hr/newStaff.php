@@ -61,7 +61,7 @@
     
         <tr>
     	<td>登录名称：</td>
-        <td><input type="text" name="loginname" class="easyui-validatebox" /></td>
+        <td><input type="text" name="newloginname" class="easyui-validatebox" /></td>
         
     </tr>
     

@@ -328,7 +328,7 @@ public function newStaff() {
 		
 		$userinfo['phone'] = $this->_post('phone');
 		
-		$loginname = $this->_post('loginname');
+		$loginname = $this->_post('newloginname');
 		
 		$passworda = $this->_post('userpassworda');
 		
