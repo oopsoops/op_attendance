@@ -39,9 +39,12 @@
                 <th field="department" width="100" align="center">员工部门</th>
                 <th field="username" width="100" align="center">员工姓名</th>  
                 <th field="uid" width="100" align="center">员工工号</th>
+                <th field="accountstatue" width="100" align="center">账户状态</th>
                 <th field="modifystaff" width="80" align="center" formatter="hrModifyDetails">修改员工</th>
                  <th field="deletestaff" width="80" align="center" formatter="hrDelStaff">删除员工</th>
-                 <th field="details" width="80" align="center" formatter="hrLoginDetails">员工登录详情</th>
+                  <th field="rpassword" width="80" align="center" formatter="hrreStaff">密码重置</th>
+                 <th field="forbid" width="100" align="center" formatter="hrforbidStaff">禁用/恢复账户</th>
+                 <th field="details" width="100" align="center" formatter="hrLoginDetails">员工登录详情</th>
 
                  
                              
@@ -119,7 +122,7 @@ function hrDelStaff(){
 function hropenDel(){
 	var row = $('#grid_hrstaffmanage').datagrid('getSelected');
 	if(row!=null){
-		$.messager.confirm('提示', '确认要删除该员工信息？', function(r){  
+		$.messager.confirm('提示', '确认要删除该员工所有信息？', function(r){  
 			if (r){  
 				//提交删除
 				
@@ -127,7 +130,7 @@ function hropenDel(){
 					url:'__APP__/Hr/staffDel/uid/'+row.uid,  
 					
 					success:function(data){ 
-						 
+						 $.messager.alert('提示', '删除成功！');
 						//刷新grid
 						$('#grid_hrstaffmanage').datagrid('loadData', { total:0, rows:[ ]});
 						$('#grid_hrstaffmanage').datagrid('load', { });
@@ -167,6 +170,123 @@ function hropenLoginDetails(){
 	}
 }
 
+
+
+//重置密码按钮
+function hrreStaff(){  
+	
+	return '<a href="javascript:void(0)" onclick="hrrepassword()"><img src="__TPL__/images/submit.png" width="16"/></a>';  
+}
+//重置密码
+function hrrepassword(){
+	var row = $('#grid_hrstaffmanage').datagrid('getSelected');
+	if(row!=null){
+		$.messager.confirm('提示', '确定将该员工登录密码重置为：12345？', function(r){  
+			if (r){  
+				//提交删除
+				
+				$.ajax({  
+					url:'__APP__/Hr/repass/uid/'+row.uid,  
+					
+					success:function(data){ 
+						 if(data=='ok')
+						 {
+							 $.messager.alert('提示', '密码重置成功！');
+						//刷新grid
+						$('#grid_hrstaffmanage').datagrid('loadData', { total:0, rows:[ ]});
+						$('#grid_hrstaffmanage').datagrid('load', { });
+						 }
+						 
+						 else {
+							  $.messager.alert('提示', '密码重置失败！');
+							 
+							 }
+						
+					}  
+				});    
+			}  
+		}); 
+	}
+}
+
+
+
+//禁用员工按钮
+function hrforbidStaff(){  
+	
+	return '<a href="javascript:void(0)" onclick="hrforbid()"><img src="__TPL__/images/warning.png" width="16"/></a>';  
+}
+//禁用员工
+function hrforbid(){
+	var row = $('#grid_hrstaffmanage').datagrid('getSelected');
+	
+	if(row!=null){
+		if(row.statue == 0)
+			{
+		$.messager.confirm('提示', '确定禁用该员工账户？', function(r){  
+			if (r){  
+				//提交删除
+				
+				$.ajax({  
+					url:'__APP__/Hr/changestatue/uid/'+row.uid,  
+					
+					success:function(data){ 
+						 
+						if(data =='ok')
+						 {
+							  $.messager.alert('提示', '账户禁用成功！');
+						//刷新grid
+						$('#grid_hrstaffmanage').datagrid('loadData', { total:0, rows:[ ]});
+						$('#grid_hrstaffmanage').datagrid('load', { });
+						 }
+						 else
+						 {
+							  $.messager.alert('提示', '账户禁用失败！');
+							 }
+						
+					}  
+				});    
+			}  
+		}); 
+	}
+	
+	else
+	{
+		
+		
+		$.messager.confirm('提示', '确定启用该员工账户？', function(r){  
+			if (r){  
+				//提交删除
+				
+				$.ajax({  
+					url:'__APP__/Hr/changestatue/uid/'+row.uid,  
+					
+					success:function(data){ 
+						 if(data =='ok')
+						 {
+							  $.messager.alert('提示', '账户启用成功！');
+						//刷新grid
+						$('#grid_hrstaffmanage').datagrid('loadData', { total:0, rows:[ ]});
+						$('#grid_hrstaffmanage').datagrid('load', { });
+						 }
+						 else
+						 {
+							 $.messager.alert('提示', '账户启用失败！');
+							 
+							 }
+						
+					}  
+				});    
+			}  
+		}); 
+		
+		}
+	
+	
+	}
+
+	
+}
 
 
 </script>

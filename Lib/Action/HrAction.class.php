@@ -431,7 +431,13 @@ public function hrfetch_all_users(){
 			{
 				
 				$cc = $userinfo->count();
-				$rs = $userinfo->field('op_userinfo.username as username,op_userinfo.uid as uid,op_department.departmentname as department')
+				$rs = $userinfo->field("op_userinfo.username as username,op_userinfo.uid as uid,op_department.departmentname as department
+				,op_userinfo.accountstatue as statue,
+			CASE 
+			 WHEN op_userinfo.accountstatue=1 THEN '已禁用'
+			 
+			 ELSE '正常' END AS accountstatue
+				")
 				->join('op_department ON op_userinfo.departmentid = op_department.did')
 				->order('op_userinfo.uid desc')
 				->limit("$start,$rows")
@@ -476,7 +482,11 @@ public function hrfetch_all_users(){
 													
 													
 									$cc = $userinfo->where($where)->count();
-									$rs = $userinfo->field('op_userinfo.username as username,op_userinfo.uid as uid,op_department.departmentname as department')
+									$rs = $userinfo->field("op_userinfo.username as username,op_userinfo.uid as uid,op_department.departmentname as department,	op_userinfo.accountstatue as statue,
+								CASE 
+								 WHEN op_userinfo.accountstatue=1 THEN '已禁用'
+								 
+								 ELSE '正常' END AS accountstatue")
 									->join('op_department ON op_userinfo.departmentid = op_department.did')
 									->where($where)
 									->order('op_userinfo.uid desc')
@@ -620,7 +630,68 @@ public function loginDetails(){
 		}
 		
 		
-		
+		public function repass()
+		{
+			
+			$uid = $this->_get('uid');
+			
+			$model = M('userinfo');
+			
+			$info=$model->getByUid($uid);
+			
+			$oldpass = $info['password'];
+			
+			$info['password'] = md5('12345');
+			
+			if(strcmp($oldpass,$info['password'])==0)
+			{
+				echo 'ok';
+				exit;
+				
+				}
+			else
+			{
+				$rs = $model->save($info);
+			
+				if(!$rs) {
+				echo '重置失败，请重试！';
+				exit;	
+					}
+				echo 'ok';
+			
+			}
+			
+		}
+		public function changestatue()
+		{
+			
+			$uid = $this->_get('uid');
+			
+			$model = M('userinfo');
+			
+			$info=$model->getByUid($uid);
+			if(	$info['accountstatue']==1)
+			{
+				
+				$info['accountstatue']=0;
+				
+				}
+				
+				else
+				{
+					$info['accountstatue']=1;
+					
+					}
+			
+			$rs = $model->save($info);
+				if(!$rs) {
+			
+			 	echo '修改失败，请重试！';
+				exit;	
+				}
+		echo 'ok';
+			
+			}
 
 }
 
