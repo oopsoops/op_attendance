@@ -7,12 +7,6 @@
 		 "attributes":{  
             "url":"Search/searchInfo"
         }
-	},{
-		"text":"导入excel",
-		"iconCls":"icon-project",
-		 "attributes":{  
-            "url":"Test/testexcel"
-        }
 	}]
 },{
 	"text":"业务管理",
@@ -38,7 +32,7 @@
 		"text":"密码管理",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"User/passchangeshow"
+			"url":"Password/passwordChange"
 		 }
 	}]
 },{

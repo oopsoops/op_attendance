@@ -485,7 +485,7 @@ public function hrfetch_all_users(){
 					
 					
 					}
-			
+			//echo $userinfo->getLastSql();
 			echo dataToJson($rs,$cc);
 			
 			}

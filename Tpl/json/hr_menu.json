@@ -66,7 +66,7 @@
 		"text":"密码管理",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"User/passchangeshow"
+			"url":"Password/passwordChange"
 		 }
 	}]
 },{

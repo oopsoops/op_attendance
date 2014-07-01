@@ -81,7 +81,7 @@
     </tr>
     <tr>
     
-     <td align="center">
+     <td align="right">
      <a class="easyui-linkbutton" onclick="return new_staff_do()">提交</a></td>
     
       <td align="left">
