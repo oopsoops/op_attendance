@@ -80,7 +80,7 @@ function modify_staff_do() {
 		},  
 		success:function(data){  
 			if(data=='ok') {
-				$.messager.confirm('提示', '修改成功！', function(){ 
+				 		$.messager.alert('提示', '修改成功'); 
 						$('#main').tabs('close','修改员工基本信息');
 						$('#main').tabs('close','员工信息管理');
 							
@@ -91,7 +91,7 @@ function modify_staff_do() {
 												closable:true
 				}); 
 					
-				}); 
+				
 			} else {
 				$.messager.alert('提示','修改失败，请核实修改信息！');
 			}

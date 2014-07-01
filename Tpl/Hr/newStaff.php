@@ -139,10 +139,9 @@ function new_staff_do() {
 				}
 		
 			else if(data=='ok') {
-				$.messager.confirm('提示', '添加员工成功！', function(){ 
+				
+						$.messager.alert('提示', '添加员工信息成功');
 						$('#main').tabs('close','创建员工');
-						
-							
 						$('#main').tabs('add',{
 												title:'创建员工',
 												href:'__APP__/Hr/newStaff',
@@ -150,7 +149,7 @@ function new_staff_do() {
 												closable:true
 				}); 
 					
-				}); 
+				
 			} else {
 				$.messager.alert('提示','添加员工失败,请检查信息输入是否正确！');
 			}

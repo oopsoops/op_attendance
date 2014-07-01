@@ -65,34 +65,6 @@
 
 
 
-function modify_staff_do() {
-	$('#form_modify_staff').form('submit', {  
-		url:'__APP__/Hr/staff_modify_do/uid/<?php echo $_GET['uid']?>'+'/entrytime/'+$('#entrytime').combo("getValue"),  
-		onSubmit: function(){  
-
-			return $('#form_modify_staff').form('validate');
-		},  
-		success:function(data){  
-			if(data=='ok') {
-				$.messager.confirm('提示', '修改成功！', function(){ 
-						$('#main').tabs('close','修改员工基本信息');
-						$('#main').tabs('close','员工信息管理');
-							
-						$('#main').tabs('add',{
-												title:'员工信息管理',
-												href:'__APP__/Hr/staffManager',
-												cache:false,
-												closable:true
-				}); 
-					
-				}); 
-			} else {
-				$.messager.alert('提示','修改失败，请核实修改信息！');
-			}
-		}  
-	});  
-}
-
 
 
 </script>
