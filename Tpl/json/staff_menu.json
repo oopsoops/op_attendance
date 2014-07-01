@@ -7,6 +7,12 @@
 		 "attributes":{  
             "url":"Search/searchInfo"
         }
+	},{
+		"text":"导入excel",
+		"iconCls":"icon-project",
+		 "attributes":{  
+            "url":"Test/testexcel"
+        }
 	}]
 },{
 	"text":"业务管理",

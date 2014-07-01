@@ -27,14 +27,7 @@ class SearchAction extends Action
 		
 		$search_end_time = $this->_post('search_end_time');
 		
-		if($uid==''&$username==''&$search_begin_time==''&$search_end_time==''&$department=='')
-		{
-			
-			$where='';
-			
-		}
-			else
-			{
+
 				
 		if($uid!='') {
 			$where = "op_clocktime.uid =$uid ";
@@ -80,39 +73,39 @@ class SearchAction extends Action
 		
 		if($department!=''&$where!='')
 		{
-			$where="$where and department=$department ";
+			$where="$where and department='"."$department"."' ";
 			}
 			
 			else if ($department!='')
 			{
-				$where="department = $department ";
+				$where="department = '"."$department"."' ";
 				}
 		
 		if($username!=''&$where!='') {
-			$where= "$where and username=$username ";
+			$where= "$where and username='"."$username"."' ";
 		}
 		else if($username!='')
 		{
-			$where= "username=$username ";
+			$where= "username='"."$username"."' ";
 			}
 		
 		
 		if($search_begin_time!=''&$where!='') {
-			$where= "$where and clocktime>=$search_begin_time ";
+			$where= "$where and op_clocktime.clockdate>='"."$search_begin_time"."' ";
 		}
 		else if($search_begin_time!='')
 		{
-			$where= "clocktime>=$search_begin_time ";
+			$where= "op_clocktime.clockdate>='"."$search_begin_time"."' ";
 			}
 		
 		if($search_end_time!=''&$where!='') {
-			$where = "$where and clocktime<=$search_end_time ";
+			$where = "$where and op_clocktime.clockdate<='"."$search_end_time"."' ";
 		}
 		else if($search_end_time!='')
 		{
-			$where = "clocktime<=$search_end_time ";
+			$where = "op_clocktime.clockdate<='"."$search_end_time"."' ";
 			}
-	   }
+	   
 	   
 
 		$clocktime = M('clocktime');
@@ -122,7 +115,7 @@ class SearchAction extends Action
 		 ->count();
 		 
 	    $allattendance=$clocktime
-		->field("phone,op_clocktime.uid as uid,op_clocktime.clocktime as clocktime,op_userinfo.username as username
+		->field("phone,op_clocktime.uid as uid,op_clocktime.clocktime as clocktime,op_clocktime.clockdate as clockdate,op_userinfo.username as username
 		,op_department.departmentname as department,
 		 CASE
 			WHEN isapply=1 THEN '已请假'
@@ -141,7 +134,7 @@ class SearchAction extends Action
 		->select();
 		
 	//echo $clocktime->getLastSql();
-		echo dataToJson($allattendance,$cc);
+	echo dataToJson($allattendance,$cc);
     }
 	
 	
@@ -175,7 +168,7 @@ class SearchAction extends Action
 		
 				//考勤正常
 		if($single_chose=='single_yes') {
-		
+		 
 			$where = "$where and op_unusualtime.static is null ";
 			
 			}
@@ -185,14 +178,17 @@ class SearchAction extends Action
 			$where = "$where and op_unusualtime.static is not null ";
 			
 			}
-		
-		if($single_begin_time!='') {
-			$where= "$where and clocktime>=$single_begin_time ";
+
+	    if($single_begin_time!=NULL) {
+			//$single_begin_time = date("Y-m-d",strtotime($single_begin_time));
+
+			$where= "$where and op_clocktime.clockdate>='"."$single_begin_time"."' ";
 		}
 		
 		
-		if($single_end_time!='') {
-			$where = "$where and clocktime<=$single_end_time ";
+		if($single_end_time!=NULL) {
+			//$single_end_time = date("Y-m-d",strtotime($single_end_time));
+			$where = "$where and op_clocktime.clockdate<='"."$single_end_time"."' ";
 		}
 		
 	  
@@ -206,7 +202,7 @@ class SearchAction extends Action
 		 ->count();
 		 
 	    $attendance=$worktime
-		->field("op_clocktime.uid as uid,op_clocktime.clocktime as clocktime,op_userinfo.username as username,op_department.departmentname as department,
+		->field("op_clocktime.uid as uid,op_clocktime.clocktime as clocktime,op_clocktime.clockdate as clockdate,op_userinfo.username as username,op_department.departmentname as department,
 		    CASE
 			WHEN isapply=1 THEN '已请假'
 			 END as isapply,
@@ -224,10 +220,12 @@ class SearchAction extends Action
 		->select();
 		
 	//echo $worktime->getLastSql();
-		echo dataToJson($attendance,$cc);
+	echo dataToJson($attendance,$cc);
     }
 	
+	
 	}
+
 
 
 ?>

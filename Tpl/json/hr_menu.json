@@ -5,7 +5,7 @@
 		"text":"考勤记录",
 		"iconCls":"icon-project",
 		 "attributes":{  
-            "url":"Project/my_project"
+            "url":"Hr/hrSearchInfo"
         }
 	}]
 },{

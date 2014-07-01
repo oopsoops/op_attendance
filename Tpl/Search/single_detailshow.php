@@ -2,15 +2,20 @@
 
 	<div id="ext_singlemanage"  style="padding:5px;height:auto">
        
-            <form id="singleForm">  
+            
+             
+            <form id="singleForm"> 
+            员工工号：
+            <?php echo $_GET['uid']?>
+           
+           &nbsp;&nbsp;&nbsp;
             考勤是否正常：
             <select name="single_chose" id="single_chose" >
                 <option value="single_none" selected ></option>
             	<option value="single_yes" >是</option>
                 <option value="single_no" >否</option>
                 </select>
-            员工工号：
-            <input id="uid" type="text" style="width:100px" value="<?php echo $_GET['uid']?>" />
+            
             开始日期：
                <input id="single_begin_time" type="text" style="width:100px" />
             结束日期：
@@ -42,10 +47,10 @@
             <tr> 
                 <th field="department" width="100" align="center">员工部门</th>
                 <th field="username" width="100" align="center">员工姓名</th>  
-                <th field="uid" width="100" align="center">员工工号</th>
-                <th field="clocktime" width="100" align="center">打卡时间</th>
-                <th field="static" width="100" align="center" >考勤状态</th>
-                <th field="isapply" width="100" align="center" >备注</th>
+                <th field="clockdate" width="80" align="center">打卡日期</th>
+                <th field="clocktime" width="80" align="center">打卡时间</th>
+                <th field="static" width="80" align="center" >考勤状态</th>
+                <th field="isapply" width="80" align="center" >备注</th>
 
                             
             </tr>  
@@ -83,7 +88,7 @@ function single_clear_time()
 
 function single_accountmanage() {
 	$('#grid_singlemanage').datagrid('loadData', { total:0, rows:[]});
-	$('#grid_singlemanage').datagrid('load', { single_chose:$('#single_chose').val(),uid:$('#uid').val(),single_begin_time:$('#single_begin_time').val(),single_end_time:$('#single_end_time').val()});
+	$('#grid_singlemanage').datagrid('load', { single_chose:$('#single_chose').val(),uid:$('#uid').val(),single_begin_time:$('#single_begin_time').combo("getValue"),single_end_time:$('#single_end_time').combo("getValue")});
 	
 }
 
