@@ -9,12 +9,7 @@
             	<option value="search_yes" >是</option>
                 <option value="search_no" >否</option>
             </select>         
-            员工部门：
-            <input type="text" id="department" style="width:100px"/>
-            员工工号：
-            <input type="text" id="uid" style="width:100px"/>
-            员工姓名：
-            <input type="text" id="username" style="width:100px"/>
+            
             开始日期：
                <input id="search_begin_time" type="text" style="width:100px" />
             结束日期：
@@ -52,9 +47,8 @@
               
                 <th field="static" width="80" align="center" >考勤状态</th>
                 <th field="isapply" width="80" align="center" >备注</th>
-                 <th field="phone" width="100" align="center">联系方式</th>
-
-                 <th field="details" width="100" align="center" formatter="formatAttendanceDetails">个人考勤详情</th>
+                <th field="details" width="80" align="center" formatter="formatUserDetails">个人信息详情</th>
+              
                              
             </tr>  
         </thead>  
@@ -91,23 +85,23 @@ function search_clear_time()
 
 function search_accountmanage() {
 	$('#grid_searchmanage').datagrid('loadData', { total:0, rows:[]});
-	$('#grid_searchmanage').datagrid('load', {search_chose:$('#search_chose').val(), department:$('#department').val(),username:$('#username').val(),uid:$('#uid').val(),search_begin_time:$('#search_begin_time').combo("getValue"),search_end_time:$('#search_end_time').combo("getValue")});
+	$('#grid_searchmanage').datagrid('load', {search_chose:$('#search_chose').val(),search_begin_time:$('#search_begin_time').combo("getValue"),search_end_time:$('#search_end_time').combo("getValue")});
 	
 }
 
 
-//个人考勤详细按钮
-function formatAttendanceDetails(val,row){  
+//个人信息详细按钮
+function formatUserDetails(val,row){  
 	
 	return '<a href="javascript:void(0)" onclick="openAttendanceDetails('+row.uid+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
 }
-//打开个人考勤详情tab
+//打开个人信息详情tab
 function openAttendanceDetails(uid){
-	$('#main').tabs('close','个人考勤详情');
+	$('#main').tabs('close','个人信息详情');
 	$('#main').tabs('add',{
-						title:'个人考勤详情',
+						title:'个人信息详情',
 						//href:'__APP__/Account/account_details/pid/'+pid,
-						href:'__APP__/search/single_detailshow/uid/'+ uid,
+						href:'__APP__/search/userinfo_detailshow/uid/'+ uid+'/flag/1',
 						cache:false,
 						closable:true
 						});

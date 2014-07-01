@@ -52,7 +52,7 @@
               
                 <th field="static" width="80" align="center" >考勤状态</th>
                 <th field="isapply" width="80" align="center" >备注</th>
-                 <th field="phone" width="100" align="center">联系方式</th>
+               <th field="details" width="80" align="center" formatter="hrformatUserDetails">个人信息详情</th>
 
                  
                              
@@ -95,13 +95,23 @@ function hrsearch_accountmanage() {
 	
 }
 
-
-//个人考勤详细按钮
-function hrformatAttendanceDetails(val,row){  
+//个人信息详细按钮
+function hrformatUserDetails(val,row){  
 	
-	return '<a href="javascript:void(0)" onclick="openAttendanceDetails('+row.uid+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
+	return '<a href="javascript:void(0)" onclick="hropenAttendanceDetails('+row.uid+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
 }
-//打开个人考勤详情tab
+//打开个人信息详情tab
+function hropenAttendanceDetails(uid){
+	$('#main').tabs('close','个人信息详情');
+	$('#main').tabs('add',{
+						title:'个人信息详情',
+						//href:'__APP__/Account/account_details/pid/'+pid,
+						href:'__APP__/search/userinfo_detailshow/uid/'+ uid+'/flag/1',
+						cache:false,
+						closable:true
+						});
+}
+
 
 
 

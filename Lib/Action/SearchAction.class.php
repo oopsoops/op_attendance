@@ -15,13 +15,11 @@ class SearchAction extends Action
 		
 		$start = ($page-1)*$rows;
 		
-		$uid = $this->_post('uid');
+		
 		
 		$search_chose=$this->_post('search_chose');
 				
-		$username = $this->_post('username');
-		
-		$department=$this->_post('department');
+
 		
 		$search_begin_time = $this->_post('search_begin_time');
 		
@@ -29,12 +27,12 @@ class SearchAction extends Action
 		
 
 				
-		if($uid!='') {
-			$where = "op_clocktime.uid =$uid ";
+		if($uid=='') {
+			$this->error('查询失败，请重新登陆！');
 		}
 		else
 		{
-			$where = '';
+			$where = "op_clocktime.uid =$uid ";
 			
 			}
 		
@@ -69,25 +67,6 @@ class SearchAction extends Action
 			}
 			
 			
-			
-		
-		if($department!=''&$where!='')
-		{
-			$where="$where and department='"."$department"."' ";
-			}
-			
-			else if ($department!='')
-			{
-				$where="department = '"."$department"."' ";
-				}
-		
-		if($username!=''&$where!='') {
-			$where= "$where and username='"."$username"."' ";
-		}
-		else if($username!='')
-		{
-			$where= "username='"."$username"."' ";
-			}
 		
 		
 		if($search_begin_time!=''&$where!='') {
@@ -138,89 +117,35 @@ class SearchAction extends Action
     }
 	
 	
-	/****************查询个人考勤详情*****************/
-	public function fetch_single_attendance() {
-		$uid = $_SESSION['uid'];
+	/****************查询个人信息详情*****************/
+	public function userinfo_detailshow() {
 		
-		$page = $this->_post('page');
-		
-		if($page<1) $page=1;
-		
-		$rows = $this->_post('rows');
-		
-		if($rows<1) $rows=10;
-		
-		$start = ($page-1)*$rows;
-		
-		$uid = $this->_get('uid');
-		
-		$single_chose=$this->_post('single_chose');
-		
-		$single_begin_time = $this->_post('single_begin_time');
-		
-		$single_end_time = $this->_post('single_end_time');
-		
-	
-			
-		$where="op_clocktime.uid=$uid";
-			
-		
-		
-				//考勤正常
-		if($single_chose=='single_yes') {
-		 
-			$where = "$where and op_unusualtime.static is null ";
-			
-			}
-			//不正常
-		else if($single_chose=='single_no')
-		{
-			$where = "$where and op_unusualtime.static is not null ";
-			
-			}
-
-	    if($single_begin_time!=NULL) {
-			//$single_begin_time = date("Y-m-d",strtotime($single_begin_time));
-
-			$where= "$where and op_clocktime.clockdate>='"."$single_begin_time"."' ";
-		}
-		
-		
-		if($single_end_time!=NULL) {
-			//$single_end_time = date("Y-m-d",strtotime($single_end_time));
-			$where = "$where and op_clocktime.clockdate<='"."$single_end_time"."' ";
-		}
-		
-	  
+	   $flag = $this->_get('flag');
 	   
+	   if($flag==1)
+	   {
+		   $uid = $this->_get('uid');
+		   }
+		
+		
+		else
+		{
+			$uid = $_SESSION['uid'];
+			}
 
-		$worktime = M('clocktime');
+		$userdetails = M('userinfo');
 		
-		$cc = $worktime
-		 ->join('op_unusualtme ON op_clocktime.id=op_unusualtime.pid')
-		 ->where($where)
-		 ->count();
+
 		 
-	    $attendance=$worktime
-		->field("op_clocktime.uid as uid,op_clocktime.clocktime as clocktime,op_clocktime.clockdate as clockdate,op_userinfo.username as username,op_department.departmentname as department,
-		    CASE
-			WHEN isapply=1 THEN '已请假'
-			 END as isapply,
-			 
-			 CASE 
-			 WHEN static='迟到' THEN '迟到'
-			 WHEN static='早退' THEN '早退'
-			 ELSE '正常' END AS static")
-		->join('op_userinfo ON op_clocktime.uid=op_userinfo.uid')
+	    $info=$userdetails
+		->field("op_userinfo.uid as uid,op_userinfo.username as username,op_userinfo.phone as phone,op_userinfo.entrydate as entrydate,op_usertype.typename as typename,op_department.departmentname as department")
+		->join('op_usertype ON op_userinfo.usertypeid=op_usertype.tid')
 		->join('op_department ON op_userinfo.departmentid=op_department.did')
-		->join('op_unusualtime ON op_clocktime.id=op_unusualtime.pid')
-		->where($where)
-		 ->order('op_clocktime.uid desc')
-		->limit("$start,$rows")
-		->select();
-		
-	//echo $worktime->getLastSql();
-	echo dataToJson($attendance,$cc);
+		->where("op_userinfo.uid = $uid")
+	    ->select();
+		//echo $userdetails->getLastSql();
+		$this->assign('userinfo',$info[0]);
+		$this->display();
     }
 	
 	

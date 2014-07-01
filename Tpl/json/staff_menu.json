@@ -32,7 +32,7 @@
 		"text":"我的信息",
 		"iconCls":"icon-client",
 		 "attributes":{  
-            "url":"Client/new_client"
+            "url":"Search/userinfo_detailshow"
         }
 	},{
 		"text":"密码管理",

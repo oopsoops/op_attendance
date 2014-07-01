@@ -1,4 +1,5 @@
 <?php
+vendor('Zend.ExcelToArrary');//导入excelToArray类
 class HrAction extends Action {
 
     public function analyse_clocktime() {
@@ -24,10 +25,15 @@ class HrAction extends Action {
 	public function doexcel()
 	{	
 		$tmp_file = $_FILES ['import_xls'] ['tmp_name'];
-		$file_types = explode ( ".", $_FILES ['file_stu'] ['name'] );
+		
+		$file_types = explode ( ".", $_FILES ['import_xls'] ['name'] );
+		
 		$file_type = $file_types [count ( $file_types ) - 1];
+		
 		$import_begin_time=$this->_post('import_begin_time');
+		
 		$import_end_time=$this->_post('import_end_time');
+		
 		$begin_time='';
 		$end_time='';
 		if($import_begin_time!='')
@@ -142,7 +148,8 @@ class HrAction extends Action {
 	
 		/**查询所有人考勤详情********/
 	  public function hrfetch_all_attendance() {
-		$uid = $_SESSION['uid'];
+		  
+		$sessionuid = $_SESSION['uid'];
 		
 		$page = $this->_post('page');
 		
@@ -169,7 +176,7 @@ class HrAction extends Action {
 
 				
 		if($uid!='') {
-			$where = "op_clocktime.uid =$uid ";
+			$where = "op_clocktime.uid = $uid ";
 		}
 		else
 		{
@@ -212,12 +219,12 @@ class HrAction extends Action {
 		
 		if($department!=''&$where!='')
 		{
-			$where="$where and op_department.departmentname='"."$department"."' ";
+			$where="$where and op_department.departmentname like '%$department%' ";
 			}
 			
 			else if ($department!='')
 			{
-				$where="op_department.departmentname = '"."$department"."' ";
+				$where="op_department.departmentname like '%$department%' ";
 				}
 		
 		if($username!=''&$where!='') {
@@ -250,6 +257,8 @@ class HrAction extends Action {
 		$clocktime = M('clocktime');
 		$cc = $clocktime
 		->join('op_userinfo ON op_clocktime.uid=op_userinfo.uid')
+		->join('op_department ON op_userinfo.departmentid=op_department.did')
+		->join('op_unusualtime ON op_unusualtime.pid=op_clocktime.id')
 		 ->where($where)
 		 ->count();
 		 
@@ -278,8 +287,341 @@ class HrAction extends Action {
 	
 	
 	
+public function newStaff() {
+		//部门
+		$department = M('department');
+		$category = $department->select();
+		$this->assign('category',$category);
+		//类型
+		$Model = M('usertype');
+		$usertype = $Model->where("op_usertype.power<10")->select();
+		$this->assign('usertype',$usertype);
+		$this->display();
+    }
 	
 	
+	
+	public function new_staff_do()
+	{
+		
+		$uid = $this->_post('staffid');
+		$Model = M('userinfo');
+		$rs = $Model->getByUid($uid);
+		if($rs) {
+			echo '该员工已存在！';
+			exit;	
+		}
+		
+		$Model = M('userinfo');
+		
+		$userinfo['uid'] = $uid;
+		
+		$userinfo['departmentid'] = $this->_post('department');
+		
+		$userinfo['usertypeid'] = $this->_post('stafftype');
+		
+		$userinfo['username'] = $this->_post('staffname');
+		
+		$userinfo['phone'] = $this->_post('phone');
+		
+		$userinfo['entrydate'] = $this->_get('entrytime');
+		
+		$userinfo['phone'] = $this->_post('phone');
+		
+		$loginname = $this->_post('loginname');
+		
+		$passworda = $this->_post('userpassworda');
+		
+		$passwordb = $this->_post('userpasswordb');
+					
+		$userinfo['updatetime'] = date('Y-m-d H:i:s');
+		
+		if($loginname!='')
+		{
+			
+			
+			$rsa = $Model->getByLoginname($loginname);
+			 if($rsa)
+			 {
+				 		
+				echo 'loginexist';
+				exit;	
+			 }
+			
+			
+			if($passworda == ''& $passwordb == '')
+			{
+				
+			echo 'passwordnull';
+			exit;
+				}
+				
+				else if($passworda == ''|| $passwordb == '')
+				{
+				 echo 'bothpassword';
+				 exit;
+					
+					
+					}
+					else if(strcmp($passworda , $passwordb)!=0)
+						{
+				
+								 echo 'diffpassword';
+								 exit;
+				
+							}
+							
+							else 
+							{								
+								
+								
+								$userinfo['loginname'] = $loginname;
+								
+								$userinfo['password'] =  md5($passworda);
+								
+								$rsend = $Model->add($userinfo);
+								
+								if(!$rsend) {
+									$Model->rollback();
+									echo '信息添加失败，请重试！';
+									exit;	
+									}
+								echo 'ok';
+											
+							 }
+					
+			}
+			
+		else
+		{
+			$rsend = $Model->add($userinfo);
+				
+				if(!$rsend) {
+					$Model->rollback();
+					echo '信息添加失败，请重试！';
+					exit;	
+				}
+		echo 'ok';
+			
+		
+			}
+	
+	}
+	
+	//查询所有员工
+public function hrfetch_all_users(){
+			
+		$page = $this->_post('page');
+		
+		if($page<1) $page=1;
+		
+		$rows = $this->_post('rows');
+		
+		if($rows<1) $rows=10;
+		
+		$start = ($page-1)*$rows;
+			
+			$department = $this->_post('department');
+			$uid = $this->_post('uid');
+			$username = $this->_post('username');
+			
+			$userinfo = M('userinfo');
+			
+			if($department == ''& $uid==''& $username == '')
+			{
+				
+				$cc = $userinfo->count();
+				$rs = $userinfo->field('op_userinfo.username as username,op_userinfo.uid as uid,op_department.departmentname as department')
+				->join('op_department ON op_userinfo.departmentid = op_department.did')
+				->order('op_userinfo.uid desc')
+				->limit("$start,$rows")
+				->select();
+				
+				
+				
+				}
+				
+				else 
+				{
+					
+									if($department!='')
+									{
+										$where = "op_department.departmentname like '%$department%' ";
+										}
+									
+									if($uid != '' & $where!='')
+									{
+										$where = "$where and op_userinfo.uid = $uid ";
+										
+										}
+										
+										else if($uid !='')
+										{
+											$where = "op_userinfo.uid = $uid ";
+											}
+											
+											
+											if($username!='' & $where !='')
+											{
+												$where = "$where and op_userinfo.username = $username ";
+												
+												}
+												
+												else if($username != '')
+												{
+													$where = "op_userinfo.username = $username ";
+													
+													
+													}
+													
+													
+									$cc = $userinfo->where($where)->count();
+									$rs = $userinfo->field('op_userinfo.username as username,op_userinfo.uid as uid,op_department.departmentname as department')
+									->join('op_department ON op_userinfo.departmentid = op_department.did')
+									->where($where)
+									->order('op_userinfo.uid desc')
+									->limit("$start,$rows")
+									->select();			
+					
+					
+					}
+			
+			echo dataToJson($rs,$cc);
+			
+			}
+	//删除员工信息
+	
+	function staffDel(){
+		$uid = $this->_get('uid');
+		$Userinfo = M('userinfo');
+		$UserClockTime = M('clocktime');
+		$UserUnusualTime = M('unusualtime');
+		
+		$rs1 = $Userinfo->where("uid=$uid")->delete();
+		$rs2 = $UserClockTime->where("uid=$uid")->delete();
+		$rs3 = $UserUnusualTime->where("uid=$uid")->delete();
+			
+			if(!$rs1 ||!$rs2||!$rs3) {
+					$Userinfo->rollback();
+					$UserClockTime->rollback();
+					$UserUnusualTime->rollback();
+					echo '删除失败，请重试！';
+					exit;	
+				}
+		echo $rs1;
+		}
+
+
+
+
+public function staffInfoModify(){
+	
+	$uid =  $this->_get('uid');
+			//部门
+		$department = M('department');
+		$category = $department->select();
+		$this->assign('category',$category);
+		//类型
+		$Model = M('usertype');
+		$usertype = $Model->where("op_usertype.power<10")->select();
+		$this->assign('usertype',$usertype);
+		
+	
+	$Userinfo = M('userinfo');
+	$rs = $Userinfo->field('op_userinfo.username as username,op_userinfo.phone as phone,op_userinfo.entrydate as entrydate,op_userinfo.uid as uid,op_userinfo.departmentid as did,op_userinfo.usertypeid as typeid')->where("op_userinfo.uid=$uid")->select();
+		
+			$this->assign('userinfo',$rs);
+			$this->display();
+		
+			//echo $Userinfo->getLastSql();
+	
+	
+	}
+
+
+public function staff_modify_do(){
+	
+	$uid=$this->_get('uid');
+	$entrytime = $this->_get('entrytime');
+	$department = $this->_post('department');
+	$username = $this->_post('staffname');
+	$stafftype = $this->_post('stafftype');
+	$phone = $this->_post('phone');
+	
+	$modifyinfo = M('userinfo');
+	
+		 
+	    $info=$modifyinfo->getByUid($uid);
+		
+	    $info['username'] =  $username;
+		$info['entrydate'] = $entrytime;
+		$info['departmentid'] =  $department;
+		$info['phone'] = $phone;
+		$info['usertypeid'] = $stafftype;
+		$info['updatetime'] = date('Y-m-d H:i:s');
+		
+		$rs = $modifyinfo->save($info);
+		
+		//echo $checkdetails->getLastSql();
+		
+	if(!$rs) {
+			echo '修改失败，请重试！';
+			exit;	
+		}
+		echo 'ok';
+	
+	
+	}
+
+
+public function loginDetails(){
+	
+	
+	 $uid = $this->_get('uid');
+	 $login = M('log');
+	 $userinfo = M('userinfo');
+	 $rs = $userinfo->where("op_userinfo.uid = $uid")->select();
+	 $cc = $login->where("op_log.uid = $uid")->count();
+	 $this->assign('total',$cc[0]);
+	  $this->assign('uid',$uid);
+	  $this->assign('loginname',$rs[0]['loginname']);
+	 $this->display();
+	//echo $login->getLastSql();
+	}
+
+//查询登录信息
+	function fetch_all_login(){
+		$page = $this->_post('page');
+		
+		if($page<1) $page=1;
+		
+		$rows = $this->_post('rows');
+		
+		if($rows<1) $rows=10;
+		
+		$start = ($page-1)*$rows;
+		
+		$uid = $this->_get('uid');
+		
+		$userinfo = M('log');
+		
+		$cc = $userinfo->where("op_log.uid=$uid")->count();
+		
+		$rs = $userinfo->field('op_log.uid as uid,op_log.logintime as logintime,op_log.quittime as quittime,op_userinfo.username as username')
+						->join('op_userinfo ON op_userinfo.uid = op_log.uid')
+						->where("op_log.uid = $uid")
+						->order('op_log.logintime desc')
+						->limit("$start,$rows")
+						->select();
+		
+		echo dataToJson($rs,$cc);
+		
+		//echo $userinfo->getLastSql();
+		}
+		
+		
+		
+
 }
 
 ?>
