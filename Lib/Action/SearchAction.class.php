@@ -89,11 +89,13 @@ class SearchAction extends Action
 
 		$clocktime = M('clocktime');
 		$cc = $clocktime
+		->Distinct(true)
 		->join('op_userinfo ON op_clocktime.uid=op_userinfo.uid')
 		 ->where($where)
 		 ->count();
 		 
 	    $allattendance=$clocktime
+		->Distinct(true)
 		->field("phone,op_clocktime.uid as uid,op_clocktime.clocktime as clocktime,op_clocktime.clockdate as clockdate,op_userinfo.username as username
 		,op_department.departmentname as department,
 		 CASE

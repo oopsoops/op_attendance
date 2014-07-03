@@ -36,15 +36,28 @@ class HrAction extends Action {
 		
 		$begin_time='';
 		$end_time='';
+		
+			if($import_begin_time==''&&$import_end_time=='')
+				{
+						$this->error('开始日期和结束日期不能同时为空！');
+			  			 exit();
+					}
+					
 		if($import_begin_time!='')
 		{
 			$begin_time=strtotime($import_begin_time);
 			}
 			
+			
 			if($import_end_time!='')
 			{
 				$end_time=strtotime($import_begin_time);
 				}
+				
+				
+
+				
+				
 		
 		 /*判别是不是.xls文件，判别是不是excel文件*/
 		 if (strtolower ( $file_type ) != "xlsx" && strtolower ( $file_type ) != "xls")              
@@ -256,6 +269,7 @@ class HrAction extends Action {
 
 		$clocktime = M('clocktime');
 		$cc = $clocktime
+		->Distinct(true)
 		->join('op_userinfo ON op_clocktime.uid=op_userinfo.uid')
 		->join('op_department ON op_userinfo.departmentid=op_department.did')
 		->join('op_unusualtime ON op_unusualtime.pid=op_clocktime.id')
@@ -263,6 +277,7 @@ class HrAction extends Action {
 		 ->count();
 		 
 	    $allattendance=$clocktime
+		->Distinct(true)
 		->field("phone,op_clocktime.uid as uid,op_clocktime.clocktime as clocktime,op_clocktime.clockdate as clockdate,op_userinfo.username as username
 		,op_department.departmentname as department,
 		 CASE
@@ -692,6 +707,103 @@ public function loginDetails(){
 		echo 'ok';
 			
 			}
+			
+			
+			//员工信息例子
+			public function staffInfoSample()
+			{
+				$page = $this->_post('page');
+		
+				if($page<1) $page=1;
+				
+				$rows = $this->_post('rows');
+				
+				if($rows<1) $rows=10;
+				
+				$start = ($page-1)*$rows;
+				$sample=M('sample');
+				/*
+				$info[0]['uid']='123456789';
+				$info[0]['username']='XXX';
+				$info[0]['department']='后勤部';
+				$info[0]['usertype']='产线班长';
+				$info[0]['entrydate']='2008-8-8';
+				$info[0]['costcenterid']='二财务部';
+				$info[0]['phone']='137XXXXXXXX';
+				*/
+				
+				$cc = $sample->count();
+				
+				$rs=$sample->field('uid,username,department,usertype,entrydate,costcenterid,phone')->limit("$start,$rows")->select();
+				
+				echo dataToJson($rs,$cc);
+				}
+			
+			
+			
+			//导入员工信息
+		public function importStaffExcel()
+	
+	{
+				$tmp_file = $_FILES ['import_staff'] ['tmp_name'];
+		
+		$file_types = explode ( ".", $_FILES ['import_staff'] ['name'] );
+		
+		$file_type = $file_types [count ( $file_types ) - 1];
+		
+		
+				
+		
+		 /*判别是不是.xls文件，判别是不是excel文件*/
+		 if (strtolower ( $file_type ) != "xlsx" && strtolower ( $file_type ) != "xls")              
+		 {
+			  $this->error ( '不是Excel文件，重新选择' );
+			 exit();
+			  
+		 }
+	
+	
+		$ExcelToArrary=new ExcelToArrary();//实例化
+		//$res=$ExcelToArrary->read(C('UPLOAD_DIR').$file_name,"UTF-8",$file_type);//传参,判断office2007还是office2003
+		$flag=0;
+		$res=$ExcelToArrary->read($tmp_file,"UTF-8",$file_type);//传参,判断office2007还是office2003
+		
+					foreach ( $res as $k => $v ) //循环excel表
+					   {
+								//$s=$k;//addAll方法要求数组必须有0索引
+							    $k=$k-1;
+								if($k>0)
+								{
+							   $data[$flag]['uid'] = $v [0];//创建二维数组
+							   $data[$flag]['username'] = $v [1];
+							   $data[$flag]['accountstatue'] = 0;
+							   $data[$flag]['departmentid'] = $v [2];
+							   $data[$flag]['usertypeid'] = $v [3];
+							 
+							   $data[$flag]['costcenterid'] =1;
+							   $data[$flag]['entrydate'] = $v [4];
+							   $data[$flag]['phone'] = $v [5];
+							   $data[$flag]['updatetime'] =  date('Y-m-d H:i:s');
+							   $flag=$flag+1;
+								}
+						}
+		
+		  $infotable=M('userinfo');//M方法
+		  $result=$infotable->addAll($data);
+		  
+		  if(!$result)
+		  {
+			  $this->error($infotable->getLastSql());
+			  echo $infotable->getLastSql();
+			  $result->rollback();
+			  exit();
+		  }
+		  else
+		  {
+			  $this->success ( '导入成功' );	
+		  }
+				
+	}
 
 }
 

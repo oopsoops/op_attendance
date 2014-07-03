@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50516
 File Encoding         : 65001
 
-Date: 2014-07-01 12:18:10
+Date: 2014-07-03 15:55:29
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -81,6 +81,26 @@ CREATE TABLE `op_log` (
 -- ----------------------------
 -- Records of op_log
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for `op_sample`
+-- ----------------------------
+DROP TABLE IF EXISTS `op_sample`;
+CREATE TABLE `op_sample` (
+  `uid` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `username` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `department` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `usertype` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `entrydate` date DEFAULT NULL,
+  `costcenterid` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `phone` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of op_sample
+-- ----------------------------
+INSERT INTO op_sample VALUES ('888', '张XX', '后勤部', '产线班长', '2008-08-08', '二财务部', '137XXXXXXXX');
 
 -- ----------------------------
 -- Table structure for `op_unusualtime`

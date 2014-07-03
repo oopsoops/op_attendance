@@ -42,7 +42,7 @@
 		"text":"员工批量导入",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Hr/importStaff"
+			"url":"Hr/staffImport"
 		 }
 	},{
 		"text":"员工信息管理",
