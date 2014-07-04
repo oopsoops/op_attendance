@@ -189,7 +189,16 @@ function hrrepassword(){
 					url:'__APP__/Hr/repass/uid/'+row.uid,  
 					
 					success:function(data){ 
-						 if(data=='ok')
+					
+					if(data == 'nologinname')
+					{
+						 $.messager.alert('提示', '该员工无登录账户，请在修改员工中进行账户添加！');
+						//刷新grid
+						$('#grid_hrstaffmanage').datagrid('loadData', { total:0, rows:[ ]});
+						$('#grid_hrstaffmanage').datagrid('load', { });
+						
+						}
+						else if(data=='ok')
 						 {
 							 $.messager.alert('提示', '密码重置成功！');
 						//刷新grid

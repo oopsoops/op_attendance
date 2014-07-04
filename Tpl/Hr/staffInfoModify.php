@@ -50,9 +50,37 @@
     <tr>
     	<td>入职日期：</td>
         <td><input id="modifyentrytime" type="text"   style="width:100px" value="<?php echo  $userinfo[0]['entrydate'];?>" /></td>
-        
-    </tr>
+   </tr>
     
+     <tr>
+    	<td>登录账户（初始密码：12345）：</td>
+        <td><input id="loginname" name="loginname" type="text"   style="width:100px" <?php if($userinfo[0]['loginname']!=''){ echo " value=" ;} ?>
+        <?php echo '"';
+		
+		  if($userinfo[0]['loginname']!='')
+		  
+		{
+				echo  $userinfo[0]['loginname'];
+				
+				
+		}
+		echo '"'; ?>
+         <?php
+		  if($userinfo[0]['loginname']!='')
+		  {
+			   echo  "readonly = ".'"readonly"';
+			   
+		   }
+		   
+		   ?>
+                
+                 />
+               
+        </td>
+   </tr>
+    
+ 
+ 
  
     <tr>
     

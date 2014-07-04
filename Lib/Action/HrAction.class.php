@@ -553,7 +553,7 @@ public function staffInfoModify(){
 		
 	
 	$Userinfo = M('userinfo');
-	$rs = $Userinfo->field('op_userinfo.username as username,op_userinfo.phone as phone,op_userinfo.entrydate as entrydate,op_userinfo.uid as uid,op_userinfo.departmentid as did,op_userinfo.usertypeid as typeid')->where("op_userinfo.uid=$uid")->select();
+	$rs = $Userinfo->field('op_userinfo.username as username,op_userinfo.phone as phone,op_userinfo.entrydate as entrydate,op_userinfo.uid as uid,op_userinfo.departmentid as did,op_userinfo.loginname as loginname,op_userinfo.usertypeid as typeid')->where("op_userinfo.uid=$uid")->select();
 		
 			$this->assign('userinfo',$rs);
 			$this->display();
@@ -572,7 +572,7 @@ public function staff_modify_do(){
 	$username = $this->_post('staffname');
 	$stafftype = $this->_post('stafftype');
 	$phone = $this->_post('phone');
-	
+	$loginname = $this->_post('loginname');
 	$modifyinfo = M('userinfo');
 	
 		 
@@ -584,6 +584,13 @@ public function staff_modify_do(){
 		$info['phone'] = $phone;
 		$info['usertypeid'] = $stafftype;
 		$info['updatetime'] = date('Y-m-d H:i:s');
+		
+		if($info['loginname']==NULL && $loginname!='')
+		{
+			
+			$info['loginname']=$loginname;
+			$info['password']=md5('12345');
+		}
 		
 		$rs = $modifyinfo->save($info);
 		
@@ -657,6 +664,13 @@ public function loginDetails(){
 			$oldpass = $info['password'];
 			
 			$info['password'] = md5('12345');
+			
+			if($info['loginname']=='')
+			{
+				echo 'nologinname';
+				exit;
+				
+				}
 			
 			if(strcmp($oldpass,$info['password'])==0)
 			{
