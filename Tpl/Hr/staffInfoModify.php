@@ -27,6 +27,15 @@
     </tr>
     
 
+     <tr>
+    	<td>所属工作组：</td>
+        <td><select name="teamid">
+            	<?php for($i=0;$i<count($teaminfo);$i++) {?>
+        		<option value="<?php echo $teaminfo[$i]['tid'];?>" <?php if($usertype[$i]['tid']==$userinfo[0]['typeid']) {echo "selected =selected";};?>><?php echo $teaminfo[$i]['teamname'];?></option>
+                <?php }?>
+            </select></td>
+        
+    </tr>
     
     <tr>
     	<td>员工姓名：</td>
@@ -35,40 +44,45 @@
     
     </tr>
     
-        
-    
- 	</tr>
-    
         <tr>
-    	<td>联系方式：</td>
-        <td><input type="text" name="phone" class="easyui-validatebox" value="<?php echo $userinfo[0]['phone'];?>"/></td>
-        
-    </tr>
+    	<td>成本中心：</td>
+        <td><input type="text" name="costcenter" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['costcenter'];?>"/></td>
     
-     </tr>
+    
+    </tr>
     
     <tr>
     	<td>入职日期：</td>
         <td><input id="modifyentrytime" type="text"   style="width:100px" value="<?php echo  $userinfo[0]['entrydate'];?>" /></td>
    </tr>
+        
+   
+    
+        <tr>
+    	<td>联系电话：</td>
+        <td><input type="text" name="phone"  value="<?php echo $userinfo[0]['phone'];?>"/></td>
+        
+    </tr>
+   
+        <tr>
+    	<td>Email：</td>
+        <td><input type="text" name="email"  value="<?php echo $userinfo[0]['email'];?>"/></td>
+        
+    </tr>
+    
     
      <tr>
     	<td>登录账户（初始密码：12345）：</td>
-        <td><input id="loginname" name="loginname" type="text"   style="width:100px" <?php if($userinfo[0]['loginname']!=''){ echo " value=" ;} ?>
-        <?php echo '"';
-		
-		  if($userinfo[0]['loginname']!='')
-		  
-		{
-				echo  $userinfo[0]['loginname'];
-				
-				
-		}
-		echo '"'; ?>
+        <td><input id="staffloginname"  name="staffloginname" type="text"   style="width:100px" <?php if($userinfo[0]['staffloginname']!='')		{ 
+		echo " value=".'"' ;
+        		echo  $userinfo[0]['staffloginname'];
+				echo '"'; 
+				echo  " readonly = ".'"'."readonly".'"';}?>
          <?php
-		  if($userinfo[0]['loginname']!='')
+		 
+		 	 if($userinfo[0]['power']<=1)
 		  {
-			   echo  "readonly = ".'"readonly"';
+			   echo  " disabled = ".'"'."disabled".'"';
 			   
 		   }
 		   
@@ -106,8 +120,15 @@ function modify_staff_do() {
 
 			return $('#form_modify_staff').form('validate');
 		},  
-		success:function(data){  
-			if(data=='ok') {
+		success:function(data){ 
+		
+		
+		  if(data =='haveexist')
+		  {
+			  
+			  $.messager.alert('提示', '该登录账户名称已存在！'); 
+			  } 
+			else if(data=='ok') {
 				 		$.messager.alert('提示', '修改成功'); 
 						$('#main').tabs('close','修改员工基本信息');
 						$('#main').tabs('close','员工信息管理');

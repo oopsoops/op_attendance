@@ -15,6 +15,8 @@
         </td>
     </tr>
     
+
+    
         <tr>
    	<td>员工类别：</td>
         <td>
@@ -24,6 +26,17 @@
                 <?php }?>
             </select>
         </td>
+    </tr>
+    
+        
+       <tr>
+    	<td>所属工作组：</td>
+        <td><select name="teamid">
+            	<?php for($i=0;$i<count($teaminfo);$i++) {?>
+        		<option value="<?php echo $teaminfo[$i]['tid'];?>"><?php echo $teaminfo[$i]['teamname'];?></option>
+                <?php }?>
+            </select></td>
+        
     </tr>
     
     <tr>
@@ -39,44 +52,45 @@
         
     </tr>
     
- 	</tr>
-    
-        <tr>
-    	<td>联系方式：</td>
-        <td><input type="text" name="phone" class="easyui-validatebox" /></td>
+    <tr>
+    	<td>成本中心：</td>
+        <td><input type="text" name="costcenter" class="easyui-validatebox" required missingMessage="必填" /></td>
         
     </tr>
     
-     </tr>
-    
-    <tr>
+
+        <tr>
     	<td>入职日期：</td>
         <td><input id="addentrytime" type="text"   style="width:100px" /></td>
         
     </tr>
     
-
+ 	</tr>
     
         <tr>
-    	<td>登录名称：</td>
+    	<td>联系电话：</td>
+        <td><input type="text" name="phone"  /></td>
+        
+    </tr>
+            <tr>
+    	<td>Email：</td>
+        <td><input type="text" name="email"  /></td>
+        
+    </tr>
+     </tr>
+    
+
+    
+
+    <tr><th colspan="2">注意：普通员工无需添加登录账户，添加后登录账户无效,账户默认登录密码为：12345！</th></tr>
+    
+        <tr>
+    	<td>登录账户名称：</td>
         <td><input type="text" name="newloginname" class="easyui-validatebox" /></td>
         
     </tr>
-    
    
-    
-    <tr>
-    	<td>请输入登录密码：</td>
-        <td><input  type="password" name="userpassworda" class="easyui-validatebox" /></td>
-        
-    </tr>
-    
-      
-    <tr>
-    	<td>请再次输入登录密码：</td>
-        <td><input type="password"  name="userpasswordb" class="easyui-validatebox" /></td>
-        
-    </tr>
+
     <tr>
     
      <td align="right">
@@ -118,23 +132,13 @@ function new_staff_do() {
 				$.messager.alert('提示','该登录账号已经存在！');
 				
 				}
-		
-		 	 else	if(data == 'passwordnull')
-			{
-				$.messager.alert('提示','登录密码不能为空！');
+			
 				
-				}
-		
-			 else	if(data == 'bothpassword')
-			{
-				$.messager.alert('提示','请确保输入密码都已填写！');
-				
-				}
-			else	if(data == 'diffpassword')
-			{
-				$.messager.alert('提示','请确保两次密码输入一致！');
-				
-				}
+				else if(data =='loginempty')
+				{
+					$.messager.alert('提示','创建非普通员工必须填写账户名称和密码！');
+					
+					}
 		
 			else if(data=='ok') {
 				

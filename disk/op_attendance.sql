@@ -1,20 +1,19 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : localhost
-Source Server Version : 50141
+Source Server         : localhost_3306
+Source Server Version : 50516
 Source Host           : localhost:3306
 Source Database       : op_attendance
 
 Target Server Type    : MYSQL
-Target Server Version : 50141
+Target Server Version : 50516
 File Encoding         : 65001
 
-Date: 2014-07-04 10:39:06
+Date: 2014-07-04 18:16:37
 */
 
 SET FOREIGN_KEY_CHECKS=0;
-
 -- ----------------------------
 -- Table structure for `op_clocktime`
 -- ----------------------------
@@ -30,11 +29,11 @@ CREATE TABLE `op_clocktime` (
 -- ----------------------------
 -- Records of op_clocktime
 -- ----------------------------
-INSERT INTO `op_clocktime` VALUES ('1', '1001', '2014-06-19', '08:00:26');
-INSERT INTO `op_clocktime` VALUES ('2', '1001', '2014-06-19', '08:02:33');
-INSERT INTO `op_clocktime` VALUES ('3', '1001', '2014-06-19', '11:57:41');
-INSERT INTO `op_clocktime` VALUES ('4', '1001', '2014-06-19', '13:41:56');
-INSERT INTO `op_clocktime` VALUES ('5', '1001', '2014-06-19', '17:42:02');
+INSERT INTO op_clocktime VALUES ('1', '1001', '2014-06-19', '08:00:26');
+INSERT INTO op_clocktime VALUES ('2', '1001', '2014-06-19', '08:02:33');
+INSERT INTO op_clocktime VALUES ('3', '1001', '2014-06-19', '11:57:41');
+INSERT INTO op_clocktime VALUES ('4', '1001', '2014-06-19', '13:41:56');
+INSERT INTO op_clocktime VALUES ('5', '1001', '2014-06-19', '17:42:02');
 
 -- ----------------------------
 -- Table structure for `op_config`
@@ -49,7 +48,7 @@ CREATE TABLE `op_config` (
 -- ----------------------------
 -- Records of op_config
 -- ----------------------------
-INSERT INTO `op_config` VALUES ('1', '0.05');
+INSERT INTO op_config VALUES ('1', '0.05');
 
 -- ----------------------------
 -- Table structure for `op_department`
@@ -64,8 +63,8 @@ CREATE TABLE `op_department` (
 -- ----------------------------
 -- Records of op_department
 -- ----------------------------
-INSERT INTO `op_department` VALUES ('1', '车间');
-INSERT INTO `op_department` VALUES ('2', '人力资源部');
+INSERT INTO op_department VALUES ('1', '车间');
+INSERT INTO op_department VALUES ('2', '人力资源部');
 
 -- ----------------------------
 -- Table structure for `op_log`
@@ -101,7 +100,7 @@ CREATE TABLE `op_sample` (
 -- ----------------------------
 -- Records of op_sample
 -- ----------------------------
-INSERT INTO `op_sample` VALUES ('888', '张XX', '后勤部', '产线班长', '2008-08-08', '二财务部', '137XXXXXXXX');
+INSERT INTO op_sample VALUES ('888', '张XX', '后勤部', '产线班长', '2008-08-08', '二财务部', '137XXXXXXXX');
 
 -- ----------------------------
 -- Table structure for `op_staffinfo`
@@ -116,7 +115,7 @@ CREATE TABLE `op_staffinfo` (
   `costcenterid` int(11) DEFAULT NULL,
   `entrydate` date DEFAULT NULL,
   `usertypeid` int(11) DEFAULT NULL,
-  `teamif` int(11) DEFAULT NULL,
+  `teamid` int(11) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `updatetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -125,8 +124,8 @@ CREATE TABLE `op_staffinfo` (
 -- ----------------------------
 -- Records of op_staffinfo
 -- ----------------------------
-INSERT INTO `op_staffinfo` VALUES ('1', '1001', '测试员工', '1', null, '1', '2014-06-19', '1', null, null, '2014-06-19 14:06:50');
-INSERT INTO `op_staffinfo` VALUES ('2', '1002', '测试管理', '2', null, '1', '2014-06-19', '2', null, null, '2014-06-19 23:29:00');
+INSERT INTO op_staffinfo VALUES ('1', '1001', '测试员工', '1', null, '1', '2014-06-19', '1', null, null, '2014-06-19 14:06:50');
+INSERT INTO op_staffinfo VALUES ('2', '1002', '测试管理', '2', null, '1', '2014-06-19', '2', null, null, '2014-06-19 23:29:00');
 
 -- ----------------------------
 -- Table structure for `op_teaminfo`
@@ -161,7 +160,7 @@ CREATE TABLE `op_unusualtime` (
 -- ----------------------------
 -- Records of op_unusualtime
 -- ----------------------------
-INSERT INTO `op_unusualtime` VALUES ('1', '1', '1001', '2014-06-19', '08:13:10', '08:00:00', '迟到', '0');
+INSERT INTO op_unusualtime VALUES ('1', '1', '1001', '2014-06-19', '08:13:10', '08:00:00', '迟到', '0');
 
 -- ----------------------------
 -- Table structure for `op_userinfo`
@@ -188,8 +187,8 @@ CREATE TABLE `op_userinfo` (
 -- ----------------------------
 -- Records of op_userinfo
 -- ----------------------------
-INSERT INTO `op_userinfo` VALUES ('1', '1001', 'test', '827ccb0eea8a706c4c34a16891f84e7b', '测试员工', '0', '1', null, '1', '2014-06-19', '1', null, null, '2014-06-19 14:06:50');
-INSERT INTO `op_userinfo` VALUES ('2', '1002', 'hr', '827ccb0eea8a706c4c34a16891f84e7b', '测试管理', '0', '2', null, '1', '2014-06-19', '2', null, null, '2014-06-19 23:29:00');
+INSERT INTO op_userinfo VALUES ('1', '1001', 'test', '827ccb0eea8a706c4c34a16891f84e7b', '测试员工', '0', '1', null, '1', '2014-06-19', '1', null, null, '2014-06-19 14:06:50');
+INSERT INTO op_userinfo VALUES ('2', '1002', 'hr', '827ccb0eea8a706c4c34a16891f84e7b', '测试管理', '0', '2', null, '1', '2014-06-19', '2', null, null, '2014-06-19 23:29:00');
 
 -- ----------------------------
 -- Table structure for `op_usertype`
@@ -206,8 +205,8 @@ CREATE TABLE `op_usertype` (
 -- ----------------------------
 -- Records of op_usertype
 -- ----------------------------
-INSERT INTO `op_usertype` VALUES ('1', '员工', 'staff_menu.json', '1');
-INSERT INTO `op_usertype` VALUES ('2', '人力', 'hr_menu.json', '2');
+INSERT INTO op_usertype VALUES ('1', '员工', 'staff_menu.json', '1');
+INSERT INTO op_usertype VALUES ('2', '人力', 'hr_menu.json', '2');
 
 -- ----------------------------
 -- Table structure for `op_worktime`
@@ -223,5 +222,5 @@ CREATE TABLE `op_worktime` (
 -- ----------------------------
 -- Records of op_worktime
 -- ----------------------------
-INSERT INTO `op_worktime` VALUES ('1', '08:00:00', '12:00:00');
-INSERT INTO `op_worktime` VALUES ('2', '13:00:00', '17:30:00');
+INSERT INTO op_worktime VALUES ('1', '08:00:00', '12:00:00');
+INSERT INTO op_worktime VALUES ('2', '13:00:00', '17:30:00');

@@ -27,16 +27,33 @@
               <td>员工角色：</td>
               <td colspan="2"><input type="text" name="typename" readonly="readonly" value="<?php echo $userinfo['typename'];?>" /></td>
               </tr>
+                            
+              <tr>
+              <td>所属组：</td>
+              <td colspan="2"><input type="text" name="teamid" readonly="readonly" value="<?php echo $userinfo['teamid'];?>" /></td>
+              </tr>
               
               <tr>
-              <td>联系方式：</td>
-              <td colspan="2"><input type="text" name="phone" readonly="readonly" value="<?php echo $userinfo['phone'];?>" /></td>
+              <td>成本中心：</td>
+              <td colspan="2"><input type="text" name="costcenter" readonly="readonly" value="<?php echo $userinfo['costcenter'];?>" /></td>
               </tr>
               
               <tr>
               <td>入职日期：</td>
               <td colspan="2"><input type="text" name="entrydate" readonly="readonly" value="<?php echo $userinfo['entrydate'];?>" /></td>
               </tr>
+              
+              <tr>
+              <td>联系电话：</td>
+              <td colspan="2"><input type="text" name="phone" readonly="readonly" value="<?php echo $userinfo['phone'];?>" /></td>
+              </tr>
+              
+              <tr>
+              <td>Email：</td>
+              <td colspan="2"><input type="text" name="email" readonly="readonly" value="<?php echo $userinfo['email'];?>" /></td>
+              </tr>
+              
+
 
                             
             </tr>  

@@ -130,11 +130,19 @@ function hropenDel(){
 					url:'__APP__/Hr/staffDel/uid/'+row.uid,  
 					
 					success:function(data){ 
+					
+					if(data=='ok')
+					{
 						 $.messager.alert('提示', '删除成功！');
 						//刷新grid
 						$('#grid_hrstaffmanage').datagrid('loadData', { total:0, rows:[ ]});
 						$('#grid_hrstaffmanage').datagrid('load', { });
+					}
+					else
+					{
+						 $.messager.alert('提示', '删除失败！');
 						
+						}
 						
 					}  
 				});    
@@ -192,10 +200,8 @@ function hrrepassword(){
 					
 					if(data == 'nologinname')
 					{
-						 $.messager.alert('提示', '该员工无登录账户，请在修改员工中进行账户添加！');
-						//刷新grid
-						$('#grid_hrstaffmanage').datagrid('loadData', { total:0, rows:[ ]});
-						$('#grid_hrstaffmanage').datagrid('load', { });
+						 $.messager.alert('提示', '该员工无登录账户，请确认员工权限后在修改员工中添加登录账户！');
+
 						
 						}
 						else if(data=='ok')
@@ -230,9 +236,10 @@ function hrforbid(){
 	var row = $('#grid_hrstaffmanage').datagrid('getSelected');
 	
 	if(row!=null){
+		
 		if(row.statue == 0)
 			{
-		$.messager.confirm('提示', '确定禁用该员工账户？', function(r){  
+				$.messager.confirm('提示', '确定禁用该员工账户？', function(r){  
 			if (r){  
 				//提交删除
 				
@@ -248,6 +255,11 @@ function hrforbid(){
 						$('#grid_hrstaffmanage').datagrid('loadData', { total:0, rows:[ ]});
 						$('#grid_hrstaffmanage').datagrid('load', { });
 						 }
+						 
+						 else if(data=='nologinname')
+						 {
+							  $.messager.alert('提示', '该员工无登录账户，请确认员工权限后在修改员工中添加登录账户！');
+							 }
 						 else
 						 {
 							  $.messager.alert('提示', '账户禁用失败！');
@@ -259,7 +271,7 @@ function hrforbid(){
 		}); 
 	}
 	
-	else
+	else if(row.statue == 1)
 	{
 		
 		
@@ -278,6 +290,12 @@ function hrforbid(){
 						$('#grid_hrstaffmanage').datagrid('loadData', { total:0, rows:[ ]});
 						$('#grid_hrstaffmanage').datagrid('load', { });
 						 }
+						 
+						 else if(data=='nologinname')
+						 {
+							  $.messager.alert('提示', '该员工无登录账户，请确认员工权限后在修改员工中添加登录账户！');
+							 }
+						 
 						 else
 						 {
 							 $.messager.alert('提示', '账户启用失败！');
@@ -287,6 +305,16 @@ function hrforbid(){
 					}  
 				});    
 			}  
+			
+			else
+			{
+				
+				$.messager.alert('提示', '该员工无登录账户，请确认员工权限后在修改员工中添加登录账户！');
+				
+				}
+		
+			
+			
 		}); 
 		
 		}

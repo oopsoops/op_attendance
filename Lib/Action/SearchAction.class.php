@@ -106,8 +106,8 @@ class SearchAction extends Action
 			 WHEN static='迟到' THEN '迟到'
 			 WHEN static='早退' THEN '早退'
 			 ELSE '正常' END AS static")
-		->join('op_userinfo ON op_clocktime.uid=op_userinfo.uid')
-		->join('op_department ON op_userinfo.departmentid=op_department.did')
+		->join('op_staffinfo ON op_clocktime.uid=op_staffinfo.uid')
+		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->join('op_unusualtime ON op_unusualtime.pid=op_clocktime.id')
 		->where($where)
 		 ->order('op_clocktime.uid desc')
@@ -135,15 +135,16 @@ class SearchAction extends Action
 			$uid = $_SESSION['uid'];
 			}
 
-		$userdetails = M('userinfo');
+		$userdetails = M('staffinfo');
 		
 
 		 
 	    $info=$userdetails
-		->field("op_userinfo.uid as uid,op_userinfo.username as username,op_userinfo.phone as phone,op_userinfo.entrydate as entrydate,op_usertype.typename as typename,op_department.departmentname as department")
-		->join('op_usertype ON op_userinfo.usertypeid=op_usertype.tid')
-		->join('op_department ON op_userinfo.departmentid=op_department.did')
-		->where("op_userinfo.uid = $uid")
+		->field("op_staffinfo.uid as uid,op_staffinfo.username as username,op_staffinfo.phone as phone,op_staffinfo.email as email,op_staffinfo.entrydate as entrydate,op_usertype.typename as typename,op_department.departmentname as department,op_teaminfo.teamname as teamif")
+		->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid')
+		->join('op_department ON op_staffinfo.departmentid=op_department.did')
+		->join('op_teaminfo ON op_staffinfo.teamif = op_teaminfo.tid')
+		->where("op_staffinfo.uid = $uid")
 	    ->select();
 		//echo $userdetails->getLastSql();
 		$this->assign('userinfo',$info[0]);
