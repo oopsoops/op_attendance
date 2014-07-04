@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50516
 File Encoding         : 65001
 
-Date: 2014-07-03 15:55:29
+Date: 2014-07-04 09:24:43
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -133,6 +133,7 @@ CREATE TABLE `op_userinfo` (
   `loginname` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `username` varchar(255) NOT NULL,
+  `accountstatue` int(11) NOT NULL DEFAULT '0',
   `departmentid` int(11) DEFAULT NULL,
   `phone` varchar(255) DEFAULT NULL,
   `costcenterid` int(11) DEFAULT NULL,
@@ -145,8 +146,8 @@ CREATE TABLE `op_userinfo` (
 -- ----------------------------
 -- Records of op_userinfo
 -- ----------------------------
-INSERT INTO op_userinfo VALUES ('1', '1001', 'test', '827ccb0eea8a706c4c34a16891f84e7b', '测试员工', '1', null, '1', '2014-06-19', '1', '2014-06-19 14:06:50');
-INSERT INTO op_userinfo VALUES ('2', '1002', 'hr', '827ccb0eea8a706c4c34a16891f84e7b', '测试管理', '2', null, '1', '2014-06-19', '2', '2014-06-19 23:29:00');
+INSERT INTO op_userinfo VALUES ('1', '1001', 'test', '827ccb0eea8a706c4c34a16891f84e7b', '测试员工', '0', '1', null, '1', '2014-06-19', '1', '2014-06-19 14:06:50');
+INSERT INTO op_userinfo VALUES ('2', '1002', 'hr', '827ccb0eea8a706c4c34a16891f84e7b', '测试管理', '0', '2', null, '1', '2014-06-19', '2', '2014-06-19 23:29:00');
 
 -- ----------------------------
 -- Table structure for `op_usertype`

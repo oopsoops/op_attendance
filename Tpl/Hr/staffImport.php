@@ -29,7 +29,7 @@
             
         <thead>
          
-        <tr><th  colspan="7"  >员工信息请按如下Excel格式导入（Excel第一行为类别名称，第二行为数据开始，列与列之间禁止有空单元格，否则信息导入不正确）：</th> </tr>
+        <tr><th  colspan="7" style="color:#F00" >员工信息请按如下Excel格式导入（Excel第一行为类别名称，第二行为数据开始，列与列之间禁止有空单元格，否则信息导入不正确）：</th> </tr>
             <tr> 
                 <th field="uid" width="100" align="center" >员工工号</th>
                 <th  field="username" width="100" align="center">员工姓名</th>  
