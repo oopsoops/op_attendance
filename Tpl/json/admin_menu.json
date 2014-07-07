@@ -5,22 +5,54 @@
 		"text":"考勤记录",
 		"iconCls":"icon-project",
 		 "attributes":{  
-            "url":"Search/searchInfo"
+            "url":"Hr/hrSearchInfo"
         }
-	},{
-		"text":"排班查询",
+	}]
+},{
+	"text":"业务管理",
+	"iconCls":"icon-docbag",
+	"children":[{
+		"text":"业务申请",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
             "url":"Work/check_project"
         }
-	} ,{
-		"text":"报表查询",
-		"iconCls":"icon-pass",
-		 "attributes":{  
-			"url":"Password/passwordChange"
-		 }
 	}]
 },{
+	"text":"工作管理",
+	"iconCls":"icon-work",
+	"children":[{
+		"text":"考勤导入",
+		"iconCls":"icon-project",
+		 "attributes":{  
+            "url":"Hr/record_import"
+        }
+	}]
+},{
+	"text":"员工管理",
+	"iconCls":"icon-archives",
+	"state":"closed",
+	"children":[{
+		"text":"创建员工",
+		"iconCls":"icon-client",
+		 "attributes":{  
+            "url":"Hr/newStaff"
+        }
+	},{
+		"text":"员工批量导入",
+		"iconCls":"icon-pass",
+		 "attributes":{  
+			"url":"Hr/staffImport"
+		 }
+	},{
+		"text":"员工信息管理",
+		"iconCls":"icon-pass",
+		 "attributes":{  
+			"url":"Hr/staffManager"
+		 }
+	}]
+},
+{
 	"text":"信息管理",
 	"iconCls":"icon-archives",
 	"state":"closed",

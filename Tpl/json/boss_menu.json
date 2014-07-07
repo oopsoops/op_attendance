@@ -5,22 +5,62 @@
 		"text":"考勤记录",
 		"iconCls":"icon-project",
 		 "attributes":{  
-            "url":"Search/searchInfo"
+            "url":"Hr/hrSearchInfo"
+        }
+	},{
+		"text":"报表查询",
+		"iconCls":"icon-project",
+		 "attributes":{  
+            "url":"Hr/hrSearchInfo"
         }
 	},{
 		"text":"排班查询",
+		"iconCls":"icon-project",
+		 "attributes":{  
+            "url":"Hr/hrSearchInfo"
+        }
+	}]
+},{
+	"text":"工作管理",
+	"iconCls":"icon-docbag",
+	"children":[{
+		"text":"加班审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
             "url":"Work/check_project"
         }
-	} ,{
-		"text":"报表查询",
+	},{
+		"text":"出差审批",
+		"iconCls":"icon-doccheck",
+		 "attributes":{  
+            "url":"Work/check_project"
+        }
+	},{
+		"text":"休假审批",
+		"iconCls":"icon-doccheck",
+		 "attributes":{  
+            "url":"Work/check_project"
+        }
+	},{
+		"text":"申请查询",
 		"iconCls":"icon-pass",
 		 "attributes":{  
 			"url":"Password/passwordChange"
 		 }
 	}]
 },{
+	"text":"员工管理",
+	"iconCls":"icon-archives",
+	"state":"closed",
+	"children":[{
+		"text":"员工信息管理",
+		"iconCls":"icon-pass",
+		 "attributes":{  
+			"url":"Hr/staffManager"
+		 }
+	}]
+},
+{
 	"text":"信息管理",
 	"iconCls":"icon-archives",
 	"state":"closed",
