@@ -53,10 +53,10 @@
 	"iconCls":"icon-archives",
 	"state":"closed",
 	"children":[{
-		"text":"员工信息管理",
+		"text":"员工查看",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Hr/staffManager"
+			"url":"Boss/bossStaffManager"
 		 }
 	}]
 },

@@ -5,29 +5,19 @@
 		"text":"考勤记录",
 		"iconCls":"icon-project",
 		 "attributes":{  
-            "url":"Hr/hrSearchInfo"
+            "url":"Department/dpSearchInfo"
         }
 	},{
 		"text":"报表查询",
 		"iconCls":"icon-project",
 		 "attributes":{  
-            "url":"Hr/hrSearchInfo"
+            "url":"Hr/"
         }
 	},{
 		"text":"排班查询",
 		"iconCls":"icon-project",
 		 "attributes":{  
-            "url":"Hr/hrSearchInfo"
-        }
-	}]
-},{
-	"text":"业务管理",
-	"iconCls":"icon-docbag",
-	"children":[{
-		"text":"业务申请",
-		"iconCls":"icon-doccheck",
-		 "attributes":{  
-            "url":"Work/check_project"
+            "url":"Hr/"
         }
 	}]
 },{
@@ -37,37 +27,37 @@
 		"text":"加班审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/check_project"
+            "url":"Work/"
         }
 	},{
 		"text":"出差审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/check_project"
+            "url":"Work/"
         }
 	},{
 		"text":"休假审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/check_project"
+            "url":"Work/"
         }
 	},{
 		"text":"事务申请",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Password/passwordChange"
+			"url":"Password/"
 		 }
 	},{
 		"text":"申请查询",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Password/passwordChange"
+			"url":"Password/"
 		 }
 	},{
 		"text":"排班设置",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/check_project"
+            "url":"Work/"
         }
 	},{
 		"text":"考勤导入",
@@ -77,18 +67,6 @@
         }
 	}]
 },{
-	"text":"员工管理",
-	"iconCls":"icon-archives",
-	"state":"closed",
-	"children":[{
-		"text":"员工信息管理",
-		"iconCls":"icon-pass",
-		 "attributes":{  
-			"url":"Hr/staffManager"
-		 }
-	}]
-},
-{
 	"text":"信息管理",
 	"iconCls":"icon-archives",
 	"state":"closed",

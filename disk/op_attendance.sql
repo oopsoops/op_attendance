@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50516
 File Encoding         : 65001
 
-Date: 2014-07-07 20:15:51
+Date: 2014-07-07 22:00:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -119,13 +119,17 @@ CREATE TABLE `op_staffinfo` (
   `email` varchar(255) DEFAULT NULL,
   `updatetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of op_staffinfo
 -- ----------------------------
-INSERT INTO op_staffinfo VALUES ('1', '1001', '测试员工', '1', null, '1', '2014-06-19', '1', null, null, '2014-06-19 14:06:50');
-INSERT INTO op_staffinfo VALUES ('2', '1002', '测试管理', '2', null, '1', '2014-06-19', '2', null, null, '2014-06-19 23:29:00');
+INSERT INTO op_staffinfo VALUES ('1', '1001', '产线员工', '1', null, '1', '2014-06-19', '1', '1', null, '2014-06-19 14:06:50');
+INSERT INTO op_staffinfo VALUES ('2', '1002', '人事经理', '2', null, '1', '2014-06-19', '2', '1', null, '2014-06-19 23:29:00');
+INSERT INTO op_staffinfo VALUES ('3', '1003', '产线班长', '1', '1111', '1', '2014-07-03', '3', '1', null, '2014-07-15 21:24:09');
+INSERT INTO op_staffinfo VALUES ('4', '1004', '部门经理', '1', '2323', '1', '2014-07-01', '4', '1', null, '2014-07-01 21:24:46');
+INSERT INTO op_staffinfo VALUES ('5', '1005', '老板', '1', '212', '1', '2014-07-01', '5', '1', null, '2014-07-08 21:25:22');
+INSERT INTO op_staffinfo VALUES ('6', '1006', '管理员', '1', '121', '1', '2014-07-01', '6', '1', null, '2014-07-01 21:26:18');
 
 -- ----------------------------
 -- Table structure for `op_teaminfo`
