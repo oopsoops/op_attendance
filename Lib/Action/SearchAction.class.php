@@ -90,13 +90,13 @@ class SearchAction extends Action
 		$clocktime = M('clocktime');
 		$cc = $clocktime
 		->Distinct(true)
-		->join('op_userinfo ON op_clocktime.uid=op_userinfo.uid')
+		->join('op_staffinfo ON op_clocktime.uid=op_staffinfo.uid')
 		 ->where($where)
 		 ->count();
 		 
 	    $allattendance=$clocktime
 		->Distinct(true)
-		->field("phone,op_clocktime.uid as uid,op_clocktime.clocktime as clocktime,op_clocktime.clockdate as clockdate,op_userinfo.username as username
+		->field("phone,op_clocktime.uid as uid,op_clocktime.clocktime as clocktime,op_clocktime.clockdate as clockdate,op_staffinfo.username as username
 		,op_department.departmentname as department,
 		 CASE
 			WHEN isapply=1 THEN '已请假'
@@ -143,7 +143,7 @@ class SearchAction extends Action
 		->field("op_staffinfo.uid as uid,op_staffinfo.username as username,op_staffinfo.phone as phone,op_staffinfo.email as email,op_staffinfo.entrydate as entrydate,op_usertype.typename as typename,op_department.departmentname as department,op_teaminfo.teamname as teamif")
 		->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
-		->join('op_teaminfo ON op_staffinfo.teamif = op_teaminfo.tid')
+		->join('op_teaminfo ON op_staffinfo.teamid = op_teaminfo.tid')
 		->where("op_staffinfo.uid = $uid")
 	    ->select();
 		//echo $userdetails->getLastSql();
