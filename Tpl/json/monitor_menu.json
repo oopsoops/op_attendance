@@ -5,19 +5,19 @@
 		"text":"考勤记录",
 		"iconCls":"icon-project",
 		 "attributes":{  
-            "url":"Hr/hrSearchInfo"
+            "url":"Monitor/monitorSearchInfo"
         }
 	},{
 		"text":"报表查询",
 		"iconCls":"icon-project",
 		 "attributes":{  
-            "url":"Hr/hrSearchInfo"
+            "url":"Hr/"
         }
 	},{
 		"text":"排班查询",
 		"iconCls":"icon-project",
 		 "attributes":{  
-            "url":"Hr/hrSearchInfo"
+            "url":"Hr/"
         }
 	}]
 },{
@@ -27,13 +27,13 @@
 		"text":"事务申请",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Password/passwordChange"
+			"url":"Password/"
 		 }
 	},{
 		"text":"申请查询",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Password/passwordChange"
+			"url":"Password/"
 		 }
 	}]
 },{

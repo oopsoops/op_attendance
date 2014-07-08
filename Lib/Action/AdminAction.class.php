@@ -1,9 +1,9 @@
 <?php
 
 
-class BossAction extends Action {
+class AdminAction extends Action {
 
-    public function boss_searchstaff() {
+    public function admin_searchstaff() {
 	
 		$sessionuid = $_SESSION['uid'];
 		

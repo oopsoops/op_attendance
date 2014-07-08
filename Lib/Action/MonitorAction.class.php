@@ -2,9 +2,9 @@
 
 
 
-class DepartmentAction extends Action {
+class MonitorAction extends Action {
 
-    public function dpfetch_all_attendance() {
+    public function mofetch_all_attendance() {
 	
 		$sessionuid = $_SESSION['uid'];
 		
@@ -20,34 +20,30 @@ class DepartmentAction extends Action {
 		
 		$uid = $this->_post('uid');
 		
-		$search_chose=$this->_post('dpsearch_chose');
+		$search_chose=$this->_post('mosearch_chose');
 				
 		$username = $this->_post('username');
 				
-		$search_begin_time = $this->_post('dpsearch_begin_time');
+		$search_begin_time = $this->_post('mosearch_begin_time');
 		
-		$search_end_time = $this->_post('dpsearch_end_time');
+		$search_end_time = $this->_post('mosearch_end_time');
 		
-		$dp = M('userinfo');
+		$monitor = M('userinfo');
 		
-		$dpinfo = $dp->getByUid($sessionuid);
-         $departmentid = $dpinfo['departmentid'];
-		 $where = " op_staffinfo.departmentid = $departmentid ";
+		$monitorinfo = $monitor->getByUid($sessionuid);
+         $teamid = $monitorinfo['teamid'];
+		 $departmentid = $monitorinfo['departmentid'];
+		 $where = " op_staffinfo.teamid =$teamid and op_staffinfo.departmentid = $departmentid ";
 				
-		if($uid!='') {
-			$where = ' $where and op_clocktime.uid = "'.$uid.' "' ;
-		}
-	
-		
 		
 
 			
-			if($search_chose=='dpsearch_yes')
+			if($search_chose=='mosearch_yes')
 			{
 			$where="$where and op_unusualtime.static is null ";
 			
 			}
-			else if($search_chose=='dpsearch_no')
+			else if($search_chose=='mosearch_no')
 			{
 				$where="$where and op_unusualtime.static is not null ";
 				}
@@ -66,12 +62,16 @@ class DepartmentAction extends Action {
 			$where = "$where and op_clocktime.clockdate<='"."$search_end_time"."' ";
 		}
 		
+			if($uid!='') {
+			$where = "$where and op_clocktime.uid = $uid ";
+		}
 	   
-
 		$clocktime = M('clocktime');
+		
 		$cc = $clocktime
 		->Distinct(true)
 		->join('op_staffinfo ON op_clocktime.uid=op_staffinfo.uid')
+		->join('op_teaminfo ON op_staffinfo.teamid=op_teaminfo.tid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->join('op_unusualtime ON op_unusualtime.pid=op_clocktime.id')
 		 ->where($where)
@@ -91,7 +91,7 @@ class DepartmentAction extends Action {
 			 ELSE '正常' END AS static")
 		->join('op_staffinfo ON op_clocktime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
-		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
+		->join('op_teaminfo ON op_staffinfo.teamid = op_teaminfo.tid')
 		->join('op_unusualtime ON op_unusualtime.pid=op_clocktime.id')
 		->where($where)
 		 ->order('op_clocktime.uid desc')
@@ -103,13 +103,7 @@ class DepartmentAction extends Action {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	}
+}
 
 
 

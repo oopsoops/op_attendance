@@ -1,35 +1,34 @@
 <div class="main_include">
 
-	<div id="ext_hrsearchmanage"  style="padding:5px;height:auto">
+	<div id="ext_mosearchmanage"  style="padding:5px;height:auto">
        
-            <form id="hrsearchForm">  
+            <form id="mosearchForm">  
              考勤状态：
-            <select name="hrsearch_chose" id="hrsearch_chose" >
-                <option  value="hrsearch_none"  selected></option>
-            	<option value="hrsearch_yes" >正常</option>
-                <option value="hrsearch_no" >异常</option>
+            <select name="mosearch_chose" id="mosearch_chose" >
+                <option  value="mosearch_none"  selected></option>
+            	<option value="mosearch_yes" >正常</option>
+                <option value="mosearch_no" >异常</option>
             </select>         
-            员工部门：
-            <input type="text" id="department" style="width:100px"/>
+            
             员工工号：
             <input type="text" id="uid" style="width:100px"/>
             员工姓名：
             <input type="text" id="username" style="width:100px"/>
             开始日期：
-               <input id="hrsearch_begin_time" type="text" style="width:100px" />
+               <input id="mosearch_begin_time" type="text" style="width:100px" />
             结束日期：
-            <input id="hrsearch_end_time" type="text" style="width:100px" />
+            <input id="mosearch_end_time" type="text" style="width:100px" />
             &nbsp;
-            <a class="easyui-linkbutton" iconCls="icon-search" onclick="hrsearch_accountmanage()">搜索</a>
+            <a class="easyui-linkbutton" iconCls="icon-search" onclick="mosearch_accountmanage()">搜索</a>
             &nbsp;
-             <a class="easyui-linkbutton" iconCls="icon-search" onclick="hrsearch_clear_time()">清空</a>
+             <a class="easyui-linkbutton" iconCls="icon-search" onclick="mosearch_clear_time()">清空</a>
              </form>
     </div>
 
     <table class="easyui-datagrid"   
-            id="grid_hrsearchmanage"
+            id="grid_mosearchmanage"
                       
-            toolbar="#ext_hrsearchmanage"
+            toolbar="#ext_mosearchmanage"
             
             style="height:430px"
             title='考勤查询'
@@ -39,13 +38,13 @@
             pagination="true"
             rownumbers="true"
             pageList="[5,10,15]"
-            url="__APP__/Hr/hrfetch_all_attendance"
+            url="__APP__/Monitor/mofetch_all_attendance"
             >
             
         <thead>
             <tr> 
                 <th field="department" width="100" align="center">员工部门</th>
-                <th field="teamname" width="100" align="center">所在组</th> 
+                <th field="teamname" width="100" align="center">所在组</th>  
                 <th field="username" width="100" align="center">员工姓名</th>  
                 <th field="uid" width="100" align="center">员工工号</th>
                 <th field="clockdate" width="80" align="center">打卡日期</th>
@@ -53,7 +52,7 @@
               
                 <th field="static" width="80" align="center" >考勤状态</th>
                 <th field="isapply" width="80" align="center" >备注</th>
-               <th field="details" width="80" align="center" formatter="hrformatUserDetails">个人信息详情</th>
+               <th field="details" width="80" align="center" formatter="moformatUserDetails">个人信息详情</th>
 
                  
                              
@@ -69,13 +68,13 @@
 </div>
 
 <script>
-	$('#hrsearch_begin_time').datebox({	
+	$('#mosearch_begin_time').datebox({	
 			formatter:timeformatter,
 			parser:timeparser,
 			editable:false,
 			width: 100
 	});
-	$('#hrsearch_end_time').datebox({
+	$('#mosearch_end_time').datebox({
 			formatter:timeformatter,
 			parser:timeparser,
 			editable:false,
@@ -85,24 +84,24 @@
 
   
 
-function hrsearch_clear_time()
+function mosearch_clear_time()
 {
-	$('#hrsearchForm').form('clear');
+	$('#mosearchForm').form('clear');
 	}
 
-function hrsearch_accountmanage() {
-	$('#grid_hrsearchmanage').datagrid('loadData', { total:0, rows:[]});
-	$('#grid_hrsearchmanage').datagrid('load', {hrsearch_chose:$('#hrsearch_chose').val(), department:$('#department').val(),username:$('#username').val(),uid:$('#uid').val(),hrsearch_begin_time:$('#hrsearch_begin_time').combo("getValue"),hrsearch_end_time:$('#hrsearch_end_time').combo("getValue")});
+function mosearch_accountmanage() {
+	$('#grid_mosearchmanage').datagrid('loadData', { total:0, rows:[]});
+	$('#grid_mosearchmanage').datagrid('load', {mosearch_chose:$('#mosearch_chose').val(), username:$('#username').val(),uid:$('#uid').val(),mosearch_begin_time:$('#mosearch_begin_time').combo("getValue"),mosearch_end_time:$('#mosearch_end_time').combo("getValue")});
 	
 }
 
 //个人信息详细按钮
-function hrformatUserDetails(val,row){  
+function moformatUserDetails(val,row){  
 	
-	return '<a href="javascript:void(0)" onclick="hropenAttendanceDetails('+row.uid+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
+	return '<a href="javascript:void(0)" onclick="moopenAttendanceDetails('+row.uid+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
 }
 //打开个人信息详情tab
-function hropenAttendanceDetails(uid){
+function moopenAttendanceDetails(uid){
 	$('#main').tabs('close','个人信息详情');
 	$('#main').tabs('add',{
 						title:'个人信息详情',

@@ -29,8 +29,8 @@
               </tr>
                             
               <tr>
-              <td>所属组：</td>
-              <td colspan="2"><input type="text" name="teamid" readonly="readonly" value="<?php echo $userinfo['teamid'];?>" /></td>
+              <td>所在组：</td>
+              <td colspan="2"><input type="text" name="teamid" readonly="readonly" value="<?php echo $userinfo['teamname'];?>" /></td>
               </tr>
               
               <tr>

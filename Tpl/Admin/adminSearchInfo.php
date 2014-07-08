@@ -3,9 +3,9 @@
 
 
     <table class="easyui-datagrid"   
-            id="grid_bossmanage"
+            id="grid_adminmanage"
                       
-            toolbar="#ext_bossmanage"
+            toolbar="#ext_adminmanage"
             
             style="height:430px"
             title='考勤查询'
@@ -15,7 +15,7 @@
             pagination="true"
             rownumbers="true"
             pageList="[5,10,15]"
-            url="__APP__/Boss/boss_searchstaff"
+            url="__APP__/admin/admin_searchstaff"
             >
             
         <thead>

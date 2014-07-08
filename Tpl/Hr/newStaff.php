@@ -30,7 +30,7 @@
     
         
        <tr>
-    	<td>所属工作组：</td>
+    	<td>所在工作组：</td>
         <td><select name="teamid">
             	<?php for($i=0;$i<count($teaminfo);$i++) {?>
         		<option value="<?php echo $teaminfo[$i]['tid'];?>"><?php echo $teaminfo[$i]['teamname'];?></option>

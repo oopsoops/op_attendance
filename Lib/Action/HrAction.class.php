@@ -280,7 +280,7 @@ class HrAction extends Action {
 	    $allattendance=$clocktime
 		->Distinct(true)
 		->field("phone,op_clocktime.uid as uid,op_clocktime.clocktime as clocktime,op_clocktime.clockdate as clockdate,op_staffinfo.username as username
-		,op_department.departmentname as department,
+		,op_department.departmentname as department,op_teaminfo.teamname as teamname,
 		 CASE
 			WHEN isapply=1 THEN '已请假'
 			 END as isapply,
@@ -291,6 +291,7 @@ class HrAction extends Action {
 			 ELSE '正常' END AS static")
 		->join('op_staffinfo ON op_clocktime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
+		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamif')
 		->join('op_unusualtime ON op_unusualtime.pid=op_clocktime.id')
 		->where($where)
 		 ->order('op_clocktime.uid desc')
@@ -439,17 +440,18 @@ public function hrfetch_all_users(){
 			
 			$staffinfo = M('staffinfo');
 			
-			if($department == ''& $uid==''& $username == '')
+			if($department == ''&& $uid==''&& $username == '')
 			{
 				
 				$cc = $staffinfo->count();
-				$rs = $staffinfo->field("op_staffinfo.username as username,op_staffinfo.uid as uid,op_department.departmentname as department,op_userinfo.accountstatue as statue,
+				$rs = $staffinfo->field("op_staffinfo.username as username,op_staffinfo.uid as uid,op_department.departmentname as department,op_userinfo.accountstatue as statue,op_teaminfo.teamname as teamname,
 			CASE 
 			 WHEN op_userinfo.accountstatue=1 THEN '已禁用'
 			 WHEN op_userinfo.accountstatue=0 THEN '正常'
 			 ELSE '无权限' END AS accountstatue
 				")
 				->join('op_department ON op_staffinfo.departmentid = op_department.did')
+				->join('op_teaminfo ON op_staffinfo.teamid = op_teaminfo.tid')
 				->join('op_userinfo ON op_staffinfo.uid = op_userinfo.uid')
 				->order('op_staffinfo.uid desc')
 				->limit("$start,$rows")
@@ -494,12 +496,13 @@ public function hrfetch_all_users(){
 													
 													
 									$cc = $staffinfo->where($where)->count();
-									$rs = $staffinfo->field("op_staffinfo.username as username,op_staffinfo.uid as uid,op_department.departmentname as department,	op_userinfo.accountstatue as statue,
+									$rs = $staffinfo->field("op_staffinfo.username as username,op_staffinfo.uid as uid,op_department.departmentname as department,	op_userinfo.accountstatue as statue,op_teaminfo.teamname as teamname,
 								CASE 
 								 WHEN op_userinfo.accountstatue=1 THEN '已禁用'
 								 WHEN op_userinfo.accountstatue=0 THEN '正常'
 								 ELSE '无权限' END AS accountstatue")
 									->join('op_department ON op_staffinfo.departmentid = op_department.did')
+									->join('op_teaminfo ON op_staffinfo.teamid = op_teaminfo.tid')
 									->join('op_userinfo ON op_staffinfo.uid = op_userinfo.uid')
 									->where($where)
 									->order('op_staffinfo.uid desc')
@@ -615,7 +618,7 @@ public function staffInfoModify(){
 			$this->assign('userinfo',$rs);
 			$this->display();
 		
-			echo $staffinfo->getLastSql();
+			//echo $staffinfo->getLastSql();
 	
 	
 	}
@@ -662,7 +665,7 @@ public function staff_modify_do(){
 		}
 		
 		
-		if( count($getuserinfo[0])==0 && $loginname!='')
+		if( count($getuserinfo)==0 && $loginname!='')
 		{
 				$accountname = $userinfo->getByLoginname($loginname);		
 				if($accountname) {

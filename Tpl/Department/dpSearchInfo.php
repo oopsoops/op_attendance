@@ -44,6 +44,7 @@
         <thead>
             <tr> 
                 <th field="department" width="100" align="center">员工部门</th>
+                <th field="teamname" width="100" align="center">所在组</th> 
                 <th field="username" width="100" align="center">员工姓名</th>  
                 <th field="uid" width="100" align="center">员工工号</th>
                 <th field="clockdate" width="80" align="center">打卡日期</th>
