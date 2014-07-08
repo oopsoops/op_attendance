@@ -700,7 +700,7 @@ public function staff_modify_do(){
 			
 		}
 		
-		else if(count($getuserinfo[0])>0)
+		else if(count($getuserinfo)>0)
 		{
 			
 		$getuser['username'] =  $username;
