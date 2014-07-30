@@ -154,7 +154,9 @@ class HrAction extends Action {
 		  }
 		  else
 		  {
-			  $this->success ( '导入成功' );	
+
+		  		R('Check/checkClock',array($import_begin_time,$import_end_time));
+				$this->success ( '导入成功' );	
 		  }
 	}
 	
@@ -291,7 +293,7 @@ class HrAction extends Action {
 			 ELSE '正常' END AS static")
 		->join('op_staffinfo ON op_clocktime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
-		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamif')
+		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
 		->join('op_unusualtime ON op_unusualtime.pid=op_clocktime.id')
 		->where($where)
 		 ->order('op_clocktime.uid desc')

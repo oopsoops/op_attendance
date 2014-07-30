@@ -1,28 +1,23 @@
 <div class="main_include">
 <br />
- <form id="importForm" method="post" action="__APP__/Hr/doexcel" enctype="multipart/form-data"> 
-<table class="tb">
-	<tr>
-    <td>注意：请不要重复导入考勤记录，否则会导致记录重复！</td>
-    </tr>
-    
-	<tr>
-    	<td><input name="import_xls" type="file" /></td>
-        <td>开始日期：</td>
-         <td><input id="import_begin_time" type="text" style="width:100px" /></td>
-         <td>结束日期：</td>
-         <td><input id="import_end_time" type="text" style="width:100px" /></td>
-        <td><input type="submit"  value="导入" style="width:80px" /></td>
-         <td><a class="easyui-linkbutton" onclick="import_clear()" style="width:60px">清空</a></td>
-    </tr>
+<form id="importForm" method="post" action="__APP__/Hr/doexcel" enctype="multipart/form-data"> 
+	<table class="tb">
+		<tr>
+	    	<td colspan="8">注意：请不要重复导入考勤记录，否则会导致记录重复！</td>
+	    </tr>
+	    
+		<tr>
+	    	<td><input name="import_xls" type="file" /></td>
+	        <td>开始日期：</td>
+	        <td><input id="import_begin_time" type="text" style="width:100px" /></td>
+	        <td>结束日期：</td>
+	        <td><input id="import_end_time" type="text" style="width:100px" /></td>
+	        <td><input type="submit"  value="导入" style="width:80px" /></td>
+	        <td><a class="easyui-linkbutton" onclick="import_clear()">清空</a></td>
+	        <td><a class="easyui-linkbutton" iconCls="icon-search" onclick="checkClock()">分析</a></td>
+	    </tr>
     </table>
  </form>
-    <table class="tb">
-	<tr>
-    	<td></td>
-        <td><a class="easyui-linkbutton" iconCls="icon-search" onclick="">分析</a></td>
-    </tr>
-</table>	
 
 
 
@@ -42,12 +37,22 @@
 			width: 100		
 	});
 
+
 function import_clear()
 {
 	$('#importForm').form('clear');
-	}
+}
 	
-
+function checkClock() {
+	var start = $("#import_begin_time").datebox('getValue');
+	var end = $("#import_end_time").datebox('getValue');
+	$.ajax({
+		url:'__APP__/Check/doCheck/start/'+start+'/end/'+end,
+		success:function(data) {
+			alert(data);
+		}
+	});
+}
 
 
 </script>

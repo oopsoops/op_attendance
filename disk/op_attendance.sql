@@ -1,21 +1,22 @@
 /*
-Navicat MySQL Data Transfer
+ Navicat MySQL Data Transfer
 
-Source Server         : localhost_3306
-Source Server Version : 50516
-Source Host           : localhost:3306
-Source Database       : op_attendance
+ Source Server         : localhost
+ Source Server Version : 50509
+ Source Host           : localhost
+ Source Database       : op_attendance
 
-Target Server Type    : MYSQL
-Target Server Version : 50516
-File Encoding         : 65001
+ Target Server Version : 50509
+ File Encoding         : utf-8
 
-Date: 2014-07-13 14:27:44
+ Date: 07/31/2014 00:07:25 AM
 */
 
-SET FOREIGN_KEY_CHECKS=0;
+SET NAMES utf8;
+SET FOREIGN_KEY_CHECKS = 0;
+
 -- ----------------------------
--- Table structure for `op_clocktime`
+--  Table structure for `op_clocktime`
 -- ----------------------------
 DROP TABLE IF EXISTS `op_clocktime`;
 CREATE TABLE `op_clocktime` (
@@ -24,19 +25,17 @@ CREATE TABLE `op_clocktime` (
   `clockdate` date DEFAULT NULL,
   `clocktime` time DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of op_clocktime
+--  Records of `op_clocktime`
 -- ----------------------------
-INSERT INTO op_clocktime VALUES ('1', '1001', '2014-06-19', '08:00:26');
-INSERT INTO op_clocktime VALUES ('2', '1001', '2014-06-19', '08:02:33');
-INSERT INTO op_clocktime VALUES ('3', '1001', '2014-06-19', '11:57:41');
-INSERT INTO op_clocktime VALUES ('4', '1001', '2014-06-19', '13:41:56');
-INSERT INTO op_clocktime VALUES ('5', '1001', '2014-06-19', '17:42:02');
+BEGIN;
+INSERT INTO `op_clocktime` VALUES ('1', '1001', '2014-06-19', '08:00:26'), ('2', '1001', '2014-06-19', '08:02:33'), ('3', '1001', '2014-06-19', '11:57:41'), ('4', '1001', '2014-06-19', '13:41:56'), ('5', '1001', '2014-06-19', '17:42:02'), ('6', '1001', '2014-06-20', '08:30:15'), ('7', '1001', '2014-06-20', '17:35:55'), ('8', '1002', '2014-06-19', '08:10:22'), ('9', '1002', '2014-06-19', '17:40:44'), ('12', '1003', '2014-06-19', '08:00:00'), ('11', '1002', '2014-06-20', '07:25:22'), ('13', '1003', '2014-06-19', '17:00:00'), ('14', '1003', '2014-06-20', '17:40:00');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `op_config`
+--  Table structure for `op_config`
 -- ----------------------------
 DROP TABLE IF EXISTS `op_config`;
 CREATE TABLE `op_config` (
@@ -46,12 +45,14 @@ CREATE TABLE `op_config` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of op_config
+--  Records of `op_config`
 -- ----------------------------
-INSERT INTO op_config VALUES ('1', '0.05');
+BEGIN;
+INSERT INTO `op_config` VALUES ('1', '0.05');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `op_department`
+--  Table structure for `op_department`
 -- ----------------------------
 DROP TABLE IF EXISTS `op_department`;
 CREATE TABLE `op_department` (
@@ -61,13 +62,14 @@ CREATE TABLE `op_department` (
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of op_department
+--  Records of `op_department`
 -- ----------------------------
-INSERT INTO op_department VALUES ('1', '车间');
-INSERT INTO op_department VALUES ('2', '人力资源部');
+BEGIN;
+INSERT INTO `op_department` VALUES ('1', '车间'), ('2', '人力资源部');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `op_log`
+--  Table structure for `op_log`
 -- ----------------------------
 DROP TABLE IF EXISTS `op_log`;
 CREATE TABLE `op_log` (
@@ -76,14 +78,10 @@ CREATE TABLE `op_log` (
   `logintime` datetime DEFAULT NULL,
   `quittime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of op_log
--- ----------------------------
-
--- ----------------------------
--- Table structure for `op_sample`
+--  Table structure for `op_sample`
 -- ----------------------------
 DROP TABLE IF EXISTS `op_sample`;
 CREATE TABLE `op_sample` (
@@ -95,15 +93,17 @@ CREATE TABLE `op_sample` (
   `costcenterid` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `phone` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   PRIMARY KEY (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of op_sample
+--  Records of `op_sample`
 -- ----------------------------
-INSERT INTO op_sample VALUES ('888', '张XX', '后勤部', '产线班长', '2008-08-08', '二财务部', '137XXXXXXXX');
+BEGIN;
+INSERT INTO `op_sample` VALUES ('888', '张XX', '后勤部', '产线班长', '2008-08-08', '二财务部', '137XXXXXXXX');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `op_staffinfo`
+--  Table structure for `op_staffinfo`
 -- ----------------------------
 DROP TABLE IF EXISTS `op_staffinfo`;
 CREATE TABLE `op_staffinfo` (
@@ -122,31 +122,31 @@ CREATE TABLE `op_staffinfo` (
 ) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of op_staffinfo
+--  Records of `op_staffinfo`
 -- ----------------------------
-INSERT INTO op_staffinfo VALUES ('1', '1001', '产线员工', '1', null, '1', '2014-06-19', '1', '1', null, '2014-06-19 14:06:50');
-INSERT INTO op_staffinfo VALUES ('2', '1002', '人事经理', '2', null, '1', '2014-06-19', '2', '1', null, '2014-06-19 23:29:00');
-INSERT INTO op_staffinfo VALUES ('3', '1003', '产线班长', '1', '1111', '1', '2014-07-03', '3', '1', null, '2014-07-15 21:24:09');
-INSERT INTO op_staffinfo VALUES ('4', '1004', '部门经理', '1', '2323', '1', '2014-07-01', '4', '1', null, '2014-07-01 21:24:46');
-INSERT INTO op_staffinfo VALUES ('5', '1005', '老板', '1', '212', '1', '2014-07-01', '5', '1', null, '2014-07-08 21:25:22');
-INSERT INTO op_staffinfo VALUES ('6', '1006', '管理员', '1', '121', '1', '2014-07-01', '6', '1', null, '2014-07-01 21:26:18');
+BEGIN;
+INSERT INTO `op_staffinfo` VALUES ('1', '1001', '产线员工', '1', null, '1', '2014-06-19', '1', '2', null, '2014-06-19 14:06:50'), ('2', '1002', '人事经理', '2', null, '1', '2014-06-19', '2', '1', null, '2014-06-19 23:29:00'), ('3', '1003', '产线班长', '1', '1111', '1', '2014-07-03', '3', '2', null, '2014-07-15 21:24:09'), ('4', '1004', '部门经理', '1', '2323', '1', '2014-07-01', '4', '1', null, '2014-07-01 21:24:46'), ('5', '1005', '老板', '1', '212', '1', '2014-07-01', '5', '1', null, '2014-07-08 21:25:22'), ('6', '1006', '管理员', '1', '121', '1', '2014-07-01', '6', '1', null, '2014-07-01 21:26:18');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `op_teaminfo`
+--  Table structure for `op_teaminfo`
 -- ----------------------------
 DROP TABLE IF EXISTS `op_teaminfo`;
 CREATE TABLE `op_teaminfo` (
   `tid` int(11) NOT NULL AUTO_INCREMENT,
   `teamname` varchar(255) NOT NULL,
   PRIMARY KEY (`tid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of op_teaminfo
+--  Records of `op_teaminfo`
 -- ----------------------------
+BEGIN;
+INSERT INTO `op_teaminfo` VALUES ('1', '办公室'), ('2', 'A组'), ('3', 'B组'), ('4', 'C组');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `op_unusualtime`
+--  Table structure for `op_unusualtime`
 -- ----------------------------
 DROP TABLE IF EXISTS `op_unusualtime`;
 CREATE TABLE `op_unusualtime` (
@@ -159,15 +159,10 @@ CREATE TABLE `op_unusualtime` (
   `static` varchar(255) DEFAULT NULL,
   `isapply` int(2) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of op_unusualtime
--- ----------------------------
-INSERT INTO op_unusualtime VALUES ('1', '1', '1001', '2014-06-19', '08:13:10', '08:00:00', '迟到', '0');
-
--- ----------------------------
--- Table structure for `op_userinfo`
+--  Table structure for `op_userinfo`
 -- ----------------------------
 DROP TABLE IF EXISTS `op_userinfo`;
 CREATE TABLE `op_userinfo` (
@@ -182,25 +177,20 @@ CREATE TABLE `op_userinfo` (
   `costcenterid` int(11) DEFAULT NULL,
   `entrydate` date DEFAULT NULL,
   `usertypeid` int(11) DEFAULT NULL,
-  `teamid` int(11) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `updatetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1000000 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of op_userinfo
+--  Records of `op_userinfo`
 -- ----------------------------
-INSERT INTO op_userinfo VALUES ('1', '1001', 'test', '827ccb0eea8a706c4c34a16891f84e7b', '产线员工', '0', '1', null, '1', '2014-06-19', '1', null, null, '2014-06-19 14:06:50');
-INSERT INTO op_userinfo VALUES ('2', '1002', 'hr', '827ccb0eea8a706c4c34a16891f84e7b', '人事经理', '0', '2', null, '1', '2014-06-19', '2', null, null, '2014-06-19 23:29:00');
-INSERT INTO op_userinfo VALUES ('3', '1003', 'monitor', '827ccb0eea8a706c4c34a16891f84e7b', '产线班长', '0', '1', null, '1', '2014-07-07', '3', null, null, '2014-07-12 17:38:26');
-INSERT INTO op_userinfo VALUES ('4', '1004', 'dpmanager', '827ccb0eea8a706c4c34a16891f84e7b', '部门经理', '0', '1', null, '1', '2014-07-01', '4', null, null, '2014-07-10 17:39:28');
-INSERT INTO op_userinfo VALUES ('5', '1005', 'boss', '827ccb0eea8a706c4c34a16891f84e7b', '老板', '0', '1', null, '1', '2014-06-04', '5', null, null, '2014-07-19 17:40:04');
-INSERT INTO op_userinfo VALUES ('6', '1006', 'admin', '827ccb0eea8a706c4c34a16891f84e7b', '管理员', '0', '1', null, '1', '2014-07-01', '6', null, null, '2014-07-19 17:40:37');
-INSERT INTO op_userinfo VALUES ('999999', 'test', 'testtimechange_ok', '827ccb0eea8a706c4c34a16891f84e7b', 'test', '0', null, null, null, null, null, null, null, null);
+BEGIN;
+INSERT INTO `op_userinfo` VALUES ('1', '1001', 'test', '827ccb0eea8a706c4c34a16891f84e7b', '产线员工', '0', '1', null, '1', '2014-06-19', '1', null, '2014-06-19 14:06:50'), ('2', '1002', 'hr', '827ccb0eea8a706c4c34a16891f84e7b', '人事经理', '0', '2', null, '1', '2014-06-19', '2', null, '2014-06-19 23:29:00'), ('3', '1003', 'monitor', '827ccb0eea8a706c4c34a16891f84e7b', '产线班长', '0', '1', null, '1', '2014-07-07', '3', null, '2014-07-12 17:38:26'), ('4', '1004', 'dpmanager', '827ccb0eea8a706c4c34a16891f84e7b', '部门经理', '0', '1', null, '1', '2014-07-01', '4', null, '2014-07-10 17:39:28'), ('5', '1005', 'boss', '827ccb0eea8a706c4c34a16891f84e7b', '老板', '0', '1', null, '1', '2014-06-04', '5', null, '2014-07-19 17:40:04'), ('6', '1006', 'admin', '827ccb0eea8a706c4c34a16891f84e7b', '管理员', '0', '1', null, '1', '2014-07-01', '6', null, '2014-07-19 17:40:37'), ('999999', 'test', 'testtimechange_ok', '827ccb0eea8a706c4c34a16891f84e7b', 'test', '0', null, null, null, null, null, null, null);
+COMMIT;
 
 -- ----------------------------
--- Table structure for `op_usertype`
+--  Table structure for `op_usertype`
 -- ----------------------------
 DROP TABLE IF EXISTS `op_usertype`;
 CREATE TABLE `op_usertype` (
@@ -212,29 +202,29 @@ CREATE TABLE `op_usertype` (
 ) ENGINE=MyISAM AUTO_INCREMENT=1000000 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of op_usertype
+--  Records of `op_usertype`
 -- ----------------------------
-INSERT INTO op_usertype VALUES ('1', '员工', 'staff_menu.json', '1');
-INSERT INTO op_usertype VALUES ('2', '人事经理', 'hr_menu.json', '2');
-INSERT INTO op_usertype VALUES ('3', '产线班长', 'monitor_menu.json', '3');
-INSERT INTO op_usertype VALUES ('4', '部门经理', 'dp_menu.json', '4');
-INSERT INTO op_usertype VALUES ('5', '老板', 'boss_menu.json', '5');
-INSERT INTO op_usertype VALUES ('6', '管理员', 'admin_menu.json', '6');
-INSERT INTO op_usertype VALUES ('999999', 'test', 'test_menu.json', '999999');
+BEGIN;
+INSERT INTO `op_usertype` VALUES ('1', '员工', 'staff_menu.json', '1'), ('2', '人事经理', 'hr_menu.json', '2'), ('3', '产线班长', 'monitor_menu.json', '3'), ('4', '部门经理', 'dp_menu.json', '4'), ('5', '老板', 'boss_menu.json', '5'), ('6', '管理员', 'admin_menu.json', '6'), ('999999', 'test', 'test_menu.json', '999999');
+COMMIT;
 
 -- ----------------------------
--- Table structure for `op_worktime`
+--  Table structure for `op_worktime`
 -- ----------------------------
 DROP TABLE IF EXISTS `op_worktime`;
 CREATE TABLE `op_worktime` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `teamid` int(11) DEFAULT NULL,
   `worktime1` time NOT NULL,
   `worktime2` time NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of op_worktime
+--  Records of `op_worktime`
 -- ----------------------------
-INSERT INTO op_worktime VALUES ('1', '08:00:00', '12:00:00');
-INSERT INTO op_worktime VALUES ('2', '13:00:00', '17:30:00');
+BEGIN;
+INSERT INTO `op_worktime` VALUES ('1', '1', '08:00:00', '18:00:00'), ('2', '2', '08:30:00', '17:30:00'), ('3', '3', '09:00:00', '18:30:00'), ('4', '4', '09:30:00', '17:00:00');
+COMMIT;
+
+SET FOREIGN_KEY_CHECKS = 1;
