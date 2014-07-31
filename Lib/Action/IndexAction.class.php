@@ -59,15 +59,15 @@ class IndexAction extends Action {
 
 	public function fetch_static() {
 		$uid = $_SESSION['uid'];
-		$groupname1 = '出勤情况';
+		$groupname1 = '考勤情况';
 		$Model = M('unusualtime');
 		//获取项目总数
-		$rs = $Model->where("uid='$uid' and isapply=0")->count();
+		$rs = $Model->where("uid='$uid' and static<>'正常'")->count();
 		if($rs>0) {
 			$rs = '<span style="color:red;">'.$rs.'</span>';	
 		}
-		$rs = $rs.' <a style="float:right" onclick="openTab(\'异常记录\',\'Project/my_project\')">[查看]</a>';
-		$data[] = array('name'=>'异常记录', 'value'=>$rs, 'group'=>$groupname1);
+		$rs = $rs.' <a style="float:right" onclick="openTab(\'考勤记录\',\'Search/searchInfo\')">[查看]</a>';
+		$data[] = array('name'=>'异常统计', 'value'=>$rs, 'group'=>$groupname1);
 		echo dataToJson($data,count($data));
 	}
 	

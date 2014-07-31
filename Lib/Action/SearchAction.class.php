@@ -152,7 +152,23 @@ class SearchAction extends Action
     }
 	
 	
-	}
+	/************************************** Yu Yi *******************************************/
+	//排班查询
+	public function worktime() {
+		$Model = M('staffinfo');
+		$uid = $_SESSION['uid'];
+		$teamid = $Model->getFieldByUid($uid,'teamid');
+		$Model = M('worktime');
+		$rs = $Model->join('op_teaminfo ON op_teaminfo.tid = op_worktime.teamid')->where("teamid = $teamid")->select();
+		$this->assign('worktime',$rs[0]);
+		$this->display();
+	} 
+
+	/****************************************************************************************/
+
+	
+}
+
 
 
 

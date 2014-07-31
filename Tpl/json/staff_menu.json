@@ -11,14 +11,8 @@
 		"text":"排班查询",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/check_project"
+            "url":"Search/worktime"
         }
-	} ,{
-		"text":"报表查询",
-		"iconCls":"icon-pass",
-		 "attributes":{  
-			"url":"Password/passwordChange"
-		 }
 	}]
 },{
 	"text":"信息管理",

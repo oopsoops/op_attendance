@@ -13,12 +13,6 @@
 		 "attributes":{  
             "url":"Hr/hrSearchInfo"
         }
-	},{
-		"text":"排班查询",
-		"iconCls":"icon-project",
-		 "attributes":{  
-            "url":"Hr/hrSearchInfo"
-        }
 	}]
 },{
 	"text":"工作管理",
@@ -49,18 +43,6 @@
 		 }
 	}]
 },{
-	"text":"员工管理",
-	"iconCls":"icon-archives",
-	"state":"closed",
-	"children":[{
-		"text":"员工查看",
-		"iconCls":"icon-pass",
-		 "attributes":{  
-			"url":"Boss/bossStaffManager"
-		 }
-	}]
-},
-{
 	"text":"信息管理",
 	"iconCls":"icon-archives",
 	"state":"closed",

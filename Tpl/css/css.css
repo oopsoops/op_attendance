@@ -26,6 +26,12 @@ img {
 	border:1px #E7E7E7 dotted;
 }
 
+.notice{
+	font-size: 0.9em;
+	padding:0;
+	color: gray;
+}
+
 .notb td {
 	padding:0;	
 }

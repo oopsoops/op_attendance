@@ -102,9 +102,34 @@ class MonitorAction extends Action {
 	echo dataToJson($allattendance,$cc);
 	}
 	/************************************** Yu Yi *******************************************/
-
-	//public 
-
+	//排班查询
+	public function worktime() {
+		$Model = M('staffinfo');
+		$uid = $_SESSION['uid'];
+		$teamid = $Model->getFieldByUid($uid,'teamid');
+		$Model = M('worktime');
+		$rs = $Model->join('op_teaminfo ON op_teaminfo.tid = op_worktime.teamid')->where("teamid = $teamid")->select();
+		$this->assign('worktime',$rs[0]);
+		$this->display();
+	} 
+	//处理排班修改
+	public function doWorktimeEdit() {
+		$start = $this->_get('start').":00";
+		$end = $this->_get('end').":00";
+		$uid = $_SESSION['uid'];
+		$Model = M('staffinfo');
+		$teamid = $Model->getFieldByUid($uid,'teamid');
+		$Model = M('worktime');
+		$row = $Model->getByTeamid($teamid);
+		$row['worktime1'] = $start;
+		$row['worktime2'] = $end;
+		$rs = $Model->save($row);
+		if (!$rs) {
+			echo '修改失败，请重试！';
+		} else {
+			echo 'ok';
+		}
+	}
 
 
 	/****************************************************************************************/
