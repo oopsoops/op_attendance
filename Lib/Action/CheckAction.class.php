@@ -97,6 +97,7 @@ class CheckAction extends Action {
     	echo 'ok';
     }
 
+   
 }
 
 ?>

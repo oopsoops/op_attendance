@@ -21,6 +21,9 @@ class IndexAction extends Action {
 				$Model = M('department');
 				$role = $Model->getByDid($rs['departmentid']);
 				$_SESSION['departmentname']=$role['departmentname'];
+
+				$this->updateLoginLog($rs['uid']);
+
 				$this->redirect('__APP__/Index/center');
 			} else {
 				$this->error('对不起，您的密码有误！');	
@@ -28,6 +31,23 @@ class IndexAction extends Action {
 		} else {
 			$this->error('对不起，您输入的用户名有误！');
 		}
+	}
+
+	public function updateLoginLog($uid) {
+		$uid='1001';
+		//日志记录
+		$Model = M('log');
+		$row['uid'] = $uid;
+		$row['logintime'] = date("Y-m-d H:i:s");
+
+		//多于10条则删除8条
+		$count = $Model->where("uid = '$uid'")->count();
+		//print_r($count);
+		if ($count>10) {
+			$rs = $Model->where("uid = '$uid'")->order("logintime desc")->limit(0,1)->select();
+			$Model->where("id = {$rs[0]['id']}")->delete();
+		}
+		$rs = $Model->add($row);
 	}
 
 	public function logout() {

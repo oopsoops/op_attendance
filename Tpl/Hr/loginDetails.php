@@ -47,10 +47,7 @@
                
                 <th field="username" width="100" align="center">员工姓名</th>  
                 <th field="logintime" width="120" align="center">登录时间</th>
-                <th field="quittime" width="120" align="center">退出时间</th>
               
-                          
-                             
             </tr>  
           </thead>
 </table>

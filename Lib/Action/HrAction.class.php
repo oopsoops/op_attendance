@@ -862,13 +862,9 @@ public function loginDetails(){
 			public function staffInfoSample()
 			{
 				$page = $this->_post('page');
-		
 				if($page<1) $page=1;
-				
 				$rows = $this->_post('rows');
-				
 				if($rows<1) $rows=10;
-				
 				$start = ($page-1)*$rows;
 				$sample=M('sample');
 				/*
@@ -955,6 +951,80 @@ public function loginDetails(){
 				
 	}
 
+
+	/**************************************** Yu Yi ********************************************/
+	//获取排班列表
+	public function fetchWorktimeList() {
+		$page = $this->_post('page');
+		if($page<1) $page=1;
+		$rows = $this->_post('rows');
+		if($rows<1) $rows=10;
+		$start = ($page-1)*$rows;
+
+    	$Model = M('worktime');
+    	$cc = $Model->count();
+    	$rs = $Model->join("op_teaminfo ON op_worktime.teamid = op_teaminfo.tid")->limit("$start,$rows")->select();
+    	echo dataToJson($rs,$cc);
+    }
+    //修改窗口
+    public function w_worktimeedit() {
+    	$id = $this->_get('id');
+    	$Model = M('worktime');
+    	$rs = $Model->join('op_teaminfo ON op_worktime.teamid = op_teaminfo.tid')->where("id = $id")->select();
+    	$this->assign("worktime",$rs[0]);
+    	$this->display();
+    }
+    //执行修改
+    public function doWorktimeEdit() {
+    	$id = $this->_get('id');
+    	$start = $this->_get('start');
+    	$end = $this->_get('end');
+    	$Model = M('worktime');
+    	$row = $Model->getById($id);
+    	$row['worktime1'] = $start;
+    	$row['worktime2'] = $end;
+    	$rs = $Model->save($row);
+    	if (!$rs) {
+    		echo '修改失败，请重试！';
+    	} else {
+    		echo 'ok';
+    	}
+    }
+    //新增窗口
+    public function w_worktimenew() {
+    	$Model = M('teaminfo');
+    	$rs = $Model->select();
+    	$this->assign("teaminfo",$rs);
+    	$this->display();
+    }
+    //处理新增
+    public function doWorktimeNew() {
+    	$tid = $this->_get('tid');
+    	$start = $this->_get('start');
+    	$end = $this->_get('end');
+    	$Model = M('worktime');
+    	$row['teamid'] = $tid;
+    	$row['worktime1'] = $start.":00";
+    	$row['worktime2'] = $end.":00";
+    	$rs = $Model->add($row);
+    	if (!$rs) {
+    		echo '新增失败，请重试！';
+    	} else {
+    		echo 'ok';
+    	}
+    }
+    //处理删除
+    public function doWorktimeDel() {
+    	$id = $this->_get('id');
+    	$Model = M('worktime');
+    	$rs = $Model->where("id = $id")->delete();
+    	if (!$rs) {
+    		echo '删除失败，请重试！';
+    	} else {
+    		echo 'ok';
+    	}
+    }
+    /*********************************************************************************************/
 }
 
 ?>
