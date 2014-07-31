@@ -154,9 +154,7 @@ class HrAction extends Action {
 		  }
 		  else
 		  {
-
-		  		R('Check/checkClock',array($import_begin_time,$import_end_time));
-				$this->success ( '导入成功' );	
+			  $this->success ( '导入成功' );	
 		  }
 	}
 	
@@ -300,8 +298,8 @@ class HrAction extends Action {
 		->limit("$start,$rows")
 		->select();
 		
-	//echo $clocktime->getLastSql();
-	echo dataToJson($allattendance,$cc);
+	echo $clocktime->getLastSql();
+	//echo dataToJson($allattendance,$cc);
     }
 	
 	
@@ -862,9 +860,13 @@ public function loginDetails(){
 			public function staffInfoSample()
 			{
 				$page = $this->_post('page');
+		
 				if($page<1) $page=1;
+				
 				$rows = $this->_post('rows');
+				
 				if($rows<1) $rows=10;
+				
 				$start = ($page-1)*$rows;
 				$sample=M('sample');
 				/*
