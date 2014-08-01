@@ -298,8 +298,8 @@ class HrAction extends Action {
 		->limit("$start,$rows")
 		->select();
 		
-	echo $clocktime->getLastSql();
-	//echo dataToJson($allattendance,$cc);
+	//echo $clocktime->getLastSql();
+	echo dataToJson($allattendance,$cc);
     }
 	
 	
