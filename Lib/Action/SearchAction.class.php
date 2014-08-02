@@ -32,7 +32,7 @@ class SearchAction extends Action
 		}
 		else
 		{
-			$where = "op_clocktime.uid =$uid ";
+			$where = "op_unusualtime.uid =$uid ";
 			
 			}
 		
@@ -42,7 +42,7 @@ class SearchAction extends Action
 			
 			if($search_chose=='search_yes')
 			{
-			$where="$where and op_unusualtime.static is null ";
+			$where="$where and op_unusualtime.static = '"."正常"."' ";
 			
 			}
 			else if($search_chose=='search_no')
@@ -55,7 +55,7 @@ class SearchAction extends Action
 						
 			if($search_chose=='search_yes')
 			{
-			$where="op_unusualtime.static is null ";
+			$where="op_unusualtime.static ='"."正常"."' ";
 			
 			}
 			else if($search_chose=='search_no')
@@ -70,33 +70,33 @@ class SearchAction extends Action
 		
 		
 		if($search_begin_time!=''&$where!='') {
-			$where= "$where and op_clocktime.clockdate>='"."$search_begin_time"."' ";
+			$where= "$where and op_unusualtime.clockdate>='"."$search_begin_time"."' ";
 		}
 		else if($search_begin_time!='')
 		{
-			$where= "op_clocktime.clockdate>='"."$search_begin_time"."' ";
+			$where= "op_unusualtime.clockdate>='"."$search_begin_time"."' ";
 			}
 		
 		if($search_end_time!=''&$where!='') {
-			$where = "$where and op_clocktime.clockdate<='"."$search_end_time"."' ";
+			$where = "$where and op_unusualtime.clockdate<='"."$search_end_time"."' ";
 		}
 		else if($search_end_time!='')
 		{
-			$where = "op_clocktime.clockdate<='"."$search_end_time"."' ";
+			$where = "op_unusualtime.clockdate<='"."$search_end_time"."' ";
 			}
 	   
 	   
 
-		$clocktime = M('clocktime');
-		$cc = $clocktime
+		$unusualtime = M('unusualtime');
+		$cc = $unusualtime
 		->Distinct(true)
-		->join('op_staffinfo ON op_clocktime.uid=op_staffinfo.uid')
+		->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 		 ->where($where)
 		 ->count();
 		 
-	    $allattendance=$clocktime
+	    $allattendance=$unusualtime
 		->Distinct(true)
-		->field("phone,op_clocktime.uid as uid,op_clocktime.clocktime as clocktime,op_clocktime.clockdate as clockdate,op_staffinfo.username as username
+		->field("phone,op_unusualtime.uid as uid,op_unusualtime.clocktime as clocktime,op_unusualtime.clockdate as clockdate,op_staffinfo.username as username
 		,op_department.departmentname as department,
 		 CASE
 			WHEN isapply=1 THEN '已请假'
@@ -106,15 +106,14 @@ class SearchAction extends Action
 			 WHEN static='迟到' THEN '迟到'
 			 WHEN static='早退' THEN '早退'
 			 ELSE '正常' END AS static")
-		->join('op_staffinfo ON op_clocktime.uid=op_staffinfo.uid')
+		->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
-		->join('op_unusualtime ON op_unusualtime.pid=op_clocktime.id')
 		->where($where)
-		 ->order('op_clocktime.uid desc')
+		 ->order('op_unusualtime.uid desc')
 		->limit("$start,$rows")
 		->select();
 		
-	//echo $clocktime->getLastSql();
+	//echo $unusualtime->getLastSql();
 	echo dataToJson($allattendance,$cc);
     }
 	

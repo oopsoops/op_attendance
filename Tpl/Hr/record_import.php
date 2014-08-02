@@ -2,9 +2,6 @@
 <br />
 <form id="importForm" method="post" action="__APP__/Hr/doexcel" enctype="multipart/form-data"> 
 	<table class="tb">
-		<tr>
-	    	<td colspan="8">注意：请不要重复导入考勤记录，否则会导致记录重复！</td>
-	    </tr>
 	    
 		<tr>
 	    	<td><input name="import_xls" type="file" /></td>
