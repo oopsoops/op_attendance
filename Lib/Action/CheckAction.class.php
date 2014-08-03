@@ -5,12 +5,20 @@ class CheckAction extends Action {
 
 		//$start_time = $this->_get('start_time').' 00:00:00';
 		//$end_time = $this->_get('end_time').' 00:00:00';
+		if(count($start)<1 || count($end)<1) {
+			return;
+		}
 		$start_time = $start.' 00:00:00';
 		$end_time = $end.' 00:00:00';
 		
 		$time1 = strtotime($start_time);
 		$time2 = strtotime($end_time);
 		$day = ($time2-$time1)/86400;
+
+		//删除该时段记录
+		$unusualModel = M('unusualtime');
+		$unusualModel->where("clockdate BETWEEN '$start' AND '$end'")->delete();
+		//echo $unusualModel->getLastSql();
 
 		//获取所有员工UID
 		$Model = M('staffinfo');
@@ -26,7 +34,7 @@ class CheckAction extends Action {
 			$worktime1 = $worktime['worktime1'];
 			$worktime2 = $worktime['worktime2'];
 			$Model = M('clocktime');
-			$unusualModel = M('unusualtime');
+
 			//每一天
 			for ($j=0; $j <= $day; $j++) { 
 				$tt = date("Y-m-d",$time1 + 86400 * $j);
@@ -42,6 +50,9 @@ class CheckAction extends Action {
 				$row['clockdate'] = $tt;
 				$row['clocktime'] = $rs[0]['clocktime'];
 				$row['standardtime'] = $worktime1;
+
+				//如果表中含有相同记录
+				//$rs = $unusualModel->where("clockdate BETWEEN '$tt' AND '$tt' AND uid = '$uid'")->delete();
 
 				//早上考勤
 				if (!$rs || $rs[0]['clocktime']<=0 || strtotime($rs[0]['clocktime'])>strtotime("12:00:00")) {
