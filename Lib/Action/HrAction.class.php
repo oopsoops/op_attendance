@@ -154,6 +154,7 @@ class HrAction extends Action {
 		  }
 		  else
 		  {
+		  	R('Check/checkClock',array($import_begin_time,$import_end_time));
 			  $this->success ( '导入成功' );	
 		  }
 	}
@@ -946,6 +947,7 @@ public function loginDetails(){
 		  }
 		  else
 		  {
+
 			  $this->success ( '导入成功' );	
 		  }
 				
@@ -993,7 +995,7 @@ public function loginDetails(){
     //新增窗口
     public function w_worktimenew() {
     	$Model = M('teaminfo');
-    	$rs = $Model->select();
+    	$rs = $Model->where("tid NOT IN(SELECT teamid FROM op_worktime)")->select();
     	$this->assign("teaminfo",$rs);
     	$this->display();
     }
@@ -1002,6 +1004,10 @@ public function loginDetails(){
     	$tid = $this->_get('tid');
     	$start = $this->_get('start');
     	$end = $this->_get('end');
+    	if ($tid<1) {
+    		echo '已经没有可以添加的组了！';
+    		return;
+    	}
     	$Model = M('worktime');
     	$row['teamid'] = $tid;
     	$row['worktime1'] = $start.":00";

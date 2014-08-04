@@ -11,7 +11,7 @@
 	        <td><input name="import_end_time"   id="import_end_time" type="text" style="width:100px" /></td>
 	        <td><input type="submit"  value="导入" style="width:80px" /></td>
 	        <td><a class="easyui-linkbutton" onclick="import_clear()">清空</a></td>
-	        <td><a class="easyui-linkbutton" iconCls="icon-search" onclick="checkClock()">分析</a></td>
+	        <!-- <td><a class="easyui-linkbutton" iconCls="icon-search" onclick="checkClock()">分析</a></td> -->
 	    </tr>
     </table>
  </form>
