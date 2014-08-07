@@ -148,7 +148,7 @@ class HrAction extends Action {
 		  if(!$result)
 		  {
 			  
-			  $result->rollback();
+			  //$result->rollback();
 			  $this->error('导入数据库失败');
 			  exit();
 		  }
