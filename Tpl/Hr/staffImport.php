@@ -5,7 +5,7 @@
 	<tr>
     	<td><input name="import_staff" type="file" /></td>
 
-        <td><input type="submit"  value="导入" style="width:80px" /></td>
+        <td><input type="submit"  value="导入" name="daoru" style="width:80px" /></td>
 
     </tr>
    
