@@ -1,5 +1,7 @@
 <?php
 vendor('Zend.ExcelToArrary');//导入excelToArray类
+	    	Vendor('Zend.Excel.PHPExcel');//引入phpexcel类(注意你自己的路径)   
+        Vendor('Zend.Excel.PHPExcel.IOFactory');
 class HrAction extends Action {
 
     public function analyse_clocktime() {
@@ -21,7 +23,7 @@ class HrAction extends Action {
 		}
     }
 	
-	//excel到数据库
+		//excel到数据库
 	public function doexcel()
 	{	
 		$tmp_file = $_FILES ['import_xls'] ['tmp_name'];
@@ -30,125 +32,80 @@ class HrAction extends Action {
 		
 		$file_type = $file_types [count ( $file_types ) - 1];
 		
-		$import_begin_time=$this->_post('import_begin_time');
-		
-		$import_end_time=$this->_post('import_end_time');
-		
-		$begin_time='';
-		$end_time='';
-		
-			if($import_begin_time==''&&$import_end_time=='')
-				{
-						$this->error('开始日期和结束日期不能同时为空！');
-			  			 exit();
-					}
-					
-		if($import_begin_time!='')
-		{
-			$begin_time=strtotime($import_begin_time);
-			}
-			
-			
-			if($import_end_time!='')
-			{
-				$end_time=strtotime($import_begin_time);
-				}
 				
-				
-
-				
-				
-		
-		 /*判别是不是.xls文件，判别是不是excel文件*/
 		 if (strtolower ( $file_type ) != "xlsx" && strtolower ( $file_type ) != "xls")              
 		 {
 			  $this->error ( '不是Excel文件，重新选择' );
 			 
 			  
 		 }
-	
-		 /*设置上传路径
-		 $savePath = C('UPLOAD_DIR');
-	*/
-		 /*以时间来命名上传的文件
-		 $str = date ( 'Ymdhis' ); 
-		 $file_name = $str . "." . $file_type;
-		 */
-		 /*是否上传成功
-		 if (! copy ( $tmp_file, $savePath . $file_name )) 
-		  {
-			  $this->error ( '上传失败' );
-		  }*/
-		$ExcelToArrary=new ExcelToArrary();//实例化
-		//$res=$ExcelToArrary->read(C('UPLOAD_DIR').$file_name,"UTF-8",$file_type);//传参,判断office2007还是office2003
-		$res=$ExcelToArrary->read($tmp_file,"UTF-8",$file_type);//传参,判断office2007还是office2003
-		if($begin_time!=''&$end_time!='')
-		{
-					foreach ( $res as $k => $v ) //循环excel表
-					   {
-						   $k=$k-1;//addAll方法要求数组必须有0索引
-					   if(strtotime($v[1])>=$begin_time&strtotime($v[1])<=$end_time)
-					   {
-					   $data[$k]['uid'] = $v [0];//创建二维数组
-					   $data[$k]['clockdate'] = $v [1];
-					   $data[$k]['clocktime'] = $v [2];
-					   }
-					
 		
-						}
-		}
 		
-		else if($begin_time!='')
-		{
-			
-					foreach ( $res as $k => $v ) //循环excel表
-				   {
-					   $k=$k-1;//addAll方法要求数组必须有0索引
-					   if(strtotime($v[1])>=$begin_time)
-					   {
-					   $data[$k]['uid'] = $v [0];//创建二维数组
-					   $data[$k]['clockdate'] = $v [1];
-					   $data[$k]['clocktime'] = $v [2];
-					   }
+		$PHPExcel = new PHPExcel();     
 		
-					}
-			}
-			
-		else if($end_time!='')
-		{
-					foreach ( $res as $k => $v ) //循环excel表
-				   {
-					   $k=$k-1;//addAll方法要求数组必须有0索引
-					   if(strtotime($v[1])<=$end_time)
-					   {
-					   $data[$k]['uid'] = $v [0];//创建二维数组
-					   $data[$k]['clockdate'] = $v [1];
-					   $data[$k]['clocktime'] = $v [2];
-					   }
+		$PHPReader = new PHPExcel_Reader_Excel5(); 
 		
-				
 		
-				  }
-		}
 		
-				
-		else
-		{
-					foreach ( $res as $k => $v ) //循环excel表
-				   {
-					   $k=$k-1;//addAll方法要求数组必须有0索引
-					   $data[$k]['uid'] = $v [0];//创建二维数组
-					   $data[$k]['clockdate'] = $v [1];
-					   $data[$k]['clocktime'] = $v [2];
-	
-				  }
-		}
-		  $kucun=M('clocktime');//M方法
+		
+		$PHPExcel = $PHPReader->load($tmp_file);
+	 	
+		$currentSheet = $PHPExcel->getSheet(0);
+		
+		$allColumn = $currentSheet->getHighestColumn();
+		
+		$allRow = $currentSheet->getHighestRow();
+		
+		$currentSheet = $PHPExcel->getSheet(0);
+		
+		$allColumn = $currentSheet->getHighestColumn();
+		
+		$allRow = $currentSheet->getHighestRow();
+		
+		$k=0;
+		
+			for($currentRow = 1; $currentRow<=$allRow; $currentRow++){
+	 					
+						$cell =  $currentSheet->getCell('A'.$currentRow)->getValue();
+	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+		   
+	 						  $data[$k]['uid'] = $cell;//创建二维数组
+
+ 						$cell =  $currentSheet->getCell('B'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+								   $data[$k]['clockdate'] = date("Y-m-d",time($cell));
+
+   						$cell =  $currentSheet->getCell('C'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+									   $data[$k]['clocktime'] =  date("H:i:s",time($cell));
+		
+  			
+  					 $k++;  //for
+ 
+			}//for
+         
+		 $kucun=M('clocktime');//M方法
+		 
 		  $result=$kucun->addAll($data);
 		  if(!$result)
 		  {
 			  
-			  //$result->rollback();
+			  
 			  $this->error('导入数据库失败');
 			  exit();
 		  }
@@ -157,8 +114,13 @@ class HrAction extends Action {
 		  	R('Check/checkClock',array($import_begin_time,$import_end_time));
 			  $this->success ( '导入成功' );	
 		  }
+
+	
+	
+	
 	}
 	
+
 	
 	
 		/**查询所有人考勤详情********/
@@ -362,7 +324,7 @@ public function newStaff() {
 						$rsstaff = $Model->add($staffinfo);
 						
 						if(!$rsstaff) {
-							$Model->rollback();
+							//$Model->rollback();
 							echo '信息添加失败，请重试！';
 							exit;	
 						}
@@ -880,7 +842,7 @@ public function loginDetails(){
 				
 				$cc = $sample->count();
 				
-				$rs=$sample->field('uid,username,department,usertype,entrydate,costcenterid,phone,email,teamid')->limit("$start,$rows")->select();
+				$rs=$sample->field('uid,username,department,usertype,entrydate,costcenterid,phone,email,team')->limit("$start,$rows")->select();
 				
 				echo dataToJson($rs,$cc);
 				}
@@ -909,37 +871,127 @@ public function loginDetails(){
 		 }
 	
 	
-		$ExcelToArrary=new ExcelToArrary();//实例化
-		//$res=$ExcelToArrary->read(C('UPLOAD_DIR').$file_name,"UTF-8",$file_type);//传参,判断office2007还是office2003
-		$flag=0;
-		$res=$ExcelToArrary->read($tmp_file,"UTF-8",$file_type);//传参,判断office2007还是office2003
+	$PHPExcel = new PHPExcel();     
 		
-					foreach ( $res as $k => $v ) //循环excel表
-					   {
-								//$s=$k;//addAll方法要求数组必须有0索引
-							    $k=$k-1;
-								if($k>0)
-								{
-							   $data[$flag]['uid'] = $v [0];//创建二维数组
-							   $data[$flag]['username'] = $v [1];
-							   $data[$flag]['departmentid'] = $v [2];
-							   $data[$flag]['teamid'] = $v [3];
-							   $data[$flag]['usertypeid'] = $v [4];
-							   $data[$flag]['costcenterid'] =$v [5];
-							   $data[$flag]['entrydate'] = $v [6];
-							   $data[$flag]['phone'] = $v [7];
-							   $data[$flag]['email'] = $v [8];
+		$PHPReader = new PHPExcel_Reader_Excel5(); 
+		
+		
+		
+		
+		$PHPExcel = $PHPReader->load($tmp_file);
+	 	
+		$currentSheet = $PHPExcel->getSheet(0);
+		
+		$allColumn = $currentSheet->getHighestColumn();
+		
+		$allRow = $currentSheet->getHighestRow();
+		
+		$currentSheet = $PHPExcel->getSheet(0);
+		
+		$allColumn = $currentSheet->getHighestColumn();
+		
+		$allRow = $currentSheet->getHighestRow();
+		
+		$flag=0;
+		
+			for($currentRow = 1; $currentRow<=$allRow; $currentRow++){
+	 					
+						$cell =  $currentSheet->getCell('A'.$currentRow)->getValue();
+	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+		   
+	 						 $data[$flag]['uid'] = $cell;//创建二维数组
+
+ 						$cell =  $currentSheet->getCell('B'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+							$data[$flag]['username'] = $cell;
+						
+
+   						$cell =  $currentSheet->getCell('C'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+							$data[$flag]['departmentid'] =  $cell;
+										   
+							$cell =  $currentSheet->getCell('D'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+							   $data[$flag]['teamid'] =  $cell;
+							   
+							   	$cell =  $currentSheet->getCell('E'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+							   $data[$flag]['usertypeid'] =  $cell;
+							   
+							   	$cell =  $currentSheet->getCell('F'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+							   $data[$flag]['costcenterid'] = $cell;
+							   
+							   	$cell =  $currentSheet->getCell('G'.$currentRow)->getValue();
+	    	 				
+				
+							   $data[$flag]['entrydate'] =  date("Y-m-d",time($cell));
+							   
+							   $cell =  $currentSheet->getCell('H'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+							   $data[$flag]['phone'] = $cell;
+							   
+							   $cell =  $currentSheet->getCell('I'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+							   $data[$flag]['email'] =  $cell;
+							  
+	    
 							   $data[$flag]['updatetime'] =  date('Y-m-d H:i:s');
-							   $flag=$flag+1;
-								}
-						}
+		
+  			
+  					 $flag++;  //for
+ 
+			}//for
+			
+								
+								
 		
 		  $infotable=M('staffinfo');//M方法
 		  $result=$infotable->addAll($data);
 		  
 		  if(!$result)
 		  {
-			  $result->rollback();
+			 // $result->rollback();
 			  $this->error('导入失败，请检查格式从新导入！');
 			  //echo $infotable->getLastSql();
 			  

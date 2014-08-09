@@ -33,10 +33,10 @@
             <tr> 
                 <th field="uid" width="100" align="center" >员工工号</th>
                 <th  field="username" width="100" align="center">员工姓名</th>  
-                <th field="department" width="100" align="center">部门名称</th>
-                <th  field="teamid" width="100" align="center">所属组</th>
-                <th field="usertype" width="100" align="center">员工类别</th>
-                  <th  field="costcenterid" width="100" align="center">成本中心</th>
+                <th field="department" width="100" align="center">部门ID</th>
+                <th  field="team" width="100" align="center">所属组ID</th>
+                <th field="usertype" width="100" align="center">员工类别ID号</th>
+                  <th  field="costcenterid" width="100" align="center">成本中心ID</th>
                  <th field="entrydate" width="100" align="center">入职日期</th>
                  <th  field="phone" width="100" align="center">联系电话</th>
                  <th  field="email" width="100" align="center">Email</th>
