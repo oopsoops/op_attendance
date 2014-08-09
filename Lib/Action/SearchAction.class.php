@@ -47,7 +47,7 @@ class SearchAction extends Action
 			}
 			else if($search_chose=='search_no')
 			{
-				$where="$where and op_unusualtime.static is not null ";
+				$where="$where and op_unusualtime.static <> '"."正常"."' ";
 				}
 		}
 		else 
@@ -60,7 +60,7 @@ class SearchAction extends Action
 			}
 			else if($search_chose=='search_no')
 			{
-				$where="op_unusualtime.static is not null ";
+				$where="op_unusualtime.static <> ='"."正常"."'  ";
 				}
 			
 			
