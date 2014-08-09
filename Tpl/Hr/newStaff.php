@@ -53,7 +53,7 @@
     </tr>
     
     <tr>
-    	<td>成本中心：</td>
+    	<td>成本中心ID：</td>
         <td><input type="text" name="costcenter" class="easyui-validatebox" required missingMessage="必填" /></td>
         
     </tr>
@@ -80,15 +80,7 @@
      </tr>
     
 
-    
-
-    <tr><th colspan="2">注意：普通员工无需添加登录账户，添加后登录账户无效,账户默认登录密码为：12345！</th></tr>
-    
-        <tr>
-    	<td>登录账户名称：</td>
-        <td><input type="text" name="newloginname" class="easyui-validatebox" /></td>
-        
-    </tr>
+ 
    
 
     <tr>

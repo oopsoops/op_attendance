@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50516
 File Encoding         : 65001
 
-Date: 2014-08-09 13:27:57
+Date: 2014-08-09 14:48:36
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -204,10 +204,11 @@ CREATE TABLE `op_userinfo` (
   `username` varchar(255) NOT NULL,
   `accountstatue` int(11) NOT NULL DEFAULT '0',
   `departmentid` int(11) DEFAULT NULL,
+  `teamid` int(11) DEFAULT NULL,
   `phone` varchar(255) DEFAULT NULL,
   `costcenterid` int(11) DEFAULT NULL,
   `entrydate` date DEFAULT NULL,
-  `usertypeid` int(11) DEFAULT NULL,
+  `usertypeid` int(11) NOT NULL,
   `email` varchar(255) DEFAULT NULL,
   `updatetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -216,12 +217,12 @@ CREATE TABLE `op_userinfo` (
 -- ----------------------------
 -- Records of op_userinfo
 -- ----------------------------
-INSERT INTO op_userinfo VALUES ('1', '1001', 'test', '827ccb0eea8a706c4c34a16891f84e7b', '产线员工', '0', '1', null, '1', '2014-06-19', '1', null, '2014-06-19 14:06:50');
-INSERT INTO op_userinfo VALUES ('2', '1002', 'hr', '827ccb0eea8a706c4c34a16891f84e7b', '人事经理', '0', '2', null, '1', '2014-06-19', '2', null, '2014-06-19 23:29:00');
-INSERT INTO op_userinfo VALUES ('3', '1003', 'monitor', '827ccb0eea8a706c4c34a16891f84e7b', '产线班长', '0', '1', null, '1', '2014-07-07', '3', null, '2014-07-12 17:38:26');
-INSERT INTO op_userinfo VALUES ('4', '1004', 'dpmanager', '827ccb0eea8a706c4c34a16891f84e7b', '部门经理', '0', '1', null, '1', '2014-07-01', '4', null, '2014-07-10 17:39:28');
-INSERT INTO op_userinfo VALUES ('5', '1005', 'boss', '827ccb0eea8a706c4c34a16891f84e7b', '老板', '0', '1', null, '1', '2014-06-04', '5', null, '2014-07-19 17:40:04');
-INSERT INTO op_userinfo VALUES ('6', '1006', 'admin', '827ccb0eea8a706c4c34a16891f84e7b', '管理员', '0', '1', null, '1', '2014-07-01', '6', null, '2014-07-19 17:40:37');
+INSERT INTO op_userinfo VALUES ('1', '1001', 'test', '827ccb0eea8a706c4c34a16891f84e7b', '产线员工', '0', '1', null, null, '1', '2014-06-19', '1', null, '2014-06-19 14:06:50');
+INSERT INTO op_userinfo VALUES ('2', '1002', 'hr', '827ccb0eea8a706c4c34a16891f84e7b', '人事经理', '0', '2', null, null, '1', '2014-06-19', '2', null, '2014-06-19 23:29:00');
+INSERT INTO op_userinfo VALUES ('3', '1003', 'monitor', '827ccb0eea8a706c4c34a16891f84e7b', '产线班长', '0', '1', null, null, '1', '2014-07-07', '3', null, '2014-07-12 17:38:26');
+INSERT INTO op_userinfo VALUES ('4', '1004', 'dpmanager', '827ccb0eea8a706c4c34a16891f84e7b', '部门经理', '0', '1', null, null, '1', '2014-07-01', '4', null, '2014-07-10 17:39:28');
+INSERT INTO op_userinfo VALUES ('5', '1005', 'boss', '827ccb0eea8a706c4c34a16891f84e7b', '老板', '0', '1', null, null, '1', '2014-06-04', '5', null, '2014-07-19 17:40:04');
+INSERT INTO op_userinfo VALUES ('6', '1006', 'admin', '827ccb0eea8a706c4c34a16891f84e7b', '管理员', '0', '1', null, null, '1', '2014-07-01', '6', null, '2014-07-19 17:40:37');
 
 -- ----------------------------
 -- Table structure for `op_usertype`

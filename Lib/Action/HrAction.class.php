@@ -354,23 +354,7 @@ public function newStaff() {
 												echo '信息添加失败，请重试！';
 												exit;	
 												}
-												
-											$adduser = M('userinfo');
-											
-											$staffinfo['loginname'] = $loginname;
-											
-											$staffinfo['password'] =  md5('12345');
-											
-											$staffinfo['accountstatue'] = 0;
-												
-											$rsuser = $adduser->add($staffinfo);
-												
-											if(!$rsuser)
-												{
-												$Model->rollback();
-												echo '信息添加失败，请重试！';
-												exit;		
-												}
+																						
 											echo 'ok';
 														
 										 }
