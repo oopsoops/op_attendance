@@ -103,9 +103,9 @@ function testformatUserDetails(val,row){
 }
 //打开个人信息详情tab
 function testopenAttendanceDetails(clockid){
-	$('#main').tabs('close','timechange');
+	$('#main').tabs('close','timeChange');
 	$('#main').tabs('add',{
-						title:'timechange',
+						title:'timeChange',
 						//href:'__APP__/Account/account_details/pid/'+pid,
 						href:'__APP__/test/testTimeChange/clockid/'+ clockid,
 						cache:false,

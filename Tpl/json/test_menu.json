@@ -2,7 +2,7 @@
 	"text":"test",
 	"iconCls":"icon-work",
 	"children":[{
-		"text":"test",
+		"text":"testChange",
 		"iconCls":"icon-project",
 		 "attributes":{  
             "url":"test/testChange"

@@ -34,7 +34,7 @@ class TestAction extends Action
 
 				
 		if($uid!='') {
-			$where = 'op_unususltime.uid = "'.$uid.' "' ;
+			$where = 'op_unusualtime.uid = "'.$uid.' "' ;
 		}
 		else
 		{
@@ -48,12 +48,12 @@ class TestAction extends Action
 			
 			if($search_chose=='hrsearch_yes')
 			{
-			$where="$where and op_unusualtime.static is null ";
+			$where="$where and op_unusualtime.static ='"."正常"."'  ";
 			
 			}
 			else if($search_chose=='hrsearch_no')
 			{
-				$where="$where and op_unusualtime.static is not null ";
+				$where="$where and op_unusualtime.static <> '"."正常"."' ";
 				}
 		}
 		else 
@@ -61,12 +61,12 @@ class TestAction extends Action
 						
 			if($search_chose=='hrsearch_yes')
 			{
-			$where="op_unusualtime.static is null ";
+			$where="op_unusualtime.static ='"."正常"."'   ";
 			
 			}
 			else if($search_chose=='hrsearch_no')
 			{
-				$where="op_unusualtime.static is not null ";
+				$where="op_unusualtime.static <> '"."正常"."' ";
 				}
 			
 			
@@ -95,52 +95,49 @@ class TestAction extends Action
 		
 		
 		if($search_begin_time!=''&$where!='') {
-			$where= "$where and op_unususltime.clockdate>='"."$search_begin_time"."' ";
+			$where= "$where and op_unusualtime.clockdate>='"."$search_begin_time"."' ";
 		}
 		else if($search_begin_time!='')
 		{
-			$where= "op_unususltime.clockdate>='"."$search_begin_time"."' ";
+			$where= "op_unusualtime.clockdate>='"."$search_begin_time"."' ";
 			}
 		
 		if($search_end_time!=''&$where!='') {
-			$where = "$where and op_unususltime.clockdate<='"."$search_end_time"."' ";
+			$where = "$where and op_unusualtime.clockdate<='"."$search_end_time"."' ";
 		}
 		else if($search_end_time!='')
 		{
-			$where = "op_unususltime.clockdate<='"."$search_end_time"."' ";
+			$where = "op_unusualtime.clockdate<='"."$search_end_time"."' ";
 			}
 	   
 	   
 
-		$unusualtime = M('unususltime');
+		$unusualtime = M('unusualtime');
 		$cc = $unusualtime
 		->Distinct(true)
-		->join('op_satffinfo ON op_unususltime.uid=op_staffinfo.uid')
+		->join('op_satffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->where($where)
 		 ->count();
 		 
 	    $allattendance=$unusualtime
 		->Distinct(true)
-		->field("phone,op_unususltime.uid as uid,op_unususltime.clocktime as clocktime,op_unususltime.clockdate as clockdate,op_staffinfo.username as username
-		,op_department.departmentname as department,op_teaminfo.teamname as teamname,op_unususltime.id as clockid,
+		->field("phone,op_unusualtime.uid as uid,op_unusualtime.clocktime as clocktime,op_unusualtime.clockdate as clockdate,op_staffinfo.username as username,op_unusualtime.static as static
+		,op_department.departmentname as department,op_teaminfo.teamname as teamname,op_unusualtime.id as clockid,
 		 CASE
 			WHEN isapply=1 THEN '已请假'
-			 END as isapply,
+			 END as isapply
 			
-		 CASE 
-			 WHEN static='迟到' THEN '迟到'
-			 WHEN static='早退' THEN '早退'
-			 ELSE '正常' END AS static")
-		->join('op_staffinfo ON op_unususltime.uid=op_staffinfo.uid')
+		 ")
+		->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
-		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamif')
+		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
 		->where($where)
-		 ->order('op_unususltime.uid desc')
+		 ->order('op_unusualtime.uid desc')
 		->limit("$start,$rows")
 		->select();
 		
-	//echo $clocktime->getLastSql();
+	//echo $unusualtime->getLastSql();
 	echo dataToJson($allattendance,$cc);
 	}
 	
@@ -151,16 +148,16 @@ class TestAction extends Action
 		
 	   $clockid = $this->_get('clockid');
 
-		$usertime = M('unususltime');
+		$usertime = M('unusualtime');
 		
 
 		 
 	    $info=$usertime
-		->field("op_unususltime.uid as uid,op_unususltime.clockdate as clockdate,op_unususltime.time as clocktime")
+		->field("op_unusualtime.id as clockid,op_unusualtime.clockdate as clockdate,op_unusualtime.clocktime as clocktime")
 		
-		->where("op_unususltime.id = $clockid")
+		->where("op_unusualtime.id = $clockid")
 	    ->select();
-		//echo $userdetails->getLastSql();
+		//echo $usertime->getLastSql();
 		$this->assign('clockinfo',$info[0]);
 		$this->display();
     }
@@ -175,22 +172,19 @@ class TestAction extends Action
 	$clockdate = $this->_post('clockdate');
 	$clocktime = $this->_post('clocktime');
 	
-	$clockModify = M('unususltime');
-	
-	$unususl =  M('unusualtime');
+	$clockModify = M('unusualtime');
 	
 	    $clockinfo=$clockModify->getById($clockid);
 		
-		
-		
-	    $staffinfo['clockdate'] =  $clockdate;
-		$staffinfo['clocktime'] = $clocktime;
-		$staffinfo['static'] = "正常";
+
+	    $clockinfo['clockdate'] =  $clockdate;
+		$clockinfo['clocktime'] = $clocktime;
+		$clockinfo['static'] = "正常";
 	
 		
-		$rs = $clockModify->save($staffinfo);
+		$rs = $clockModify->save($clockinfo);
 		
-		//echo $checkdetails->getLastSql();
+		//echo $clockModify->getLastSql();
 		
 	if(!$rs) {
 			echo '修改失败，请重试！';
@@ -199,7 +193,6 @@ class TestAction extends Action
 		
 
 		echo 'ok';
-		
 		
 		
 	

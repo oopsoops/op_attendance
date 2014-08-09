@@ -172,7 +172,7 @@ class HrAction extends Action {
 			}
 			else if($search_chose=='hrsearch_no')
 			{
-				$where="$where and op_unusualtime.static is not null  ";
+				$where="$where and op_unusualtime.static <> '"."正常"."'  ";
 				}
 		}
 		else 
@@ -185,7 +185,7 @@ class HrAction extends Action {
 			}
 			else if($search_chose=='hrsearch_no')
 			{
-				$where="op_unusualtime.static is not null ";
+				$where="op_unusualtime.static <> '"."正常"."' ";
 				}
 			
 			
@@ -241,16 +241,12 @@ class HrAction extends Action {
 		 
 	    $allattendance=$unusualtime
 		->Distinct(true)
-		->field("phone,op_unusualtime.uid as uid,op_unusualtime.clocktime as clocktime,op_unusualtime.clockdate as clockdate,op_staffinfo.username as username
+		->field("phone,op_unusualtime.uid as uid,op_unusualtime.clocktime as clocktime,op_unusualtime.clockdate as clockdate,op_staffinfo.username as username,op_unusualtime.static as static
 		,op_department.departmentname as department,op_teaminfo.teamname as teamname,
 		 CASE
 			WHEN isapply=1 THEN '已请假'
-			 END as isapply,
-			
-		 CASE 
-			 WHEN static='迟到' THEN '迟到'
-			 WHEN static='早退' THEN '早退'
-			 ELSE '正常' END AS static")
+			 END as isapply
+		")
 		->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
