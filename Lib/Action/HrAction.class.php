@@ -471,7 +471,7 @@ public function hrfetch_all_users(){
 		$getuserUnusualTime = $userUnusualTime->getByUid($uid);
 		$getstaff = $staff->getByUid($uid);
 		
-		
+		$userinfo->startTrans();
 		if(count($getuserinfo)>0)
 		{
 						$rs1 = $userinfo->where('uid="'.$uid.'"')->delete();
@@ -482,7 +482,7 @@ public function hrfetch_all_users(){
 									exit;	
 								}
 		}
-		
+		$userClockTime->startTrans();
 		
 		if(count($getuserClockTime)>0)
 		{
@@ -495,6 +495,7 @@ public function hrfetch_all_users(){
 							}
 		}
 				
+				$userUnusualTime->userUnusualTime();
 				
 		if(count($getuserUnusualTime)>0)
 		{
@@ -524,6 +525,11 @@ public function hrfetch_all_users(){
 							
 							}
 		}
+		
+								$userinfo->commit();
+								$userClockTime->commit();
+								$userUnusualTime->commit();
+		
 			echo 'ok';
 		}
 
@@ -595,7 +601,7 @@ public function staff_modify_do(){
 		$staffinfo['email'] = $email;
 		$staffinfo['usertypeid'] = $stafftype;
 		$staffinfo['updatetime'] = date('Y-m-d H:i:s');
-		
+		$modifyinfo->startTrans();
 		$rs = $modifyinfo->save($staffinfo);
 		
 		//echo $checkdetails->getLastSql();
@@ -661,6 +667,8 @@ public function staff_modify_do(){
 			exit;	
 			}
 	}
+	
+	$modifyinfo->commit();
 		//echo $userinfo->getLastSql();
 		echo 'ok';
 	
