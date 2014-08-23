@@ -1,4 +1,4 @@
-[{
+﻿[{
 	"text":"考勤管理",
 	"iconCls":"icon-work",
 	"children":[{
@@ -18,34 +18,34 @@
 	"text":"工作管理",
 	"iconCls":"icon-docbag",
 	"children":[{
-		"text":"加班审批?",
+		"text":"加班审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/"
+            "url":"works/jbAproval"
         }
 	},{
-		"text":"出差审批?",
+		"text":"出差审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/"
+            "url":"works/ccApproval"
         }
 	},{
-		"text":"休假审批?",
+		"text":"休假审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/"
+            "url":"works/qjApproval"
         }
 	},{
-		"text":"事务申请?",
+		"text":"事务申请",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Work/"
+			"url":"Works/transitionApply"
 		 }
 	},{
-		"text":"申请查询?",
+		"text":"申请查询",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Work/"
+			"url":"Works/"
 		 }
 	},{
 		"text":"排班设置",

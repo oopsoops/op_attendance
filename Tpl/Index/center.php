@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <include file="./Tpl/head.php" />
@@ -64,8 +64,7 @@ function tree_select(node)
     <!-- 中间 -->
     	<div id="main" class="easyui-tabs" data-options="fit:true">  
             <div title="我的首页" data-options="fit:true,cache:false,href:'__APP__/Index/home'" style="background:url(__TPL__/images/greenlight.jpg) no-repeat top right;">  
-            </div>
-            
+            </div>   
         </div>  
     </div>
     

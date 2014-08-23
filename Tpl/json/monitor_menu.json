@@ -1,4 +1,4 @@
-[{
+﻿[{
 	"text":"考勤管理",
 	"iconCls":"icon-work",
 	"children":[{
@@ -27,7 +27,7 @@
 		"text":"事务申请",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Password/"
+			"url":"Works/transitionApply"
 		 }
 	},{
 		"text":"申请查询",
