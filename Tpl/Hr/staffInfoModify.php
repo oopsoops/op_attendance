@@ -37,6 +37,13 @@
         
     </tr>
     
+        <tr>
+    	<td>员工工号：</td>
+        <td><input type="text" name="uid" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['uid'];?>"/></td>
+    
+    
+    </tr>
+    
     <tr>
     	<td>员工姓名：</td>
         <td><input type="text" name="staffname" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['username'];?>"/></td>

@@ -582,12 +582,183 @@ public function staff_modify_do(){
 	$phone = $this->_post('phone');
 	$email =  $this->_post('email');
 	$loginname =$this->_post('staffloginname');
+	$newuid =$this->_post('uid');
 	$modifyinfo = M('staffinfo');
 	$userinfo = M('userinfo');
+	$clocktimeinfo = M('clocktime');
+	$loginfo=M('log');
+	$unusualtimeinfo=M('unusualtime');
+	
 	//$power = M('usertype');
 	
 
 		//$power=$power->getByTid($stafftype);
+		//判断是否修改uid
+		if($newuid!=$uid)
+		{
+			
+			$judgeuid=$modifyinfo->getByUid($newuid);
+			if($judgeuid!=NULL)
+			{
+				echo '修改失败，请重试！';
+			    exit;
+				
+				}
+				
+		$data[uid]=$newuid;		
+				
+	//$userinfo->startTrans();
+	$clocktimeinfo->startTrans();
+	$loginfo->startTrans();
+	$unusualtimeinfo->startTrans();
+	$modifyinfo->startTrans();
+	
+	
+	if($clocktimeinfo->getByUid($uid))
+	{
+		$rsclocktime = $clocktimeinfo->where("uid=$uid")->save($data);
+	
+		if(!$rsclocktime) {
+			echo 'haveexist';
+			exit;	
+		}
+	}
+	
+	
+	if($loginfo->getByUid($uid))
+	{
+		
+		$rslog= $loginfo->where("uid=$uid")->save($data);
+		
+		if(!$rslog) {
+			$clocktimeinfo->rollback();
+			echo '修改失败，请重试！';
+			exit;	
+		}
+	}
+	
+	
+	if($unusualtimeinfo->getByUid($uid))
+	{
+		$rsunusualtime=$unusualtimeinfo->where("uid=$uid")->save($data);
+		
+		if(!$rsunusualtime) {
+			$clocktimeinfo->rollback();
+			$loginfo->rollback();
+			echo '修改失败，请重试！';
+			exit;	
+		}
+		
+	}
+		$staffinfo=$modifyinfo->getByUid($uid);
+		
+		$getuserinfo = $userinfo->getByUid($uid);
+		
+	    $staffinfo['username'] =  $username;
+		$staffinfo['uid'] =  $newuid;
+		$staffinfo['entrydate'] = $entrytime;
+		$staffinfo['departmentid'] =  $department;
+		$staffinfo['teamid'] =  $teamid;
+		$staffinfo['phone'] = $phone;
+		$staffinfo['email'] = $email;
+		$staffinfo['usertypeid'] = $stafftype;
+		$staffinfo['updatetime'] = date('Y-m-d H:i:s');
+		
+		$rs = $modifyinfo->save($staffinfo);
+		
+		//echo $checkdetails->getLastSql();
+		
+	if(!$rs) {
+			$clocktimeinfo->rollback();
+			$loginfo->rollback();
+			$unusualtimeinfo->rollback();
+			echo '修改失败，请重试！';
+			exit;	
+		}
+		
+		
+		if( count($getuserinfo)==0 && $loginname!='')
+		{
+		$accountname = $userinfo->getByLoginname($loginname);		
+		if($accountname) {
+			$clocktimeinfo->rollback();
+			$loginfo->rollback();
+			$unusualtimeinfo->rollback();
+			$modifyinfo->rollback();
+					echo 'haveexist';
+					exit;	
+				}
+			
+			$staffinfo=$modifyinfo->getByUid($uid);
+			
+			$getuser['uid'] =  $newuid;
+			$getuser['username'] =  $staffinfo['username'];
+			$getuser['entrydate'] = $staffinfo['entrydate'];
+			$getuser['accountstatue']=0;
+			$getuser['departmentid'] =  $staffinfo['departmentid'];
+			$getuser['costcenterid'] =  $staffinfo['costcenterid'];
+			$getuser['teamid'] =  $staffinfo['teamid'] ;
+			$getuser['phone'] = $staffinfo['phone'];
+			$getuser['email'] = $staffinfo['email'];
+			$getuser['usertypeid'] = $staffinfo['usertypeid'] ;
+			$getuser['updatetime'] = date('Y-m-d H:i:s');
+			$getuser['loginname']=$loginname;
+			$getuser['password']=md5('12345');
+			
+			$rsuser = $userinfo->add($getuser);
+			
+			if(!rsuser)
+			{
+			$clocktimeinfo->rollback();
+			$loginfo->rollback();
+			$unusualtimeinfo->rollback();
+			$modifyinfo->rollback();
+			echo '修改失败，请重试！';
+			exit;	
+			}
+			
+		}
+		
+		else if(count($getuserinfo)>0)
+		{
+			
+		$getuserinfo['username'] =  $username;
+		$getuserinfo['uid'] =  $newuid;
+		$getuserinfo['entrydate'] = $entrytime;
+		$getuserinfo['departmentid'] =  $department;
+		$getuserinfo['teamid'] =  $teamid;
+		$getuserinfo['phone'] = $phone;
+		$getuserinfo['email'] = $email;
+		$getuserinfo['usertypeid'] = $stafftype;
+		$getuserinfo['updatetime'] = date('Y-m-d H:i:s');
+		$rsuser = $userinfo->save($getuserinfo);
+			
+			if(!rsuser)
+			{
+			$clocktimeinfo->rollback();
+			$loginfo->rollback();
+			$unusualtimeinfo->rollback();
+			$modifyinfo->rollback();
+			echo '修改失败，请重试！';
+			exit;	
+			}
+	}
+	
+	
+			$clocktimeinfo->commit();
+			$loginfo->commit();
+			$unusualtimeinfo->commit();
+			$modifyinfo->commit();
+			$userinfo->commit();
+		//echo $userinfo->getLastSql();
+		echo 'ok';
+				
+}
+//newuid==olduid
+		else  
+		{
+		
+		
 		
 	    $staffinfo=$modifyinfo->getByUid($uid);
 		
@@ -650,15 +821,15 @@ public function staff_modify_do(){
 		else if(count($getuserinfo)>0)
 		{
 			
-		$getuser['username'] =  $username;
-		$getuser['entrydate'] = $entrytime;
-		$getuser['departmentid'] =  $department;
-		$getuser['teamid'] =  $teamid;
-		$getuser['phone'] = $phone;
-		$getuser['email'] = $email;
-		$getuser['usertypeid'] = $stafftype;
-		$getuser['updatetime'] = date('Y-m-d H:i:s');
-		$rsuser = $userinfo->save($getuser);
+		$getuserinfo['username'] =  $username;
+		$getuserinfo['entrydate'] = $entrytime;
+		$getuserinfo['departmentid'] =  $department;
+		$getuserinfo['teamid'] =  $teamid;
+		$getuserinfo['phone'] = $phone;
+		$getuserinfo['email'] = $email;
+		$getuserinfo['usertypeid'] = $stafftype;
+		$getuserinfo['updatetime'] = date('Y-m-d H:i:s');
+		$getuserinfo = $userinfo->save($getuserinfo);
 			
 			if(!rsuser)
 			{
@@ -672,7 +843,7 @@ public function staff_modify_do(){
 		//echo $userinfo->getLastSql();
 		echo 'ok';
 	
-	
+		}
 	}
 
 
