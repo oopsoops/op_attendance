@@ -32,6 +32,20 @@ class HrAction extends Action {
 		
 		$file_type = $file_types [count ( $file_types ) - 1];
 		
+		$import_begin_time=$this->_post('import_begin_time');
+		
+		$import_end_time=$this->_post('import_end_time');
+		$kucun=M('clocktime');
+		$kucun->where("uid is not null")->delete();
+		
+			if($import_begin_time==''||$import_end_time=='')
+				{
+						$this->error('开始日期和结束日期不能同时为空！');
+			  			 exit();
+					}
+				
+	
+		
 				
 		 if (strtolower ( $file_type ) != "xlsx" && strtolower ( $file_type ) != "xls")              
 		 {
@@ -66,40 +80,41 @@ class HrAction extends Action {
 		
 			for($currentRow = 1; $currentRow<=$allRow; $currentRow++){
 	 					
-						$cell =  $currentSheet->getCell('A'.$currentRow)->getValue();
+						$cellA =  $currentSheet->getCell('A'.$currentRow)->getValue();
 	 				
-						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+						 if($cellA instanceof PHPExcel_RichText)     //富文本转换字符串   
            
 		  				 {
-		  					  $cell = $cell->__toString();  
+		  					  $cellA = $cellA->__toString();  
 		 				  }
 		   
-	 						  $data[$k]['uid'] = $cell;//创建二维数组
+	 						  $data[$k]['uid'] = $cellA;//创建二维数组
 
- 						$cell =  $currentSheet->getCell('B'.$currentRow)->getValue();
-	    	 				
-						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
-           
-		  				 {
-		  					  $cell = $cell->__toString();  
-		 				  }
-								   $data[$k]['clockdate'] = date("Y-m-d",time($cell));
+ 						$cellB =  $currentSheet->getCell('B'.$currentRow)->getValue();
+						
+						$jd = GregorianToJD(1, 1, 1970); 
+						$celldate = JDToGregorian($jd+intval($cellB)-25569); 
+					
+	 
+							  $dataexplode=explode("/",$celldate);
+		 				 
+							  $data[$k]['clockdate'] = date("Y-m-d",mktime(0,0,0,$dataexplode[0],$dataexplode[1],$dataexplode[2]));
 
-   						$cell =  $currentSheet->getCell('C'.$currentRow)->getValue();
+   						      $cellC =  $currentSheet->getCell('C'.$currentRow)->getValue();
 	    	 				
-						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
-           
-		  				 {
-		  					  $cell = $cell->__toString();  
-		 				  }
-									   $data[$k]['clocktime'] =  date("H:i:s",time($cell));
+							$t= intval($cellB)+$cellC;
+							$n= intval(($t - 25569) * 3600 * 24);
+							
+							
+							
+						      $data[$k]['clocktime'] =  gmdate('H:i:s', $n);//date("H:i:s",strtotime($n));
 		
   			
   					 $k++;  //for
  
 			}//for
          
-		 $kucun=M('clocktime');//M方法
+		// $kucun=M('clocktime');//M方法
 		 
 		  $result=$kucun->addAll($data);
 		  if(!$result)
@@ -112,6 +127,7 @@ class HrAction extends Action {
 		  else
 		  {
 		  	R('Check/checkClock',array($import_begin_time,$import_end_time));
+			  $kucun->where("id is not null")->delete();
 			  $this->success ( '导入成功' );	
 		  }
 
