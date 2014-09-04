@@ -1,8 +1,8 @@
 <div class="main_include">
    <table class="easyui-datagrid"   
-            id="grid_qjApprove"
+            id="grid_jbApprove"
             style="height:430px"
-            title='加班审批'
+            title='休假审批'
             singleSelect="true"
             striped="true"
             loadMsg='载入中...' 
@@ -24,7 +24,11 @@
                 <th field="details" width="80" align="center" formatter="jbDetailFormatter">查看详情</th>
                 <th field="rejiect" width="40" align="center" formatter="rejectFormatter">驳回</th>
                 <th field="approve" width="40" align="center" formatter="approveFormatter">批准</th>
-                <th field="subm" width="40" align="center" formatter="submitFormatter">提交HR</th>
+                
+               
+
+                 
+                             
             </tr>  
         </thead>  
     </table>
@@ -37,9 +41,6 @@
 	}
 	function approveFormatter(val,row){
 		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+')"><img src="__TPL__/images/check.png" width="16"/></a>';
-	}
-	function submitFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doSubm('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
 	}
 	
 	function openjbDetail(vid){
@@ -62,8 +63,8 @@
 					success:function(data){
 						if(data=="1"){
 							$.messager.alert("提示","驳回成功！");
-							$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
-							$('#grid_qjApprove').datagrid('load', { });
+							$('#grid_jbApprove').datagrid('loadData', { total:0, rows:[ ]});
+							$('#grid_jbApprove').datagrid('load', { });
 						}				
 					},
 					error:function(XMLHttpRequest,textStatus,errorThrown){
@@ -75,8 +76,7 @@
 	}
 	function doApprove(id){
 		
-		$.messager.confirm('提示', '确认要批准该员工申请？', function(r){
-			  
+		$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 			if (r){
 				$.ajax({
 					url:"__APP__/Works/approveTrans/vid/"+id,
@@ -96,30 +96,9 @@
 			}
 		});
 	}
-	function doSubm(id){
-		$.messager.confirm('提示', '确认要提交给人事经理审批？', function(r){
-			if (r){
-				$.ajax({
-					url:"__APP__/Works/sub2hr/vid/"+id,
-					type:'GET',
-					success:function(data){
-						if(data=="1"){
-							$.messager.alert("提示","提交成功！");
-							$('#grid_jbApprove').datagrid('loadData', { total:0, rows:[ ]});
-							$('#grid_jbApprove').datagrid('load', { });
-						}				
-					},
-					error:function(XMLHttpRequest,textStatus,errorThrown){
-						alert(''+errorThrown);
-					}	
-				});
-			}
-		});
-	}
     
     
 </script>
-
     
     
 </div>
