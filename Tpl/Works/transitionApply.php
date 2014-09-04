@@ -77,9 +77,9 @@
 			$.messager.alert("提示","请填写申请理由！");
 			return false;
 		}
-		var begin=begindate+" "+begintime;
+/*		var begin=begindate+" "+begintime;
 		var end=enddate+" "+endtime;
-		var diff=computeDateDiff(begin,end);
+		var diff=computeDateDiff(begin,end);*/
 		$.ajax({
 			url: "__APP__/Works/dealApply",
 			data:{

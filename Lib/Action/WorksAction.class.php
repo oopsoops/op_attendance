@@ -27,8 +27,6 @@
 			$endtime=$this->_post('endtime');
 			$reason=$this->_post('reason');
 			$transdm=$this->_post('transdm');
-			$begin=$begindate." ".$begintime;
-			$end=$enddate." ".$endtime;
 			$uid = $_SESSION['uid'];
 			$Model=M('userinfo');
 			$tidrow=$Model->getByUid($uid);
@@ -50,9 +48,11 @@
 			}
 			$astatus['uid']=$uid;
 			$astatus['transtype']=$transdm;
-			$astatus['begintime']=$begin;
+			$astatus['begindate']=$begindate;
+			$astatus['begintime']=$begintime;
 			$astatus['status']=$status;
-			$astatus['endtime']=$end;
+			$astatus['enddate']=$enddate;
+			$astatus['endtime']=$endtime;
 			$astatus['applytime']=date('Y-m-d H:i:s');
 			$astatus['departmanagerid']=$managerid;
 			$astatus['reason']=$reason;
@@ -164,6 +164,36 @@
 
 /*****************************************批准申请end*******************************************/		
 	
+	/*****************************************提交hr begin*******************************************/	
+	
+	public function sub2hr(){
+		$id=$this->_get('vid');
+	//	echo $id;
+		$model=M('vacationstatus');
+		$rs=$model->getById($id);
+		$rs['status']=2;
+		$result=$model->save($rs);
+		if(!$result){
+			echo "操作失败,请重试！";
+			exit;
+		}
+		else{
+			$data="1";
+			echo $data;
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*****************************************提交hr end*******************************************/
 	
 	
 	
