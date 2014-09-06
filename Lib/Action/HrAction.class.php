@@ -1069,7 +1069,7 @@ public function loginDetails(){
 		
 		$flag=0;
 		
-			for($currentRow = 1; $currentRow<=$allRow; $currentRow++){
+			for($currentRow = 2; $currentRow<=$allRow; $currentRow++){
 	 					
 						$cell =  $currentSheet->getCell('A'.$currentRow)->getValue();
 	 				
