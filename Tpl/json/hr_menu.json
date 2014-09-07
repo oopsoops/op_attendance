@@ -7,12 +7,6 @@
 		 "attributes":{  
             "url":"Hr/hrSearchInfo"
         }
-	},{
-		"text":"报表查询?",
-		"iconCls":"icon-project",
-		 "attributes":{  
-            "url":"Hr/"
-        }
 	}]
 },{
 	"text":"工作管理",
