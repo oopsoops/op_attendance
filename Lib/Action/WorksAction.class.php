@@ -140,8 +140,25 @@ require "PHPMailer/_lib/class.phpmailer.php";
 		$rows = $this->_post('rows');
 		if($rows<1) $rows=10;
 		$start = ($page-1)*$rows;
+		
+		$model=M('staffinfo');		
+		$rx=$model->field("op_usertype.power")
+		->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
+		->where("op_staffinfo.uid=".$uid)->select();
+		$power=$rx[0]['power'];
+		if($power==2){
+			$status=2;
+			$where="(status=2 or (status=1 and departmanagerid='".$uid."')) and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+		}
+		else if($power=5){
+			$status=3;
+			$where="status=3 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+		}else{
+			$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+		}
+		
+		
 		$model=M('vacationstatus');
-		$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
 		$num=$model->where($where)->count();
 	//	echo $model->where($where)->getLastSql();
 		$list=$model->field("op_vacationstatus.uid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,
@@ -153,7 +170,7 @@ require "PHPMailer/_lib/class.phpmailer.php";
 		->order("op_vacationstatus.applytime desc")
 		->limit("$start,$rows")
 		->select();
-		
+//		echo $model->where($where)->getLastSql();
 		echo dataToJson($list,$num);
 		
 	}
