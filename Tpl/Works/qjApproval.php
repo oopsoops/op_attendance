@@ -86,7 +86,6 @@
 					url:"__APP__/Works/approveTrans/vid/"+id,
 					type:'GET',
 					success:function(data){
-						alert(data);
 						if(data=="1"){
 							$.messager.alert("提示","批准成功！");
 							$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});

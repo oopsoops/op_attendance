@@ -13,9 +13,9 @@
         选择事务：
         <select id="transName">
         		<option value=''></option>
-        		<option value="1">休假申请</option>
-                <option value="2">加班申请</option>
-                <option value="3">出差申请</option>
+        		<option value="3">休假申请</option>
+                <option value="1">加班申请</option>
+                <option value="2">出差申请</option>
         </select>
         开始日期：
             <input id="trans_begin_date" type="text" style="width:100px" />

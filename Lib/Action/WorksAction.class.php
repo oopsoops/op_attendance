@@ -64,7 +64,7 @@ require "PHPMailer/_lib/class.phpmailer.php";
 			$powerrow=$Model->getByTid($tid);
 			$power=$powerrow['power'];
 			$status=1;
-			if($power==1||$power==3){
+			if($power==1||$power==3||$power==7){
 				$model=M('userinfo');
 				$row=$model->getByUid($uid);
 				$departmentid=$row['departmentid'];
@@ -150,7 +150,7 @@ require "PHPMailer/_lib/class.phpmailer.php";
 			$status=2;
 			$where="(status=2 or (status=1 and departmanagerid='".$uid."')) and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
 		}
-		else if($power=5){
+		else if($power==5){
 			$status=3;
 			$where="status=3 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
 		}else{
@@ -170,7 +170,7 @@ require "PHPMailer/_lib/class.phpmailer.php";
 		->order("op_vacationstatus.applytime desc")
 		->limit("$start,$rows")
 		->select();
-//		echo $model->where($where)->getLastSql();
+		//echo $model->where($where)->getLastSql();
 		echo dataToJson($list,$num);
 		
 	}
