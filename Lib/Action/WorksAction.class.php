@@ -1,6 +1,8 @@
 <?php 
 	
-require "PHPMailer/_lib/class.phpmailer.php";	
+	Vendor('PHPMailer.classphpmailer');
+	
+		
 	
 	class WorksAction extends Action{
 		
@@ -24,13 +26,12 @@ require "PHPMailer/_lib/class.phpmailer.php";
 		//邮件发送
 		public function sendMail(){
 			try { 
-				$mail=new PHPMailer(true);
-				$mail->Mailer="stmp";
+				$mail=new PHPMailer();
+		//		$mail->Mailer="stmp";
 				$mail->IsSMTP();
-				$mail->SMTPSecure = 'tls';
 				$mail->SMTPAuth = true;
 				$mail->Port = 25; 
-				$mail->CharSet = "GB2312";
+				$mail->CharSet = "utf-8";
 				$mail->Host = "smtp.163.com";
 				$mail->Username = "superdragon@163.com";
 				$mail->Password = "13579superk24680";
@@ -39,8 +40,10 @@ require "PHPMailer/_lib/class.phpmailer.php";
 				$mail->AddAddress("732121339@qq.com");
 				$mail->Subject = "phpmailer测试标题";
 				$mail->Body = "演示";
-			//	$mail->IsHTML(true);
+				$mail->IsHTML(true);
+				echo "aaaaaa";
 				$mail->Send();
+				echo "ccccccbbbbbbb";
 				if(!$mail->Send()){
 					echo "fail  ".$mail->ErrorInfo;
 				}

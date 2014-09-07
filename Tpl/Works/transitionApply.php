@@ -1,6 +1,9 @@
 <div class="main_include">
     <div id="ext_mosearchmanage"  style="padding:10px;height:auto">
-     <form id="transitionApply_Form" method="post">
+    
+    <div id="tt" class="easyui-tabs" style="width:1024px;height:500px;"> 
+<div title="加班申请" style="padding:20px;"> 
+<form id="transitionApply_Form" method="post">
      <?php if ($teamlist[0]['teamid']!=1&&$power==3){ ?>
         选择员工
         <select id="uid">
@@ -35,6 +38,18 @@
             <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply()">提交</a>
        	
      </form> 
+</div> 
+<div title="休假申请" closable="true" style="overflow:auto;padding:20px;display:none;"> 
+tab2 
+</div> 
+<div title="出差申请"  closable="true" style="padding:20px;display:none;"> 
+tab3 
+</div> 
+</div> 
+    
+    
+    
+     
     </div>
     <script>
 	$('#trans_begin_date').datebox({	

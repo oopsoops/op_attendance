@@ -1,0 +1,13 @@
+[DEFAULT]
+BASEURL=http://www.idcspy.com/content/view/38/45/
+[DOC#205]
+BASEURL=http://www.lunarpages.com/index.php
+ORIGURL=http://www.idcspy.com/hosturl/lunarpages.htm
+[InternetShortcut]
+URL=http://www.idcspy.com/content/view/38/45/
+IDList=
+IconFile=C:\WINDOWS\system32\SHELL32.dll
+IconIndex=220
+HotKey=0
+[{000214A0-0000-0000-C000-000000000046}]
+Prop3=19,2
