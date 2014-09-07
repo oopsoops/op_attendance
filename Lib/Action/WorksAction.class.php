@@ -83,6 +83,7 @@ require "PHPMailer/_lib/class.phpmailer.php";
 				->join('op_usertype ON op_userinfo.usertypeid=op_usertype.tid ')
 				->where("op_usertype.power=5")->select();
 				$managerid=$rows[0]['uid'];
+				$status=3;
 			}
 			if($power==4){
 				$model=M('userinfo');
@@ -92,6 +93,7 @@ require "PHPMailer/_lib/class.phpmailer.php";
 				->join('op_usertype ON op_userinfo.usertypeid=op_usertype.tid ')
 				->where("op_usertype.power=2")->select();
 				$managerid=$rows[0]['uid'];
+				$status=2;
 			}
 			$astatus['uid']=$uid;
 			$astatus['transtype']=$transdm;
