@@ -1,41 +1,23 @@
-﻿[{
+[{
 	"text":"考勤管理",
 	"iconCls":"icon-work",
 	"children":[{
 		"text":"考勤记录",
 		"iconCls":"icon-project",
 		 "attributes":{  
-            "url":"Hr/hrSearchInfo"
+            "url":"Search/searchInfo"
         }
 	},{
 		"text":"排班查询",
-		"iconCls":"icon-project",
+		"iconCls":"icon-doccheck",
 		 "attributes":{  
             "url":"Search/worktime"
         }
 	}]
 },{
-	"text":"工作管理",
+	"text":"事务管理",
 	"iconCls":"icon-docbag",
 	"children":[{
-		"text":"加班审批",
-		"iconCls":"icon-doccheck",
-		 "attributes":{  
-            "url":"works/jbAproval"
-        }
-	},{
-		"text":"出差审批",
-		"iconCls":"icon-doccheck",
-		 "attributes":{  
-            "url":"works/ccApproval"
-        }
-	},{
-		"text":"休假审批",
-		"iconCls":"icon-doccheck",
-		 "attributes":{  
-            "url":"works/qjApproval"
-        }
-	},{
 		"text":"事务申请",
 		"iconCls":"icon-pass",
 		 "attributes":{  
@@ -45,46 +27,10 @@
 		"text":"申请查询",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Works/"
+			"url":"Password/"
 		 }
-	},{
-		"text":"排班设置",
-		"iconCls":"icon-doccheck",
-		 "attributes":{  
-            "url":"Hr/worktimeList"
-        }
-	},{
-		"text":"考勤导入",
-		"iconCls":"icon-project",
-		 "attributes":{  
-            "url":"Hr/record_import"
-        }
 	}]
 },{
-	"text":"员工管理",
-	"iconCls":"icon-archives",
-	"state":"closed",
-	"children":[{
-		"text":"创建员工",
-		"iconCls":"icon-client",
-		 "attributes":{  
-            "url":"Hr/newStaff"
-        }
-	},{
-		"text":"员工批量导入",
-		"iconCls":"icon-pass",
-		 "attributes":{  
-			"url":"Hr/staffImport"
-		 }
-	},{
-		"text":"员工信息管理",
-		"iconCls":"icon-pass",
-		 "attributes":{  
-			"url":"Hr/staffManager"
-		 }
-	}]
-},
-{
 	"text":"信息管理",
 	"iconCls":"icon-archives",
 	"state":"closed",
@@ -102,7 +48,7 @@
 		 }
 	}]
 },{
-	"text":"消息中心X",
+	"text":"消息中心",
 	"iconCls":"icon-mail",
 	"state":"closed",
 	"children":[{

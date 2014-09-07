@@ -91,7 +91,7 @@ function testsearch_clear_time()
 	}
 
 function testsearch_accountmanage() {
-	alert($('#testsearch_chose').val());
+	
 	$('#grid_testsearchmanage').datagrid('loadData', { total:0, rows:[]});
 	$('#grid_testsearchmanage').datagrid('load', {hrsearch_chose:$('#testsearch_chose').val(), department:$('#department').val(),username:$('#username').val(),uid:$('#uid').val(),hrsearch_begin_time:$('#testsearch_begin_time').combo("getValue"),hrsearch_end_time:$('#testsearch_end_time').combo("getValue")});
 	

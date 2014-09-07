@@ -85,16 +85,7 @@
         		echo  $userinfo[0]['staffloginname'];
 				echo '"'; 
 				echo  " readonly = ".'"'."readonly".'"';}?>
-         <?php
-		 
-		 	 if($userinfo[0]['power']<1)
-		  {
-			   echo  " disabled = ".'"'."disabled".'"';
-			   
-		   }
-		   
-		   ?>
-                
+                       
                  />
                
         </td>

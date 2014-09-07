@@ -77,7 +77,21 @@
         <td><input type="text" name="email"  /></td>
         
     </tr>
-     </tr>
+    
+    
+    <tr>
+        
+    	<td>登录账户（初始密码：12345）：</td>
+        <td><input id="staffloginname"  name="staffloginname" type="text"   style="width:100px"/></td>
+        </tr>
+        <tr>
+        <td>是否有登录权限：</td><td><select name="access" id="access" >
+               	<option value="access_yes" >是	</option>
+                <option value="access_no" >否</option>
+            </select>  </td>
+   </tr>
+    
+  
     
 
  
@@ -119,18 +133,14 @@ function new_staff_do() {
 			return $('#form_new_staff').form('validate');
 		},  
 		success:function(data){  
+		
 			if(data == 'loginexist')
 			{
 				$.messager.alert('提示','该登录账号已经存在！');
 				
 				}
 			
-				
-				else if(data =='loginempty')
-				{
-					$.messager.alert('提示','创建非普通员工必须填写账户名称和密码！');
-					
-					}
+			
 		
 			else if(data=='ok') {
 				

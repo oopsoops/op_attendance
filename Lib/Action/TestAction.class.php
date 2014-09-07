@@ -46,12 +46,12 @@ class TestAction extends Action
 		if($where!='')
 		{
 			
-			if($search_chose=='hrsearch_yes')
+			if($search_chose=='testsearch_yes')
 			{
 			$where="$where and op_unusualtime.static ='"."正常"."'  ";
 			
 			}
-			else if($search_chose=='hrsearch_no')
+			else if($search_chose=='testsearch_yes')
 			{
 				$where="$where and op_unusualtime.static <> '"."正常"."' ";
 				}
@@ -59,12 +59,12 @@ class TestAction extends Action
 		else 
 		{
 						
-			if($search_chose=='hrsearch_yes')
+			if($search_chose=='testsearch_yes')
 			{
 			$where="op_unusualtime.static ='"."正常"."'   ";
 			
 			}
-			else if($search_chose=='hrsearch_no')
+			else if($search_chose=='testsearch_yes')
 			{
 				$where="op_unusualtime.static <> '"."正常"."' ";
 				}
@@ -138,8 +138,8 @@ class TestAction extends Action
 		->limit("$start,$rows")
 		->select();
 		
-	echo $unusualtime->getLastSql();
-	//echo dataToJson($allattendance,$cc);
+	//echo $unusualtime->getLastSql();
+	echo dataToJson($allattendance,$cc);
 	}
 	
 	/****************************************/

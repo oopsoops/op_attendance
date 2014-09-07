@@ -309,7 +309,8 @@ public function newStaff() {
 			exit;	
 		}
 		
-		$Model = M('staffinfo');
+		
+		$userinfo=M('userinfo');
 		
 		$staffinfo['uid'] = $uid;
 		
@@ -329,11 +330,15 @@ public function newStaff() {
 		
 		$staffinfo['phone'] = $this->_post('phone');
 		
-		$loginname = $this->_post('newloginname');
+		$loginname = $this->_post('staffloginname');
+		$status = $this->_post('access');
 					
 		$staffinfo['updatetime'] = date('Y-m-d H:i:s');
 		
-		if($staffinfo['usertypeid']<=1||$loginname=='')
+		
+		
+		
+		if($loginname=='')
 		{
 						$rsstaff = $Model->add($staffinfo);
 						
@@ -351,7 +356,7 @@ public function newStaff() {
 		else {
 					
 					
-									$rsa = $Model->getByLoginname($loginname);
+									$rsa = $userinfo->getByLoginname($loginname);
 									 if($rsa)
 									 {
 												
@@ -363,7 +368,7 @@ public function newStaff() {
 									else 
 										{								
 																						
-
+											$Model->startTrans();
 											
 											$rsend = $Model->add($staffinfo);
 											
@@ -372,12 +377,47 @@ public function newStaff() {
 												echo '信息添加失败，请重试！';
 												exit;	
 												}
-																						
-											echo 'ok';
-														
-										 }
+												
+									$staffinfo=$Model->getByUid($uid);
+				
+									$getuser['uid'] =  $uid;
+									$getuser['username'] =  $staffinfo['username'];
+									$getuser['entrydate'] = $staffinfo['entrydate'];
+									
+									$getuser['departmentid'] =  $staffinfo['departmentid'];
+									$getuser['costcenterid'] =  $staffinfo['costcenterid'];
+									$getuser['phone'] = $staffinfo['phone'];
+									$getuser['email'] = $staffinfo['email'];
+									$getuser['usertypeid'] = $staffinfo['usertypeid'] ;
+									$getuser['updatetime'] = date('Y-m-d H:i:s');
+									$getuser['loginname']=$loginname;
+									$getuser['password']=md5('12345');
+									if($status=='access_yes')
+									{
+									
+									$getuser['accountstatue']=0;
+									}
+									else
+									{
+										$getuser['accountstatue']=1;
+										
+										}
+			
+									$rsuser = $userinfo->add($getuser);
+									
+									if(!rsuser)
+									{
+									$Model->rollback();
+									echo '修改失败，请重试！';
+									exit;	
+									}
+									
+									$Model->commit();								
+																											
+									echo 'ok';
+			 }//else
 					
-			}
+		}
 	
 	}
 	//查询所有员工
@@ -715,7 +755,7 @@ public function staff_modify_do(){
 			$getuser['accountstatue']=0;
 			$getuser['departmentid'] =  $staffinfo['departmentid'];
 			$getuser['costcenterid'] =  $staffinfo['costcenterid'];
-			$getuser['teamid'] =  $staffinfo['teamid'] ;
+		
 			$getuser['phone'] = $staffinfo['phone'];
 			$getuser['email'] = $staffinfo['email'];
 			$getuser['usertypeid'] = $staffinfo['usertypeid'] ;
@@ -744,7 +784,7 @@ public function staff_modify_do(){
 		$getuserinfo['uid'] =  $newuid;
 		$getuserinfo['entrydate'] = $entrytime;
 		$getuserinfo['departmentid'] =  $department;
-		$getuserinfo['teamid'] =  $teamid;
+	
 		$getuserinfo['phone'] = $phone;
 		$getuserinfo['email'] = $email;
 		$getuserinfo['usertypeid'] = $stafftype;
@@ -817,7 +857,6 @@ public function staff_modify_do(){
 			$getuser['accountstatue']=0;
 			$getuser['departmentid'] =  $staffinfo['departmentid'];
 			$getuser['costcenterid'] =  $staffinfo['costcenterid'];
-			$getuser['teamid'] =  $staffinfo['teamid'] ;
 			$getuser['phone'] = $staffinfo['phone'];
 			$getuser['email'] = $staffinfo['email'];
 			$getuser['usertypeid'] = $staffinfo['usertypeid'] ;
