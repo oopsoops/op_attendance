@@ -1,7 +1,7 @@
 <div class="main_include">
     <div id="ext_mosearchmanage"  style="padding:10px;height:auto">
      <form id="transitionApply_Form" method="post">
-     <?php if ($teamlist[0]['teamid']!=1){ ?>
+     <?php if ($teamlist[0]['teamid']!=1&&$power==3){ ?>
         选择员工
         <select id="uid">
             <?php for($i=0;$i<count($teamlist);$i++){

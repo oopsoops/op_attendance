@@ -15,6 +15,10 @@ require "PHPMailer/_lib/class.phpmailer.php";
 			$tid=$tids['teamid'];
 			$rs=$Model->where('teamid="'.$tid.'"')->select();
 			$this->assign('teamlist',$rs);
+			$pow=M('usertype');
+			$power=$pow->getByTid($tids['usertypeid']);
+			$this->assign('power',$power['power']);
+			
 			$this->display();
 		}
 		//邮件发送
