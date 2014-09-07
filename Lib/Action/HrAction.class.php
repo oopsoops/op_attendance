@@ -142,7 +142,7 @@ class HrAction extends Action {
 		/**查询所有人考勤详情********/
 	  public function hrfetch_all_attendance() {
 		  
-		$sessionuid = $_SESSION['uid'];
+		$sessionuid =1002;// $_SESSION['uid'];
 		
 		$page = $this->_post('page');
 		
@@ -250,10 +250,12 @@ class HrAction extends Action {
 		$unusualtime = M('unusualtime');
 		$cc = $unusualtime
 		->Distinct(true)
-		->join('op_satffinfo ON op_unusualtime.uid=op_staffinfo.uid')
+		->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
+		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
 		->where($where)
 		 ->count();
+	
 		 
 	    $allattendance=$unusualtime
 		->Distinct(true)

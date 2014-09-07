@@ -28,7 +28,7 @@ class MonitorAction extends Action {
 		
 		$search_end_time = $this->_post('mosearch_end_time');
 		
-		$monitor = M('userinfo');
+		$monitor = M('staffinfo');
 		
 		$monitorinfo = $monitor->getByUid($sessionuid);
          $teamid = $monitorinfo['teamid'];

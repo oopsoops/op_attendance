@@ -87,7 +87,7 @@
 				echo  " readonly = ".'"'."readonly".'"';}?>
          <?php
 		 
-		 	 if($userinfo[0]['power']<=1)
+		 	 if($userinfo[0]['power']<1)
 		  {
 			   echo  " disabled = ".'"'."disabled".'"';
 			   

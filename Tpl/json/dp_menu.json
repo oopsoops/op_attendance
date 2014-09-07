@@ -11,7 +11,7 @@
 		"text":"排班查询",
 		"iconCls":"icon-project",
 		 "attributes":{  
-            "url":"Hr/"
+            "url":"Search/worktime"
         }
 	}]
 },{
@@ -21,43 +21,37 @@
 		"text":"加班审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/"
+            "url":"works/jbAproval"
         }
 	},{
 		"text":"出差审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/"
+            "url":"works/ccApproval"
         }
 	},{
 		"text":"休假审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/"
+            "url":"works/qjApproval"
         }
 	},{
 		"text":"事务申请",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Password/"
+			"url":"Works/transitionApply"
 		 }
 	},{
-		"text":"申请查询",
+		"text":"申请查询?",
 		"iconCls":"icon-pass",
 		 "attributes":{  
 			"url":"Password/"
 		 }
 	},{
-		"text":"排班设置",
+		"text":"排班设置?",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
             "url":"Work/"
-        }
-	},{
-		"text":"考勤导入",
-		"iconCls":"icon-project",
-		 "attributes":{  
-            "url":"Hr/record_import"
         }
 	}]
 },{

@@ -115,8 +115,9 @@ class TestAction extends Action
 		$unusualtime = M('unusualtime');
 		$cc = $unusualtime
 		->Distinct(true)
-		->join('op_satffinfo ON op_unusualtime.uid=op_staffinfo.uid')
+		->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
+		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
 		->where($where)
 		 ->count();
 		 
@@ -137,8 +138,8 @@ class TestAction extends Action
 		->limit("$start,$rows")
 		->select();
 		
-	//echo $unusualtime->getLastSql();
-	echo dataToJson($allattendance,$cc);
+	echo $unusualtime->getLastSql();
+	//echo dataToJson($allattendance,$cc);
 	}
 	
 	/****************************************/
