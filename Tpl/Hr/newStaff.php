@@ -52,6 +52,14 @@
         
     </tr>
     
+        </tr>
+    
+        <tr>
+    	<td>可休假天数：</td>
+        <td><input type="text" name="holiday" class="easyui-validatebox" required missingMessage="必填" value='0'/></td>
+        
+    </tr>
+    
     <tr>
     	<td>成本中心ID：</td>
         <td><input type="text" name="costcenter" class="easyui-validatebox" required missingMessage="必填" /></td>

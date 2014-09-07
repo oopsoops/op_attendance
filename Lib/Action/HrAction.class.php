@@ -142,7 +142,7 @@ class HrAction extends Action {
 		/**查询所有人考勤详情********/
 	  public function hrfetch_all_attendance() {
 		  
-		$sessionuid =1002;// $_SESSION['uid'];
+		$sessionuid = $_SESSION['uid'];
 		
 		$page = $this->_post('page');
 		
@@ -319,6 +319,7 @@ public function newStaff() {
 		$staffinfo['usertypeid'] = $this->_post('stafftype');
 		
 		$staffinfo['username'] = $this->_post('staffname');
+		$staffinfo['holiday'] = $this->_post('holiday');
 		
 		$staffinfo['costcenterid'] = $this->_post('costcenter');
 		
@@ -463,7 +464,7 @@ public function hrfetch_all_users(){
 				else 
 				{
 					
-									if($department!='')
+						if($department!='')
 									{
 										$where = "op_department.departmentname like '%$department%' ";
 									}
@@ -614,7 +615,7 @@ public function staffInfoModify(){
 		
 	$staffinfo = M('staffinfo');
 	
-	$rs = $staffinfo->field('op_staffinfo.username as username,op_staffinfo.phone as phone,op_staffinfo.entrydate as entrydate,op_staffinfo.email as email,op_staffinfo.uid as uid,op_staffinfo.departmentid as did,op_userinfo.loginname as staffloginname,op_staffinfo.usertypeid as typeid,op_staffinfo.teamid as teamid,op_usertype.power as power,op_staffinfo.costcenterid as costcenter')
+	$rs = $staffinfo->field('op_staffinfo.username as username,op_staffinfo.phone as phone,op_staffinfo.holiday as holiday,op_staffinfo.entrydate as entrydate,op_staffinfo.email as email,op_staffinfo.uid as uid,op_staffinfo.departmentid as did,op_userinfo.loginname as staffloginname,op_staffinfo.usertypeid as typeid,op_staffinfo.teamid as teamid,op_usertype.power as power,op_staffinfo.costcenterid as costcenter')
 	
 	->join('op_userinfo ON op_staffinfo.uid = op_userinfo.uid')
 	->join('op_usertype ON op_staffinfo.usertypeid = op_usertype.tid')
@@ -639,6 +640,7 @@ public function staff_modify_do(){
 	$stafftype = $this->_post('stafftype');
 	$phone = $this->_post('phone');
 	$email =  $this->_post('email');
+	$holiday = $this->_post('holiday');
 	$loginname =$this->_post('staffloginname');
 	$newuid =$this->_post('uid');
 	$modifyinfo = M('staffinfo');
@@ -719,6 +721,7 @@ public function staff_modify_do(){
 		$staffinfo['teamid'] =  $teamid;
 		$staffinfo['phone'] = $phone;
 		$staffinfo['email'] = $email;
+		$staffinfo['holiday'] = $holiday;
 		$staffinfo['usertypeid'] = $stafftype;
 		$staffinfo['updatetime'] = date('Y-m-d H:i:s');
 		
@@ -828,6 +831,7 @@ public function staff_modify_do(){
 		$staffinfo['teamid'] =  $teamid;
 		$staffinfo['phone'] = $phone;
 		$staffinfo['email'] = $email;
+		$staffinfo['holiday'] = $holiday;
 		$staffinfo['usertypeid'] = $stafftype;
 		$staffinfo['updatetime'] = date('Y-m-d H:i:s');
 		$modifyinfo->startTrans();
@@ -1298,7 +1302,162 @@ public function loginDetails(){
     		echo 'ok';
     	}
     }
+	
+	
+	
+ 
+     /* 导出excel函数*/
+     public function doexport(){
+ 
+ 		
+		$export_begin_time=$this->_post('export_begin_time');
+		
+		$export_end_time=$this->_post('export_end_time');
+		if($export_begin_time==''||$export_end_time=='')
+			{
+						$this->error('开始日期和结束日期不能同时为空！');
+			  			 exit();
+			}
+			
+					
+		
+			$where= "op_unusualtime.clockdate>='"."$export_begin_time"."'  and op_unusualtime.clockdate<='"."$export_end_time"."'  ";
+		
+		   
+          error_reporting(E_ALL);
+           date_default_timezone_set('Europe/London');
+          $objPHPExcel = new PHPExcel();
+ 			$clocktime=M('unusualtime');
+            $name=date('YndHis');
+			
+            $data=$clocktime->field("op_unusualtime.uid as uid,op_staffinfo.username as name,clockdate,standardtime,static,type,
+			
+			CASE 
+			 WHEN  op_unusualtime.static = '正常' THEN  op_unusualtime.standardtime
+			 
+			 ELSE op_unusualtime.clocktime END AS clocktime
+			
+			")->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')->where($where)->order('op_unusualtime.uid asc,op_unusualtime.clockdate asc,op_unusualtime.type asc')->select();
+			//echo $clocktime->getLastSql();
+			$flag=0;
+			$haveend=1; //表示已经下班
+			/*
+			从第一条考勤记录开始遍历：
+			如果是上班记录，并且上一条记录只有上班没有下班，那么该条记录将作为下一条存储记录（$flag++）；
+			如果是上班记录，并且上一条已经下班，那么该条记录自动记录下一条考勤记录（下班时$flag已经自动++）；
+			如果是下班记录，则判断是不是上一个上班记录属于同一个员工，如果是则记录下班记录，$flag++，haveend置为1表示上下班已经配对；
+			如果是下班记录，但是该下班记录不属于上一个员工的下班记录，那么上一个员工的下班记录为0，下一个员工的下班记录为当前记录，但是没有上班记录，置为0；
+			
+			
+			*/
+			foreach($data as $k => $temp){
+				if($temp['type']==0)  //如果是上班就保存查询到的时间日期为上班时间日期
+				{
+						if($haveend==0)  //之前考勤周期只有上班没有下班，就自动跳转到下一个考勤周期
+						{
+							$flag=$flag+1;
+						$pdata[$flag]['uid']=$temp['uid'];
+						$pdata[$flag]['name']=$temp['name'];
+						$pdata[$flag]['begindate']=$temp['clockdate'];
+						
+						$pdata[$flag]['begintime']=$temp['clocktime'];
+						$pdata[$flag]['enddate']='0000-00-00';
+						$pdata[$flag]['endtime']='00:00:00';
+						
+						}
+						else             //之前考勤记录已经下班，之前下班时已经跳转到了下一个周期
+						{
+						$pdata[$flag]['uid']=$temp['uid'];
+						$pdata[$flag]['name']=$temp['name'];
+						$pdata[$flag]['begindate']=$temp['clockdate'];
+						
+						$pdata[$flag]['begintime']=$temp['clocktime'];
+							 $haveend=0;
+							}
+				
+				
+				
+				}
+				else if($temp['type']==1)  //如果是下班就保存下班时间作为下班时间日期，下一条数据就是下一个考勤周期的数据。
+				{
+							//该下班记录是上一个员工上班记录的另一半
+							if($pdata[$flag]['uid']==$temp['uid'])
+							{
+							
+							$pdata[$flag]['enddate']=$temp['clockdate'];
+							$pdata[$flag]['endtime']=$temp['clocktime'];
+							$haveend=1;
+							$flag=$flag+1;
+							}
+							//是另外一个员工的下班时间
+							else
+							{
+							$pdata[$flag]['enddate']='0000-00-00';
+							$pdata[$flag]['endtime']='00:00:00';
+							$haveend=1;
+							$flag=$flag+1;
+							$pdata[$flag]['uid']=$temp['uid'];
+							$pdata[$flag]['name']=$temp['name'];
+							$pdata[$flag]['begindate']='0000-00-00';
+							$pdata[$flag]['begintime']='00:00:00';
+							$pdata[$flag]['enddate']=$temp['clockdate'];
+							$pdata[$flag]['endtime']=$temp['clocktime'];
+								
+								
+								}
+					
+					}
+					
+						
+						
+							
+							
+				
+				
+				
+				
+				
+				}
+			
+			
+			
+        /*以下是一些设置 ，什么作者  标题啊之类的*/
+          $objPHPExcel->getProperties()->setCreator("OOPS")
+                                ->setLastModifiedBy("OOPS")
+                                ->setTitle("数据EXCEL导出")
+                                ->setSubject("数据EXCEL导出")
+                                ->setDescription("报表导出")
+                                ->setKeywords("excel")
+                               ->setCategory("result file");
+          /*以下就是对处理Excel里的数据， 横着取数据，主要是这一步，其他基本都不要改*/
+         foreach($pdata as $k => $v){
+ 
+             $num=$k+1;
+              $objPHPExcel->setActiveSheetIndex(0)
+ 
+                         //Excel的第A列，uid是你查出数组的键值，下面以此类推
+                           ->setCellValue('A'.$num, $v['uid'])    
+                           ->setCellValue('B'.$num, $v['name'])
+                           ->setCellValue('C'.$num, $v['begindate'])
+                            ->setCellValue('D'.$num, $v['enddate'])
+                             ->setCellValue('E'.$num, $v['begintime'])
+                               ->setCellValue('F'.$num, $v['endtime']);
+             }
+ 
+            $objPHPExcel->getActiveSheet()->setTitle('报表');
+             $objPHPExcel->setActiveSheetIndex(0);
+	
+              $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+              $objWriter->save('d://excel/forms/Forms'."$name".'.xls');
+              exit;
+       }
+
+	
+	
     /*********************************************************************************************/
 }
+
+
+
 
 ?>

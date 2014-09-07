@@ -2,7 +2,7 @@
 <br />
 <form id="importForm" method="post" action="__APP__/Hr/doexcel" enctype="multipart/form-data"> 
 	<table class="tb">
-	    
+	   
 		<tr>
 	    	<td><input name="import_xls" type="file" /></td>
 	        <td>开始日期：</td>
@@ -35,21 +35,15 @@
 	});
 
 
+	
+
+
 function import_clear()
 {
 	$('#importForm').form('clear');
 }
 	
-function checkClock() {
-	var start = $("#import_begin_time").datebox('getValue');
-	var end = $("#import_end_time").datebox('getValue');
-	$.ajax({
-		url:'__APP__/Check/doCheck/start/'+start+'/end/'+end,
-		success:function(data) {
-			alert(data);
-		}
-	});
-}
+
 
 
 </script>

@@ -42,6 +42,12 @@
         <td><input type="text" name="uid" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['uid'];?>"/></td>
     
     
+     <tr>
+    	<td>可休假天数：</td>
+        <td><input type="text" name="holiday" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['holiday'];?>"/></td>
+        
+    </tr>
+    
     </tr>
     
     <tr>

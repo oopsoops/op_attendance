@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50516
 File Encoding         : 65001
 
-Date: 2014-09-07 14:39:51
+Date: 2014-09-08 03:33:34
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -114,6 +114,36 @@ CREATE TABLE `op_sample` (
 INSERT INTO op_sample VALUES ('888', '张XX', '1', '1', '2008-08-08', '2', '137XXXXXXXX', '2', 'oops@juying.com');
 
 -- ----------------------------
+-- Table structure for `op_staffinfo`
+-- ----------------------------
+DROP TABLE IF EXISTS `op_staffinfo`;
+CREATE TABLE `op_staffinfo` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` varchar(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `departmentid` int(11) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `costcenterid` int(11) DEFAULT NULL,
+  `entrydate` date DEFAULT NULL,
+  `usertypeid` int(11) DEFAULT NULL,
+  `teamid` int(11) DEFAULT NULL,
+  `holiday` int(11) NOT NULL DEFAULT '0',
+  `email` varchar(255) DEFAULT NULL,
+  `updatetime` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of op_staffinfo
+-- ----------------------------
+INSERT INTO op_staffinfo VALUES ('1', '1001', '产线员工', '1', null, '1', '2014-06-19', '1', '2', '0', null, '2014-06-19 14:06:50');
+INSERT INTO op_staffinfo VALUES ('2', '1002', '人事经理', '2', null, '1', '2014-06-19', '2', '1', '0', null, '2014-06-19 23:29:00');
+INSERT INTO op_staffinfo VALUES ('3', '1003', '产线班长', '1', '1111', '1', '2014-07-03', '3', '2', '0', null, '2014-07-15 21:24:09');
+INSERT INTO op_staffinfo VALUES ('4', '1004', '部门经理', '1', '2323', '1', '2014-07-01', '4', '1', '0', null, '2014-07-01 21:24:46');
+INSERT INTO op_staffinfo VALUES ('5', '1005', '老板', '1', '212', '1', '2014-07-01', '5', '1', '0', null, '2014-07-08 21:25:22');
+INSERT INTO op_staffinfo VALUES ('6', '1006', '管理员', '1', '121', '1', '2014-07-01', '6', '1', '0', null, '2014-07-01 21:26:18');
+
+-- ----------------------------
 -- Table structure for `op_teaminfo`
 -- ----------------------------
 DROP TABLE IF EXISTS `op_teaminfo`;
@@ -144,6 +174,7 @@ CREATE TABLE `op_unusualtime` (
   `standardtime` time DEFAULT NULL,
   `static` varchar(255) DEFAULT NULL,
   `isapply` int(2) NOT NULL DEFAULT '0',
+  `type` int(2) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
