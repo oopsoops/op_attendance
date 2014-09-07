@@ -15,19 +15,19 @@
 		"text":"加班审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/check_project"
+            "url":"works/jbAproval"
         }
 	},{
 		"text":"出差审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/check_project"
+            "url":"works/ccApproval"
         }
 	},{
 		"text":"休假审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Work/check_project"
+            "url":"works/qjApproval"
         }
 	},{
 		"text":"申请查询",

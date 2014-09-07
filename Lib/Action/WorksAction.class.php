@@ -1,6 +1,9 @@
 <?php 
 	
+require "PHPMailer/_lib/class.phpmailer.php";	
+	
 	class WorksAction extends Action{
+		
 		
 /*****************************************员工事务申请页面begin*****************************************/
 
@@ -15,7 +18,33 @@
 			$this->display();
 		}
 		//邮件发送
-		public function sendMail($mail,$uid){
+		public function sendMail(){
+			try { 
+				$mail=new PHPMailer(true);
+				$mail->Mailer="stmp";
+				$mail->IsSMTP();
+				$mail->SMTPSecure = 'tls';
+				$mail->SMTPAuth = true;
+				$mail->Port = 25; 
+				$mail->CharSet = "GB2312";
+				$mail->Host = "smtp.163.com";
+				$mail->Username = "superdragon@163.com";
+				$mail->Password = "13579superk24680";
+				$mail->AddReplyTo("superdragon@163.com","super");
+				$mail->From = "superdragon@163.com";
+				$mail->AddAddress("732121339@qq.com");
+				$mail->Subject = "phpmailer测试标题";
+				$mail->Body = "演示";
+			//	$mail->IsHTML(true);
+				$mail->Send();
+				if(!$mail->Send()){
+					echo "fail  ".$mail->ErrorInfo;
+				}
+				echo "ccc";
+			} catch (phpmailerException $e) { 
+					echo "邮件发送失败：".$e->errorMessage(); 
+			} 
+			
 		}
 		
 		//申请事务提交
@@ -27,8 +56,6 @@
 			$endtime=$this->_post('endtime');
 			$reason=$this->_post('reason');
 			$transdm=$this->_post('transdm');
-			$begin=$begindate." ".$begintime;
-			$end=$enddate." ".$endtime;
 			$uid = $_SESSION['uid'];
 			$Model=M('userinfo');
 			$tidrow=$Model->getByUid($uid);
@@ -37,8 +64,7 @@
 			$powerrow=$Model->getByTid($tid);
 			$power=$powerrow['power'];
 			$status=1;
-			$managerid=2;
-			if($power!=2&&$power!=4&&$power!=5){
+			if($power==1||$power==3){
 				$model=M('userinfo');
 				$row=$model->getByUid($uid);
 				$departmentid=$row['departmentid'];
@@ -48,11 +74,32 @@
 				->where("op_usertype.power=4")->select();
 				$managerid=$rows[0]['uid'];
 			}
+			if($power==2){
+				$model=M('userinfo');
+				$row=$model->getByUid($uid);
+				$departmentid=$row['departmentid'];
+				
+				$rows=$model->field("op_userinfo.uid")
+				->join('op_usertype ON op_userinfo.usertypeid=op_usertype.tid ')
+				->where("op_usertype.power=5")->select();
+				$managerid=$rows[0]['uid'];
+			}
+			if($power==4){
+				$model=M('userinfo');
+				$row=$model->getByUid($uid);
+				$departmentid=$row['departmentid'];
+				$rows=$model->field("op_userinfo.uid")
+				->join('op_usertype ON op_userinfo.usertypeid=op_usertype.tid ')
+				->where("op_usertype.power=2")->select();
+				$managerid=$rows[0]['uid'];
+			}
 			$astatus['uid']=$uid;
 			$astatus['transtype']=$transdm;
-			$astatus['begintime']=$begin;
+			$astatus['begindate']=$begindate;
+			$astatus['begintime']=$begintime;
 			$astatus['status']=$status;
-			$astatus['endtime']=$end;
+			$astatus['enddate']=$enddate;
+			$astatus['endtime']=$endtime;
 			$astatus['applytime']=date('Y-m-d H:i:s');
 			$astatus['departmanagerid']=$managerid;
 			$astatus['reason']=$reason;
@@ -76,6 +123,12 @@
 
 	public function jbAproval(){
 		
+		$this->display();
+	}
+	public function ccAproval(){
+		$this->display();
+	}
+	public function qjAproval(){
 		$this->display();
 	}
 	
@@ -164,9 +217,27 @@
 
 /*****************************************批准申请end*******************************************/		
 	
+/*****************************************提交hr begin*******************************************/	
 	
+	public function sub2hr(){
+		$id=$this->_get('vid');
+	//	echo $id;
+		$model=M('vacationstatus');
+		$rs=$model->getById($id);
+		$rs['status']=2;
+		$result=$model->save($rs);
+		if(!$result){
+			echo "操作失败,请重试！";
+			exit;
+		}
+		else{
+			$data="1";
+			echo $data;
+		}
+		
+	}	
 	
-	
+/*****************************************提交hr end*******************************************/	
 	
 	
 	}
