@@ -1,8 +1,8 @@
 <?php
 class CheckAction extends Action {
 
+	//打卡检测
     public function checkClock($start,$end) {
-
 		//$start_time = $this->_get('start_time').' 00:00:00';
 		//$end_time = $this->_get('end_time').' 00:00:00';
 		if(count($start)<1 || count($end)<1) {
@@ -108,7 +108,81 @@ class CheckAction extends Action {
     	echo 'ok';
     }
 
+    //休假、出差条检测
+    public function checkVacation($start,$end,$uid) {
+    	$vacModel = M('vacationstatus');
+    	//查询所有请假条
+    	$vacList = $vacModel->where("uid='$uid' AND isapproved=1 AND transtype IN (2,3) AND begindate BETWEEN '$start' AND '$end' ")->order('applytime')->select();
+    	//print_r($vacList);
+    	for($i=0;$i<count($vacList);$i++) {
+    		$unusModel = M('unusualtime');
+    		//查询请假时段异常记录
+    		$beginDatetime = $vacList[$i]['begindate'].' '.$vacList[$i]['begintime'];
+    		$endDatetime = $vacList[$i]['enddate'].' '.$vacList[$i]['endtime'];
+    		$unsuList = $unusModel->where("uid='$uid' AND static<>'正常' AND CONCAT(clockdate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
+    		//echo $unusModel->getLastSql();
+    		//print_r($unsuList);
+    		for($j=0;$j<count($unsuList);$j++) {
+    			$unsuList[$j]['static'] = '正常';
+    			if($vacList[$i]['transtype']==3) {
+    				$unsuList[$j]['ps'] = '休假';
+    			} else {
+    				$unsuList[$j]['ps'] = '出差';
+    			}
+    			$unsuList[$j]['vacid'] = $vacList[$i]['id'];
+    			$rs = $unusModel->save($unsuList[$j]);
+    			//print_r($unsuList[$j]);
+    			if(!$rs) {
+    				echo 'error';
+	    		}
+    		}
+    		
+    	}
+
+    }
+
+    public function doCheckVacation() {
+    	$start = $this->_get('start');
+    	$end = $this->_get('end');
+    	$uid = $this->_get('uid');
+    	R('Check/checkVacation',array($start,$end,$uid));
+    	echo 'ok';
+    }
    
+   //加班条检测
+    public function checkOverwork($start,$end,$uid) {
+    	$vacModel = M('vacationstatus');
+    	//查询所有请假条
+    	$vacList = $vacModel->where("uid='$uid' AND isapproved=1 AND transtype=3 AND begindate BETWEEN '$start' AND '$end' ")->order('applytime')->select();
+    	for($i=0;$i<count($vacList);$i++) {
+    		$unusModel = M('unusualtime');
+    		//查询请假时段异常记录
+    		$beginDatetime = $vacList[$i]['begindate'].' '.$vacList[$i]['begintime'];
+    		$endDatetime = $vacList[$i]['enddate'].' '.$vacList[$i]['endtime'];
+    		$unsuList = $unusModel->where("uid='$uid' AND static<>'正常' AND standardtime BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
+    		//print_r($unsuList);
+    		for($j=0;$j<count($unsuList);$j++) {
+    			$unsuList[$j]['static'] = '正常';
+    			$unsuList[$j]['ps'] = '休假';
+    			$unsuList[$j]['vacid'] = $vacList[$i]['id'];
+    			$rs = $unusModel->save($unsuList[$j]);
+    			//print_r($unsuList[$j]);
+    			if(!$rs) {
+    				echo 'error';
+	    		}
+    		}
+    		
+    	}
+
+    }
+
+    public function doCheckOverwork() {
+    	$start = $this->_get('start');
+    	$end = $this->_get('end');
+    	$uid = $this->_get('uid');
+    	R('Check/checkOverwork',array($start,$end,$uid));
+    	echo 'ok';
+    }
 }
 
 ?>

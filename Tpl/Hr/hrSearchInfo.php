@@ -50,9 +50,8 @@
                 <th field="uid" width="100" align="center">员工工号</th>
                 <th field="clockdate" width="80" align="center">打卡日期</th>
                 <th field="clocktime" width="80" align="center">打卡时间</th>
-              
                 <th field="static" width="80" align="center" >考勤状态</th>
-                <th field="isapply" width="80" align="center" >备注</th>
+                <th field="ps" width="80" align="center" >备注</th>
                <th field="details" width="80" align="center" formatter="hrformatUserDetails">个人信息详情</th>
 
                  

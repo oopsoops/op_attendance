@@ -1,7 +1,7 @@
 [{
 	"text":"员工管理",
 	"iconCls":"icon-archives",
-	"state":"closed",
+	"state":"open",
 	"children":[{
 		"text":"创建员工",
 		"iconCls":"icon-client",
@@ -18,7 +18,7 @@
 },{
 	"text":"信息管理",
 	"iconCls":"icon-archives",
-	"state":"closed",
+	"state":"open",
 	"children":[{
 		"text":"我的信息",
 		"iconCls":"icon-client",
@@ -31,28 +31,5 @@
 		 "attributes":{  
 			"url":"Password/passwordChange"
 		 }
-	}]
-},{
-	"text":"消息中心",
-	"iconCls":"icon-mail",
-	"state":"closed",
-	"children":[{
-		"text":"发消息",
-		"iconCls":"icon-mailedit",
-		 "attributes":{  
-            "url":"Mail/mail_sendshow"
-        }
-	},{
-		"text":"收件箱",
-		"iconCls":"icon-mailin",
-		 "attributes":{  
-            "url":"Mail/mail_inboxshow"
-        }
-	},{
-		"text":"发件箱",
-		"iconCls":"icon-mailout",
-		 "attributes":{  
-            "url":"Mail/mail_toboxshow"
-        }
 	}]
 }]
