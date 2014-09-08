@@ -1,7 +1,7 @@
 <div class="main_include">
 
 <div class="propertygroup">
-<table class="easyui-propertygrid" style="width:300px;"  
+<table class="easyui-propertygrid" style="width:300px;height:100px"  
 		data-options="
         	url:'__APP__/Index/fetch_static',
         	showHeader:false,
