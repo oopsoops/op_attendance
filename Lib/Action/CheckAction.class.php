@@ -153,7 +153,7 @@ class CheckAction extends Action {
     public function checkOverwork($start,$end,$uid) {
     	$vacModel = M('vacationstatus');
     	//查询所有请假条
-    	$vacList = $vacModel->where("uid='$uid' AND isapproved=1 AND transtype=3 AND begindate BETWEEN '$start' AND '$end' ")->order('applytime')->select();
+    	$vacList = $vacModel->where("uid='$uid' AND isapproved=1 AND transtype=1 AND begindate BETWEEN '$start' AND '$end' ")->order('applytime')->select();
     	for($i=0;$i<count($vacList);$i++) {
     		$unusModel = M('unusualtime');
     		//查询请假时段异常记录

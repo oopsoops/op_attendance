@@ -249,7 +249,6 @@ class HrAction extends Action {
 
 		$unusualtime = M('unusualtime');
 		$cc = $unusualtime
-		->Distinct(true)
 		->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
@@ -258,7 +257,6 @@ class HrAction extends Action {
 	
 		 
 	    $allattendance=$unusualtime
-		->Distinct(true)
 		->field("phone,op_unusualtime.uid as uid,op_unusualtime.clocktime as clocktime,op_unusualtime.clockdate as clockdate,op_staffinfo.username as username,op_unusualtime.static as static
 		,op_department.departmentname as department,op_teaminfo.teamname as teamname,ps,vacid,
 		 CASE
