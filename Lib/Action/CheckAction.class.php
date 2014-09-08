@@ -154,17 +154,42 @@ class CheckAction extends Action {
     	$vacModel = M('vacationstatus');
     	//查询所有请假条
     	$vacList = $vacModel->where("uid='$uid' AND isapproved=1 AND transtype=1 AND begindate BETWEEN '$start' AND '$end' ")->order('applytime')->select();
+    	//print_r($vacList);
     	for($i=0;$i<count($vacList);$i++) {
     		$unusModel = M('unusualtime');
     		//查询请假时段异常记录
     		$beginDatetime = $vacList[$i]['begindate'].' '.$vacList[$i]['begintime'];
     		$endDatetime = $vacList[$i]['enddate'].' '.$vacList[$i]['endtime'];
-    		$unsuList = $unusModel->where("uid='$uid' AND static<>'正常' AND standardtime BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
+    		$unsuList = $unusModel->where("uid='$uid' AND standardtime BETWEEN '$beginDatetime' AND '$endDatetime'")->order('clockdate,clocktime')->select();
     		//print_r($unsuList);
     		for($j=0;$j<count($unsuList);$j++) {
-    			$unsuList[$j]['static'] = '正常';
-    			$unsuList[$j]['ps'] = '休假';
     			$unsuList[$j]['vacid'] = $vacList[$i]['id'];
+    			//判断该条是上午 or 下午
+    			if(strtotime($unsuList[$j]['standardtime'])<strtotime('12:00:00')) {
+    				//如果是上午
+    				//更改standardtime
+    				$unsuList[$j]['standardtime'] = $vacList[$i]['begintime'];
+    				if(strtotime($unsuList[$j]['clocktime'])>strtotime($vacList[$i]['begintime'])) {
+    					//迟到
+    					$unsuList[$j]['static'] = '迟到';
+    					$unsuList[$j]['ps'] = '加班日';
+    				} else {
+    					$unsuList[$j]['static'] = '正常';
+    					$unsuList[$j]['ps'] = '加班日';
+    				}
+    			} else {
+    				//如果是下午
+    				//更改standardtime
+    				$unsuList[$j]['standardtime'] = $vacList[$i]['endtime'];
+    				if(strtotime($unsuList[$j]['clocktime'])<strtotime($vacList[$i]['endtime'])) {
+    					//迟到
+    					$unsuList[$j]['static'] = '早退';
+    					$unsuList[$j]['ps'] = '加班日';
+    				} else {
+    					$unsuList[$j]['static'] = '正常';
+    					$unsuList[$j]['ps'] = '加班日';
+    				}
+    			}
     			$rs = $unusModel->save($unsuList[$j]);
     			//print_r($unsuList[$j]);
     			if(!$rs) {
