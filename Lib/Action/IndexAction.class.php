@@ -34,7 +34,7 @@ class IndexAction extends Action {
 	}
 
 	public function updateLoginLog($uid) {
-		$uid='1001';
+		//$uid='1001';
 		//日志记录
 		$Model = M('log');
 		$row['uid'] = $uid;

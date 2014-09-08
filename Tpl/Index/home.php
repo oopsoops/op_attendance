@@ -11,7 +11,7 @@
 
 </table>  
 </div>
-
+<!-- 
 <div class="propertygroup">
 <table class="easyui-propertygrid" style="width:300px;"  
 		data-options="
@@ -23,6 +23,7 @@
 
 </table>  
 </div>
+-->
 
 <div style="clear:both"></div>
 
