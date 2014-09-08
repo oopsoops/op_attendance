@@ -11,7 +11,6 @@
             pageList="[5,10,15]"
             url="__APP__/Works/getTransitionByType/tid/2"
             >
-            
         <thead>
             <tr> 
                 <th field="departmentname" width="100" align="center">员工部门</th>

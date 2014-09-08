@@ -29,8 +29,8 @@
                 <th field="approve" width="40" align="center" formatter="approveFormatter">批准</th>
                 <?php if($power=='4'){?>
                 <th field="subm" width=50" align="center" formatter="submitFormatter">提交HR</th>  
-                <?php }?>  
-                <?php if($power=='2'){?>
+                <?php } 
+                 	if($power=='2'){?>
                 <th field="subboss" width=60" align="center" formatter="subbossFormatter">提交老板</th>  
                 <?php }?>     
                              
