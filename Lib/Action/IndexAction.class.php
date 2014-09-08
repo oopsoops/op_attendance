@@ -66,7 +66,7 @@ class IndexAction extends Action {
 		if($rs>0) {
 			$rs = '<span style="color:red;">'.$rs.'</span>';	
 		}
-		$rs = $rs.' <a style="float:right" onclick="openTab(\'考勤记录\',\'Search/searchInfo\')">[查看]</a>';
+		$rs = '<a style="float:right" onclick="openTab(\'考勤记录\',\'Search/searchInfo\')">[查看]</a>'.$rs;
 		$data[] = array('name'=>'异常统计', 'value'=>$rs, 'group'=>$groupname1);
 		echo dataToJson($data,count($data));
 	}
