@@ -260,7 +260,7 @@ class HrAction extends Action {
 	    $allattendance=$unusualtime
 		->Distinct(true)
 		->field("phone,op_unusualtime.uid as uid,op_unusualtime.clocktime as clocktime,op_unusualtime.clockdate as clockdate,op_staffinfo.username as username,op_unusualtime.static as static
-		,op_department.departmentname as department,op_teaminfo.teamname as teamname,
+		,op_department.departmentname as department,op_teaminfo.teamname as teamname,ps,vacid,
 		 CASE
 			WHEN isapply=1 THEN '已请假'
 			 END as isapply
