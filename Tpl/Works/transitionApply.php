@@ -93,7 +93,7 @@
         	<input id="transpot" type="text" style="width:100px" />
         预算费用：
         	<input id="fee" type="text" style="width:100px" />
-        出差事由：<br />
+        出差事由：<br /><br/>
         	&nbsp;&nbsp;&nbsp;&nbsp; 
             &nbsp;&nbsp;&nbsp;&nbsp;
             <textarea id="reason3" rows="8" cols="100"></textarea><br />

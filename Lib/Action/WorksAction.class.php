@@ -150,7 +150,7 @@
 		$this->assign('power'.$power);
 		$this->display();
 	}
-	public function ccAproval(){
+	public function ccApproval(){
 		$uid = $_SESSION['uid'];
 		$model=M('staffinfo');
 		$rs=$model->field("op_usertype.power")
