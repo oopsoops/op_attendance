@@ -94,7 +94,6 @@ tab3
 		}
 		var begin=begindate+" "+begintime;
 		var end=enddate+" "+endtime;
-		var diff=computeDateDiff(begin,end);
 		$.ajax({
 			url: "__APP__/Works/dealApply",
 			data:{
@@ -119,16 +118,14 @@ tab3
 		
 		
 	}
-	function computeDateDiff(begin,end){
-		var begintime=begin.replace(/-/g,"/");
-		var endtime=end.replace(/-/g,"/");
-		begintime=new Date(begintime);
-		endtime=new Date(endtime);
-		var diff=parseInt((endtime.getTime()-begintime.getTime()));
-		diff=diff/(1000*60*60);
-	//	alert(diff);
-		return diff;
-	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	$('#tt').tabs({ 
 		border:false, 
