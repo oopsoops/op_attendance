@@ -9,7 +9,7 @@
  Target Server Version : 50509
  File Encoding         : utf-8
 
- Date: 09/08/2014 18:21:16 PM
+ Date: 09/08/2014 22:44:53 PM
 */
 
 SET NAMES utf8;
@@ -272,17 +272,19 @@ COMMIT;
 DROP TABLE IF EXISTS `op_worktime`;
 CREATE TABLE `op_worktime` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `teamid` int(11) DEFAULT NULL,
+  `teamid` int(11) NOT NULL,
+  `workdate1` date NOT NULL,
   `worktime1` time NOT NULL,
+  `workdate2` date NOT NULL,
   `worktime2` time NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Records of `op_worktime`
 -- ----------------------------
 BEGIN;
-INSERT INTO `op_worktime` VALUES ('1', '1', '08:00:00', '18:00:00'), ('2', '2', '08:30:00', '17:30:00'), ('3', '3', '09:00:00', '18:30:00'), ('5', '4', '08:00:00', '17:00:00');
+INSERT INTO `op_worktime` VALUES ('1', '1', '2014-06-01', '08:00:00', '2014-06-30', '18:00:00'), ('2', '2', '2014-06-01', '08:30:00', '2014-06-18', '17:30:00'), ('3', '3', '2014-06-01', '09:00:00', '2014-06-30', '18:30:00'), ('5', '4', '2014-06-01', '08:00:00', '2014-06-30', '17:00:00'), ('8', '2', '2014-06-19', '08:00:00', '2014-06-20', '19:00:00'), ('9', '2', '2014-06-21', '08:30:00', '2014-06-30', '17:30:00');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;

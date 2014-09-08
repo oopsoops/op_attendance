@@ -42,7 +42,7 @@ function tree_select(node)
 	}
 }
 </script>
-	<div data-options="region:'north',border:false" style="height:60px;padding:10px;background:url(__TPL__/images/cube.jpg) repeat;">
+	<div data-options="region:'north',border:false" style="height:50px;padding:10px;background:url(__TPL__/images/cube.jpg) repeat;">
     <!-- 顶部 -->
         <include file="./Tpl/top.php" />
     </div>
