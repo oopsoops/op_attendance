@@ -18,7 +18,7 @@ class DepartmentAction extends Action {
 		
 		$start = ($page-1)*$rows;
 		
-		$uid = $this->_post('uid');
+		$uid = 1001;//$this->_post('uid');
 		
 		$search_chose=$this->_post('dpsearch_chose');
 				
@@ -35,7 +35,7 @@ class DepartmentAction extends Action {
 		 $where = " op_staffinfo.departmentid = $departmentid ";
 				
 		if($uid!='') {
-			$where = ' $where and op_unusualtime.uid = "'.$uid.' "' ;
+			$where = " $where and op_unusualtime.uid = '"."$uid"."' " ;
 		}
 	
 		
@@ -70,19 +70,17 @@ class DepartmentAction extends Action {
 
 		$unusualtime = M('unusualtime');
 		$cc = $unusualtime
-		->Distinct(true)
+		
 		->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
+		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
 		->where($where)
 		 ->count();
 		 
 	    $allattendance=$unusualtime
-		->Distinct(true)
 		->field("phone,op_unusualtime.uid as uid,op_unusualtime.clocktime as clocktime,op_unusualtime.clockdate as clockdate,op_staffinfo.username as username,op_unusualtime.static as static
-		,op_department.departmentname as department,op_teaminfo.teamname as teamname,
-		 CASE
-			WHEN isapply=1 THEN '已请假'
-			 END as isapply
+		,op_department.departmentname as department,op_teaminfo.teamname as teamname,ps
+		
 			
 		 ")
 		->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
@@ -93,7 +91,7 @@ class DepartmentAction extends Action {
 		->limit("$start,$rows")
 		->select();
 		
-	//echo $clocktime->getLastSql();
+	//echo $unusualtime->getLastSql();
 	echo dataToJson($allattendance,$cc);
 	}
 	

@@ -166,20 +166,13 @@ class HrAction extends Action {
 		
 		$search_end_time = $this->_post('hrsearch_end_time');
 		
+		$where= "op_usertype.power<5 or op_usertype.power=7";
 
 				
 		if($uid!='') {
-			$where = 'op_unusualtime.uid = "'.$uid.' "' ;
+			$where = " $where and op_unusualtime.uid = '"."$uid"."' " ;
 		}
-		else
-		{
-			$where = '';
-			
-			}
 		
-		
-		if($where!='')
-		{
 			
 			if($search_chose=='hrsearch_yes')
 			{
@@ -190,23 +183,7 @@ class HrAction extends Action {
 			{
 				$where="$where and op_unusualtime.static <> '"."正常"."'  ";
 				}
-		}
-		else 
-		{
-						
-			if($search_chose=='hrsearch_yes')
-			{
-			$where="op_unusualtime.static  ='"."正常"."' ";
-			
-			}
-			else if($search_chose=='hrsearch_no')
-			{
-				$where="op_unusualtime.static <> '"."正常"."' ";
-				}
-			
-			
-			}
-			
+		
 			
 			
 		
@@ -252,6 +229,7 @@ class HrAction extends Action {
 		->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
+		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
 		->where($where)
 		 ->count();
 	
@@ -266,6 +244,7 @@ class HrAction extends Action {
 		->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
+		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
 		->where($where)
 		->order('op_unusualtime.uid desc')
 		->limit("$start,$rows")
@@ -469,13 +448,13 @@ public function hrfetch_all_users(){
 									
 									if($uid != '' & $where!='')
 									{
-										$where = '$where and op_staffinfo.uid = "'.$uid.' "';
+										$where = " $where and op_staffinfo.uid = '"."$uid"."' " ;
 										
 									}
 										
 										else if($uid !='')
 										{
-											$where = 'op_staffinfo.uid = "'.$uid.' "';
+											$where = "op_staffinfo.uid = '"."$uid"."' ";
 										}
 											
 											
