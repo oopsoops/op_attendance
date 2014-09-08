@@ -45,7 +45,7 @@
 		"text":"申请查询",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Works/"
+			"url":"Works/applyQuery"
 		 }
 	},{
 		"text":"排班设置",

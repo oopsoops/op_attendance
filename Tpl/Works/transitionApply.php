@@ -62,6 +62,7 @@
             <option value="病假">病假</option>
             <option value="婚假">婚假</option>
             <option value="产假">产假</option>
+            <option value="其他">其他</option>
             
         </select>
             <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply2()">提交</a>
@@ -80,7 +81,7 @@
         <?php }?>
       
         开始日期：
-            <input id="trans_begin_dat3e" type="text" style="width:100px" />
+            <input id="trans_begin_date3" type="text" style="width:100px" />
         开始时间：
         	<input type="text" id="trans_starttime3" class="easyui-timespinner"  value="08:30" />
         结束日期：
@@ -95,7 +96,7 @@
         出差事由：<br />
         	&nbsp;&nbsp;&nbsp;&nbsp; 
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <textarea id="reason" rows="8" cols="100"></textarea><br />
+            <textarea id="reason3" rows="8" cols="100"></textarea><br />
             &nbsp;&nbsp;&nbsp;&nbsp; 
             &nbsp;&nbsp;&nbsp;&nbsp;
             <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply3()">提交</a>
@@ -123,13 +124,8 @@
 			editable:false,
 			width: 100		
 	});
-	function sendMEmail(content,emailAddress){}
 	function apply(){
-		var transdm=$("#transName").val();
-		if(transdm==""){
-			$.messager.alert('提示','请选择事务类型！');
-			return false;
-		}
+		var transdm="1";
 		var begindate=$('#trans_begin_date').combo("getValue");
 		var enddate=$("#trans_end_date").combo("getValue");
 		var begintime=$('#trans_starttime').val();
@@ -187,17 +183,17 @@
 			editable:false,
 			width: 100		
 	});
-	function sendMEmail(content,emailAddress){}
 	function apply2(){
-		var transdm=$("#transName").val();
-		if(transdm==""){
-			$.messager.alert('提示','请选择事务类型！');
-			return false;
-		}
+		var transdm="3";
 		var begindate=$('#trans_begin_date2').combo("getValue");
 		var enddate=$("#trans_end_date2").combo("getValue");
 		var begintime=$('#trans_starttime2').val();
 		var endtime=$("#trans_endtime2").val();
+		var holiday=$("#holiday").val();
+		if(holiday==""){
+			$.messager.alert("提示","请休假类型！");
+			return false;
+		}
 		if(begindate==""||enddate==""){
 			$.messager.alert("提示","请同时填写开始日期和结束日期！");
 			return false;
@@ -219,8 +215,8 @@
 				enddate:enddate,
 				begintime:begintime,
 				endtime:endtime,
-				reason:reason,
-				transdm:transdm
+				transdm:transdm,
+				holiday:holiday				
 			},
 			type:'POST',
 			success:function(data){
@@ -233,7 +229,7 @@
 			}
 		});	
 	}
-	/************************************休假申请*************************************/
+	/************************************出差申请*************************************/
 	$('#trans_begin_date3').datebox({	
 			formatter:timeformatter,
 			parser:timeparser,
@@ -247,7 +243,7 @@
 			width: 100		
 	});
 	function apply3(){
-		var transdm=3
+		var transdm="2";
 		
 		var begindate=$('#trans_begin_date3').combo("getValue");
 		var enddate=$("#trans_end_date3").combo("getValue");
@@ -265,6 +261,21 @@
 			$.messager.alert("提示","同一天结束时间不能早于开始时间！");
 			return false;
 		}
+		var transpot=$("#transpot").val();
+		if(transpot==""){
+			$.messager.alert("提示","请填写交通方式！");
+			return false;
+		}
+		var fee=$("#fee").val();
+		if(fee==""){
+			$.messager.alert("提示","请填写预算！");
+			return false;
+		}
+		var reason=$("#reason3").val();
+		if(reason==""){
+			$.messager.alert("提示","请填写申请理由！");
+			return false;
+		}
 		var begin=begindate+" "+begintime;
 		var end=enddate+" "+endtime;
 		$.ajax({
@@ -275,7 +286,9 @@
 				begintime:begintime,
 				endtime:endtime,
 				reason:reason,
-				transdm:transdm
+				transdm:transdm,
+				fee:fee,
+				transpot:transpot
 			},
 			type:'POST',
 			success:function(data){

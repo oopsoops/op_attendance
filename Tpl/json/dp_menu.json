@@ -42,17 +42,11 @@
 			"url":"Works/transitionApply"
 		 }
 	},{
-		"text":"申请查询?",
+		"text":"申请查询",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Password/"
+			"url":"Works/applyQuery"
 		 }
-	},{
-		"text":"排班设置?",
-		"iconCls":"icon-doccheck",
-		 "attributes":{  
-            "url":"Work/"
-        }
 	}]
 },{
 	"text":"信息管理",

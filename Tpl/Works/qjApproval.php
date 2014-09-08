@@ -11,24 +11,22 @@
             pageList="[5,10,15]"
             url="__APP__/Works/getTransitionByType/tid/3"
             >
-            
+            <?php $a=1;?>
         <thead>
             <tr> 
                 <th field="departmentname" width="100" align="center">员工部门</th>
                 <th field="teamname" width="80" align="center">所在组</th> 
                 <th field="username" width="80" align="center">员工姓名</th>  
                 <th field="uid" width="80" align="center">员工工号</th>
-                <th field="begintime" width="140" align="center">开始时间</th>
-                <th field="endtime" width="140" align="center">结束时间</th>
+                <th field="begindate" width="80" align="center">开始日期</th>
+                <th field="begintime" width="80" align="center">开始时间</th>
+                <th field="enddate" width="80" align="center">结束日期</th>
+                <th field="endtime" width="80" align="center">结束时间</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
                 <th field="details" width="80" align="center" formatter="jbDetailFormatter">查看详情</th>
                 <th field="rejiect" width="40" align="center" formatter="rejectFormatter">驳回</th>
                 <th field="approve" width="40" align="center" formatter="approveFormatter">批准</th>
-                <th field="subm" width="40" align="center" formatter="submitFormatter">提交HR</th>
-                
-               
-
-                 
+                <th field="subm" width=50" align="center" formatter="submitFormatter">提交HR</th>      
                              
             </tr>  
         </thead>  

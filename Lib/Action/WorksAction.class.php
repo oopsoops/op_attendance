@@ -63,6 +63,9 @@
 			$endtime=$this->_post('endtime');
 			$reason=$this->_post('reason');
 			$transdm=$this->_post('transdm');
+			$transpot=$this->_post('transpot');
+			$fee=$this->_post('fee');
+			$holiday=$this->_post('holiday');
 			$uid = $_SESSION['uid'];
 			$Model=M('userinfo');
 			$tidrow=$Model->getByUid($uid);
@@ -111,7 +114,18 @@
 			$astatus['endtime']=$endtime;
 			$astatus['applytime']=date('Y-m-d H:i:s');
 			$astatus['departmanagerid']=$managerid;
-			$astatus['reason']=$reason;
+			if($reason!=""){
+				$astatus['reason']=$reason;
+			}
+			if($fee!=""){
+				$astatus['fee']=$fee;
+			}
+			if($transpot!=""){
+				$astatus['transpot']=$transpot;
+			}
+			if($holiday!=""){
+				$astatus['holiday']=$holiday;
+			}
 			
 			$model=M('vacationstatus');
 			$rs=$model->add($astatus);
@@ -171,7 +185,7 @@
 		$num=$model->where($where)->count();
 	//	echo $model->where($where)->getLastSql();
 		$list=$model->field("op_vacationstatus.uid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,
-		op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id")
+		op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.fee,op_vacationstatus.transpot,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->join("op_teaminfo ON op_staffinfo.teamid=op_teaminfo.tid")
 		->join("op_department ON op_staffinfo.departmentid=op_department.did")
@@ -264,9 +278,35 @@
 	}	
 	
 /*****************************************提交hr end*******************************************/	
-	
-	
+
+	public function applyQuery(){
+		$this->display();
 	}
+
+	public function getMyApply(){
+		$uid = $_SESSION['uid'];
+		$page = $this->_post('page');
+		if($page<1) $page=1;
+		$rows = $this->_post('rows');
+		if($rows<1) $rows=10;
+		$start = ($page-1)*$rows;
+		$model=M('vacationstatus');
+		$where="op_vacationstatus.uid='".$uid."' ";
+		$num=$model->where($where)->count();
+		$list=$model->field("op_vacationstatus.begindate,op_vacationstatus.uid,op_vacationstatus.enddate,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.isapproved,op_vacationstatus.isrejected,op_vacationstatus.transtype,op_staffinfo.username,op_vacationtype.typemc,op_vacationstatus.applytime")
+		->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid")
+		->join("op_vacationtype on op_vacationstatus.transtype=op_vacationtype.typedm")
+		->where($where)
+		->order("op_vacationstatus.applytime desc")
+		->limit("$start,$rows")
+		->select();
+//		echo $model->where($where)->getLastSql();
+		echo dataToJson($list,$num);
+	}
+
+
+	
+}
 	
 	
 	
