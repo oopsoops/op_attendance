@@ -39,10 +39,10 @@
        	
      </form> 
 </div> 
-<div title="休假申请" closable="true" style="overflow:auto;padding:20px;display:none;"> 
+<div title="休假申请"  style="overflow:auto;padding:20px;"> 
 tab2 
 </div> 
-<div title="出差申请"  closable="true" style="padding:20px;display:none;"> 
+<div title="出差申请"   style="padding:20px;"> 
 tab3 
 </div> 
 </div> 
@@ -129,6 +129,15 @@ tab3
 	//	alert(diff);
 		return diff;
 	}
+	
+	$('#tt').tabs({ 
+		border:false, 
+		onSelect:function(title){ 
+			
+		} 
+	}); 
+	var pp = $('#tt').tabs('getSelected'); 
+	var tab = pp.panel('options').tab; // 相应的 tab 对象
 	
 	</script>
     
