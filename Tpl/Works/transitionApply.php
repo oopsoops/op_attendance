@@ -13,13 +13,7 @@
             ?>	  
         </select>&nbsp;&nbsp;&nbsp;&nbsp;
         <?php }?>
-        选择事务：
-        <select id="transName">
-        		<option value=''></option>
-        		<option value="3">休假申请</option>
-                <option value="1">加班申请</option>
-                <option value="2">出差申请</option>
-        </select>
+      
         开始日期：
             <input id="trans_begin_date" type="text" style="width:100px" />
         开始时间：
@@ -39,12 +33,38 @@
        	
      </form> 
 </div> 
+
+
 <div title="休假申请"  style="overflow:auto;padding:20px;"> 
-tab2 
-</div> 
+ <?php if ($teamlist[0]['teamid']!=1&&$power==3){ ?>
+        选择员工
+        <select id="uid2">
+            <?php for($i=0;$i<count($teamlist);$i++){
+                        echo "<option value='".$teamlist[$i]['uid']."'>".$teamlist[$i]['username'];	
+                  }
+            ?>	  
+        </select>&nbsp;&nbsp;&nbsp;&nbsp;
+        <?php }?>
+        
+        开始日期：
+            <input id="trans_begin_date2" type="text" style="width:100px" />
+        开始时间：
+        	<input type="text" id="trans_starttime2" class="easyui-timespinner"  value="08:30" />
+        结束日期：
+            <input id="trans_end_date2" type="text" style="width:100px" />
+        结束时间：
+        	<input type="text" id="trans_endtime2" class="easyui-timespinner"  value="17:30" />
+        <br/><br />
+            <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply2()">提交</a>
+	
+</div>
+ 
 <div title="出差申请"   style="padding:20px;"> 
 tab3 
-</div> 
+</div>
+
+
+ 
 </div> 
     
     
@@ -52,6 +72,7 @@ tab3
      
     </div>
     <script>
+	/************************************加班申请***************************************/
 	$('#trans_begin_date').datebox({	
 			formatter:timeformatter,
 			parser:timeparser,
@@ -113,11 +134,10 @@ tab3
 			error:function(XMLHttpRequest,textStatus,errorThrown){
 				alert(''+errorThrown)
 			}
-		});
-		
-		
-		
+		});	
 	}
+	/************************************休假申请*************************************/
+	
 	
 	
 	
