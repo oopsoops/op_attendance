@@ -23,10 +23,17 @@
                 <th field="enddate" width="80" align="center">结束日期</th>
                 <th field="endtime" width="80" align="center">结束时间</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
+                <th field="transpot" width="50" align="center">交通</th>
+                <th field="fee" width="50" align="center">预算</th>
                 <th field="details" width="80" align="center" formatter="jbDetailFormatter">查看详情</th>
                 <th field="rejiect" width="40" align="center" formatter="rejectFormatter">驳回</th>
                 <th field="approve" width="40" align="center" formatter="approveFormatter">批准</th>
-                <th field="subm" width="40" align="center" formatter="submitFormatter">提交HR</th>
+                <?php if($power=='4'){?>
+                <th field="subm" width=50" align="center" formatter="submitFormatter">提交HR</th>  
+                <?php }?>  
+                <?php if($power=='2'){?>
+                <th field="subboss" width=60" align="center" formatter="subbossFormatter">提交老板</th>  
+                <?php }?> 
                 
                
 
@@ -46,6 +53,9 @@
 		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+')"><img src="__TPL__/images/check.png" width="16"/></a>';
 	}
 	function submitFormatter(val,row){
+		return '<a href="javascript:void(0)" onclick="doSubm('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
+	}
+	function subbossFormatter(val,row){
 		return '<a href="javascript:void(0)" onclick="doSubm('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
 	}
 	

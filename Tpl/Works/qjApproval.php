@@ -10,8 +10,7 @@
             rownumbers="true"
             pageList="[5,10,15]"
             url="__APP__/Works/getTransitionByType/tid/3"
-            >
-            <?php $a=1;?>
+            >        
         <thead>
             <tr> 
                 <th field="departmentname" width="100" align="center">员工部门</th>
@@ -23,10 +22,17 @@
                 <th field="enddate" width="80" align="center">结束日期</th>
                 <th field="endtime" width="80" align="center">结束时间</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
+                <th field="holidaytype" width="60" align="center">请假类型</th>
+                <th field="days" width="60" align="center">剩余假期</th>
                 <th field="details" width="80" align="center" formatter="jbDetailFormatter">查看详情</th>
                 <th field="rejiect" width="40" align="center" formatter="rejectFormatter">驳回</th>
                 <th field="approve" width="40" align="center" formatter="approveFormatter">批准</th>
-                <th field="subm" width=50" align="center" formatter="submitFormatter">提交HR</th>      
+                <?php if($power=='4'){?>
+                <th field="subm" width=50" align="center" formatter="submitFormatter">提交HR</th>  
+                <?php }?>  
+                <?php if($power=='2'){?>
+                <th field="subboss" width=60" align="center" formatter="subbossFormatter">提交老板</th>  
+                <?php }?>     
                              
             </tr>  
         </thead>  
@@ -34,6 +40,12 @@
 <script>
     function jbDetailFormatter(val,row){
 		return '<a href="javascript:void(0)" onclick="openjbDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
+	}
+	function qjDetailFormatter(val,row){
+		return '<a href="javascript:void(0)" onclick="openqjDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
+	}
+	function ccDetailFormatter(val,row){
+		return '<a href="javascript:void(0)" onclick="openccDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
 	}
 	function rejectFormatter(val,row){
 		return '<a href="javascript:void(0)" onclick="doReject('+row.id+')"><img src="__TPL__/images/del.png" width="16"/></a>';
@@ -44,6 +56,9 @@
 	function submitFormatter(val,row){
 		return '<a href="javascript:void(0)" onclick="doSubm('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
 	}
+	function subbossFormatter(val,row){
+		return '<a href="javascript:void(0)" onclick="doSubm('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
+	}
 	
 	function openjbDetail(vid){
 		$('#main').tabs('close','申请详情');
@@ -51,6 +66,26 @@
 						title:'申请详情',
 						//href:'__APP__/Account/account_details/pid/'+pid,
 						href:'__APP__/works/transitionDetail/vid/'+vid,
+						cache:false,
+						closable:true
+						});
+	}
+	function openqjDetail(vid){
+		$('#main').tabs('close','申请详情');
+		$('#main').tabs('add',{
+						title:'申请详情',
+						//href:'__APP__/Account/account_details/pid/'+pid,
+						href:'__APP__/works/qjDetail/vid/'+vid,
+						cache:false,
+						closable:true
+						});
+	}
+	function openccDetail(vid){
+		$('#main').tabs('close','申请详情');
+		$('#main').tabs('add',{
+						title:'申请详情',
+						//href:'__APP__/Account/account_details/pid/'+pid,
+						href:'__APP__/works/ccDetail/vid/'+vid,
 						cache:false,
 						closable:true
 						});

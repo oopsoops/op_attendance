@@ -24,7 +24,7 @@
 			$this->display();
 		}
 		//邮件发送
-		public function sendMail(){
+		public function sendMail($email){
 			try { 
 				$mail=new PHPMailer();
 		//		$mail->Mailer="stmp";
@@ -37,17 +37,11 @@
 				$mail->Password = "13579superk24680";
 				$mail->AddReplyTo("superdragon@163.com","super");
 				$mail->From = "superdragon@163.com";
-				$mail->AddAddress("732121339@qq.com");
-				$mail->Subject = "phpmailer测试标题";
-				$mail->Body = "演示";
+				$mail->AddAddress($email);
+				$mail->Subject = "工作申请审批提醒";
+				$mail->Body = "你有一个工作审批，请登录考勤管理系统查看。";
 				$mail->IsHTML(true);
-				echo "aaaaaa";
 				$mail->Send();
-				echo "ccccccbbbbbbb";
-				if(!$mail->Send()){
-					echo "fail  ".$mail->ErrorInfo;
-				}
-				echo "ccc";
 			} catch (phpmailerException $e) { 
 					echo "邮件发送失败：".$e->errorMessage(); 
 			} 
@@ -78,32 +72,31 @@
 				$model=M('userinfo');
 				$row=$model->getByUid($uid);
 				$departmentid=$row['departmentid'];
-				
-				$rows=$model->field("op_userinfo.uid")
+				$rows=$model->field("op_userinfo.uid,op_userinfo.email")
 				->join('op_usertype ON op_userinfo.usertypeid=op_usertype.tid ')
 				->where("op_usertype.power=4")->select();
 				$managerid=$rows[0]['uid'];
+				$email=$rows[0]['email'];
 			}
 			if($power==2){
-				$model=M('userinfo');
-				$row=$model->getByUid($uid);
-				$departmentid=$row['departmentid'];
-				
-				$rows=$model->field("op_userinfo.uid")
-				->join('op_usertype ON op_userinfo.usertypeid=op_usertype.tid ')
-				->where("op_usertype.power=5")->select();
-				$managerid=$rows[0]['uid'];
+				$model=M('staffinfo');
+				$rs=$model->field("op_staffinfo.email")
+				->join("op_usertype on op_staffinfo.usertypeid=op_usertype.tid")
+				->where("op_usertype.power=5")
+				->select();
 				$status=3;
+				$email=$rs[0]['email'];
 			}
 			if($power==4){
 				$model=M('userinfo');
 				$row=$model->getByUid($uid);
 				$departmentid=$row['departmentid'];
-				$rows=$model->field("op_userinfo.uid")
+				$rows=$model->field("op_userinfo.uid,op_userinfo.email")
 				->join('op_usertype ON op_userinfo.usertypeid=op_usertype.tid ')
 				->where("op_usertype.power=2")->select();
-				$managerid=$rows[0]['uid'];
 				$status=2;
+				$email=$rows[0]['email'];
+				
 			}
 			$astatus['uid']=$uid;
 			$astatus['transtype']=$transdm;
@@ -113,7 +106,9 @@
 			$astatus['enddate']=$enddate;
 			$astatus['endtime']=$endtime;
 			$astatus['applytime']=date('Y-m-d H:i:s');
-			$astatus['departmanagerid']=$managerid;
+			if($managerid!=""){
+				$astatus['departmanagerid']=$managerid;
+			}
 			if($reason!=""){
 				$astatus['reason']=$reason;
 			}
@@ -136,7 +131,7 @@
 			}
 			
 			$model->commit();
-	//		sendMail($reason,$uid);
+			$this->sendMail($email);
 			echo "1";
 			
 		}
@@ -145,13 +140,37 @@
 /*****************************************审批页面begin*****************************************/
 
 	public function jbAproval(){
-		
+		$uid = $_SESSION['uid'];
+		$model=M('staffinfo');
+		$rs=$model->field("op_usertype.power")
+		->join("op_usertype on op_staffinfo.usertypeid=op_usertype.tid")
+		->where("uid='".$uid."'")
+		->select();
+		$power=$rs[0]['power'];
+		$this->assign('power'.$power);
 		$this->display();
 	}
 	public function ccAproval(){
+		$uid = $_SESSION['uid'];
+		$model=M('staffinfo');
+		$rs=$model->field("op_usertype.power")
+		->join("op_usertype on op_staffinfo.usertypeid=op_usertype.tid")
+		->where("uid='".$uid."'")
+		->select();
+		$power=$rs[0]['power'];
+		$this->assign('power'.$power);
 		$this->display();
 	}
-	public function qjAproval(){
+	public function qjApproval(){
+		$uid = $_SESSION['uid'];
+		$model=M('staffinfo');
+		$rs=$model->field("op_usertype.power")
+		->join("op_usertype on op_staffinfo.usertypeid=op_usertype.tid")
+		->where("uid='".$uid."'")
+		->select();
+		
+		$power=$rs[0]['power'];
+		$this->assign('power',$power);
 		$this->display();
 	}
 	
@@ -185,10 +204,11 @@
 		$num=$model->where($where)->count();
 	//	echo $model->where($where)->getLastSql();
 		$list=$model->field("op_vacationstatus.uid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,
-		op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.fee,op_vacationstatus.transpot,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate")
+op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus.transpot,op_userinfo.holiday as days,		op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.fee,op_vacationstatus.transpot,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->join("op_teaminfo ON op_staffinfo.teamid=op_teaminfo.tid")
 		->join("op_department ON op_staffinfo.departmentid=op_department.did")
+		->join("op_userinfo ON op_staffinfo.uid=op_userinfo.uid")
 		->where($where)
 		->order("op_vacationstatus.applytime desc")
 		->limit("$start,$rows")
@@ -207,7 +227,7 @@
 		$vid=$this->_get('vid');
 		$model=M('vacationstatus');
 		$detail=$model->
-		field("op_vacationstatus.reason,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_staffinfo.username")
+		field("op_vacationstatus.reason,op_vacationstatus.begintime,op_vacationstatus.begindate,op_vacationstatus.enddate,op_vacationstatus.endtime,op_vacationstatus.applytime,op_staffinfo.username")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->where("op_vacationstatus.id='".$vid."'")->select();
 		$this->assign('detail',$detail);
@@ -215,6 +235,21 @@
 		
 		$this->display();
 	}
+	public function ccDetail(){
+		$vid=$this->_get('vid');
+		$model=M('vacationstatus');
+		$detail=$model->
+		field("op_vacationstatus.reason,op_vacationstatus.begintime,op_vacationstatus.begindate,op_vacationstatus.enddate,op_vacationstatus.endtime,op_vacationstatus.applytime,op_staffinfo.username,op_staffinfo.holiday as days,op_vacationstatus.holiday as holiday")
+		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
+		->where("op_vacationstatus.id='".$vid."'")->select();
+		$this->assign('detail',$detail);
+		
+		
+		$this->display();
+	}
+	
+	
+	
 
 /*****************************************事务申请页面详情end*******************************************/
 

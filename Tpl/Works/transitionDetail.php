@@ -12,12 +12,19 @@
             <td>员工姓名：</td> 
             <td colspan="3"><input type="text" name="department" readonly="readonly" value="<?php echo $detail[0]['username'];?>" /></td>
              </tr>
+             <tr>
+             <td>开始日期：</td> 
+             <td colspan="3"><input type="text" name="uid" readonly="readonly" value="<?php echo $detail[0]['begindate'];?>" /></td> 
+              </tr>
              
              <tr>
              <td>开始时间：</td> 
              <td colspan="3"><input type="text" name="uid" readonly="readonly" value="<?php echo $detail[0]['begintime'];?>" /></td> 
               </tr>
-              
+              <tr>
+             <td>结束日期：</td> 
+             <td colspan="3"><input type="text" name="uid" readonly="readonly" value="<?php echo $detail[0]['enddate'];?>" /></td> 
+              </tr>
               <tr>
               <td>结束时间：</td>
               <td colspan="3"><input type="text" name="username" readonly="readonly" value="<?php echo $detail[0]['endtime'];?>" /></td>
