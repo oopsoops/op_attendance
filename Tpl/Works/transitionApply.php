@@ -88,13 +88,17 @@
         结束时间：
         	<input type="text" id="trans_endtime3" class="easyui-timespinner"  value="17:30" />
         <br/><br />
-        申请理由：<br />
+        交通方式：
+        	<input id="transpot" type="text" style="width:100px" />
+        预算费用：
+        	<input id="fee" type="text" style="width:100px" />
+        出差事由：<br />
         	&nbsp;&nbsp;&nbsp;&nbsp; 
             &nbsp;&nbsp;&nbsp;&nbsp;
             <textarea id="reason" rows="8" cols="100"></textarea><br />
             &nbsp;&nbsp;&nbsp;&nbsp; 
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply()">提交</a>
+            <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply3()">提交</a>
 </div>
 
 
