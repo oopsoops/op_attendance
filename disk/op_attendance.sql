@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50516
 File Encoding         : 65001
 
-Date: 2014-09-08 18:44:08
+Date: 2014-09-08 19:46:45
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -79,17 +79,16 @@ INSERT INTO op_department VALUES ('2', '人力资源部');
 -- ----------------------------
 DROP TABLE IF EXISTS `op_log`;
 CREATE TABLE `op_log` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` varchar(255) NOT NULL,
   `logintime` datetime DEFAULT NULL,
   `quittime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of op_log
 -- ----------------------------
-INSERT INTO op_log VALUES ('0', '1001', '2014-07-31 21:55:21', null);
 
 -- ----------------------------
 -- Table structure for `op_sample`
