@@ -31,7 +31,7 @@
     	<td>所在工作组：</td>
         <td><select name="teamid">
             	<?php for($i=0;$i<count($teaminfo);$i++) {?>
-        		<option value="<?php echo $teaminfo[$i]['tid'];?>" <?php if($usertype[$i]['tid']==$userinfo[0]['typeid']) {echo "selected =selected";};?>><?php echo $teaminfo[$i]['teamname'];?></option>
+        		<option value="<?php echo $teaminfo[$i]['tid'];?>" <?php if($teaminfo[$i]['tid']==$userinfo[0]['teamid']) {echo "selected =selected";};?>><?php echo $teaminfo[$i]['teamname'];?></option>
                 <?php }?>
             </select></td>
         

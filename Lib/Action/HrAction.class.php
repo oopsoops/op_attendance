@@ -441,12 +441,12 @@ public function hrfetch_all_users(){
 				else 
 				{
 					
-						if($department!='')
+									if($department!='')
 									{
 										$where = "op_department.departmentname like '%$department%' ";
 									}
 									
-									if($uid != '' & $where!='')
+									if($uid != '' && $where!='')
 									{
 										$where = " $where and op_staffinfo.uid = '"."$uid"."' " ;
 										
@@ -458,7 +458,7 @@ public function hrfetch_all_users(){
 										}
 											
 											
-											if($username!='' & $where !='')
+											if($username!='' && $where !='')
 											{
 												$where = "$where and op_staffinfo.username = $username ";
 												
@@ -472,7 +472,13 @@ public function hrfetch_all_users(){
 													}
 													
 													
-									$cc = $staffinfo->where($where)->count();
+					$cc = $staffinfo
+					->join('op_department ON op_staffinfo.departmentid = op_department.did')
+					->join('op_teaminfo ON op_staffinfo.teamid = op_teaminfo.tid')
+					->join('op_userinfo ON op_staffinfo.uid = op_userinfo.uid')
+					->where($where)
+					->count();
+				
 									$rs = $staffinfo->field("op_staffinfo.username as username,op_staffinfo.uid as uid,op_department.departmentname as department,	op_userinfo.accountstatue as statue,op_teaminfo.teamname as teamname,
 								CASE 
 								 WHEN op_userinfo.accountstatue=1 THEN '已禁用'
@@ -498,14 +504,30 @@ public function hrfetch_all_users(){
 		
 		$uid = $this->_get('uid');
 		$userinfo = M('userinfo');
-		$userClockTime = M('clocktime');
+		
 		$userUnusualTime = M('unusualtime');
 		$staff = M('staffinfo');
-		
+		$log=M('log');
 		$getuserinfo = $userinfo->getByUid($uid);
-		$getuserClockTime = $userClockTime->getByUid($uid);
+		$loginfo=$log->getByUid($uid);
 		$getuserUnusualTime = $userUnusualTime->getByUid($uid);
 		$getstaff = $staff->getByUid($uid);
+		
+		$log->startTrans();
+		
+		if(count($loginfo)>0)
+		{
+						$rsa = $log->where('uid="'.$uid.'"')->delete();
+						
+							if(!$rsa) {
+				
+									echo '删除失败，请重试！';
+									exit;	
+								}
+		}
+		
+		
+		
 		
 		$userinfo->startTrans();
 		if(count($getuserinfo)>0)
@@ -513,25 +535,13 @@ public function hrfetch_all_users(){
 						$rs1 = $userinfo->where('uid="'.$uid.'"')->delete();
 						
 							if(!$rs1) {
-				
+									$log->rollback();
 									echo '删除失败，请重试！';
 									exit;	
 								}
 		}
-		$userClockTime->startTrans();
 		
-		if(count($getuserClockTime)>0)
-		{
-						$rs2 = $userClockTime->where('uid="'.$uid.'"')->delete();
-				
-						if(!$rs2 ) {
-								$userinfo->rollback();
-								echo '删除失败，请重试！';
-								exit;	
-							}
-		}
-				
-				$userUnusualTime->userUnusualTime();
+		
 				
 		if(count($getuserUnusualTime)>0)
 		{
@@ -539,7 +549,7 @@ public function hrfetch_all_users(){
 					
 						if(!$rs3 ){
 								$userinfo->rollback();
-								$userClockTime->rollback();
+								$log->rollback();
 								echo '删除失败，请重试！';
 								exit;
 							
@@ -554,7 +564,7 @@ public function hrfetch_all_users(){
 						
 						if(!$rs4){
 								$userinfo->rollback();
-								$userClockTime->rollback();
+								$log->rollback();
 								$userUnusualTime->rollback();
 								echo '删除失败，请重试！';
 								exit;
@@ -563,7 +573,7 @@ public function hrfetch_all_users(){
 		}
 		
 								$userinfo->commit();
-								$userClockTime->commit();
+								$log->commit();
 								$userUnusualTime->commit();
 		
 			echo 'ok';
@@ -574,7 +584,7 @@ public function hrfetch_all_users(){
 
 public function staffInfoModify(){
 	
-	$uid =  $this->_get('uid');
+	$uid = 1003;// $this->_get('uid');
 			//部门
 		$department = M('department');
 		$category = $department->select();
@@ -586,7 +596,7 @@ public function staffInfoModify(){
 		
 		//组
 		$team = M('teaminfo');
-		$teaminfo = $team->select();
+		$teaminfo = $team->order('op_teaminfo.tid asc')->select();
 		$this->assign('teaminfo',$teaminfo);
 		
 		
