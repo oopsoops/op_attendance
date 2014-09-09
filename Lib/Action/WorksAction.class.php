@@ -35,7 +35,7 @@
 				$mail->Host = "smtp.163.com";
 				$mail->Username = "superdragon@163.com";
 				$mail->Password = "13579superk24680";
-				$mail->AddReplyTo("superdragon@163.com","super");
+				$mail->AddReplyTo("superdragon@163.com","系统");
 				$mail->From = "superdragon@163.com";
 				$mail->AddAddress($email);
 				$mail->Subject = "工作申请审批提醒";
@@ -147,7 +147,7 @@
 		->where("uid='".$uid."'")
 		->select();
 		$power=$rs[0]['power'];
-		$this->assign('power'.$power);
+		$this->assign('jbpower'.$power);
 		$this->display();
 	}
 	public function ccApproval(){
@@ -158,7 +158,7 @@
 		->where("uid='".$uid."'")
 		->select();
 		$power=$rs[0]['power'];
-		$this->assign('power'.$power);
+		$this->assign('ccpower'.$power);
 		$this->display();
 	}
 	public function qjApproval(){
@@ -170,7 +170,7 @@
 		->select();
 		
 		$power=$rs[0]['power'];
-		$this->assign('power',$power);
+		$this->assign('qjpower',$power);
 		$this->display();
 	}
 	

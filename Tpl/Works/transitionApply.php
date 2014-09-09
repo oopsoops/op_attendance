@@ -1,115 +1,112 @@
 <div class="main_include">
-    <div id="ext_mosearchmanage"  style="padding:10px;height:auto">
+   
     
-    <div id="tt" class="easyui-tabs" style="width:1024px;height:500px;"> 
-<div title="加班申请" style="padding:20px;"> 
-<form id="transitionApply_Form" method="post">
-     <?php if ($teamlist[0]['teamid']!=1&&$power==3){ ?>
-        选择员工
-        <select id="uid">
-            <?php for($i=0;$i<count($teamlist);$i++){
-                        echo "<option value='".$teamlist[$i]['uid']."'>".$teamlist[$i]['username'];	
-                  }
-            ?>	  
-        </select>&nbsp;&nbsp;&nbsp;&nbsp;
-        <?php }?>
-      
-        开始日期：
-            <input id="trans_begin_date" type="text" style="width:100px" />
-        开始时间：
-        	<input type="text" id="trans_starttime" class="easyui-timespinner"  value="08:30" />
-        结束日期：
-            <input id="trans_end_date" type="text" style="width:100px" />
-        结束时间：
-        	<input type="text" id="trans_endtime" class="easyui-timespinner"  value="17:30" />
-        <br/><br />
-        申请理由：<br />
-        	&nbsp;&nbsp;&nbsp;&nbsp; 
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <textarea id="reason" rows="8" cols="100"></textarea><br />
-            &nbsp;&nbsp;&nbsp;&nbsp; 
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply()">提交</a>
-       	
-     </form> 
-</div> 
-
-
-<div title="休假申请"  style="overflow:auto;padding:20px;"> 
- <?php if ($teamlist[0]['teamid']!=1&&$power==3){ ?>
-        选择员工
-        <select id="uid2">
-            <?php for($i=0;$i<count($teamlist);$i++){
-                        echo "<option value='".$teamlist[$i]['uid']."'>".$teamlist[$i]['username'];	
-                  }
-            ?>	  
-        </select>&nbsp;&nbsp;&nbsp;&nbsp;
-        <?php }?>
-        
-        开始日期：
-            <input id="trans_begin_date2" type="text" style="width:100px" />
-        开始时间：
-        	<input type="text" id="trans_starttime2" class="easyui-timespinner"  value="08:30" />
-        结束日期：
-            <input id="trans_end_date2" type="text" style="width:100px" />
-        结束时间：
-        	<input type="text" id="trans_endtime2" class="easyui-timespinner"  value="17:30" />
-        <br/><br />
-        休假类型：
-        <select id="holiday">
-        	<option value="">请选择</option>
-            <option value="年假">年假</option>
-            <option value="病假">病假</option>
-            <option value="婚假">婚假</option>
-            <option value="产假">产假</option>
-            <option value="其他">其他</option>
+    	<div id="tt" class="easyui-tabs" style="width:1024px;height:500px;"> 
+            <div title="加班申请" style="padding:20px;"> 
+            <form id="transitionApply_Form" method="post">
+                 <?php if ($teamlist[0]['teamid']!=1&&$power==3){ ?>
+                    选择员工
+                    <select id="uid">
+                        <?php for($i=0;$i<count($teamlist);$i++){
+                                    echo "<option value='".$teamlist[$i]['uid']."'>".$teamlist[$i]['username'];	
+                              }
+                        ?>	  
+                    </select>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <?php }?>
+                  
+                    开始日期：
+                        <input id="trans_begin_date" type="text" style="width:100px" />
+                    开始时间：
+                        <input type="text" id="trans_starttime" class="easyui-timespinner"  value="08:30" />
+                    结束日期：
+                        <input id="trans_end_date" type="text" style="width:100px" />
+                    结束时间：
+                        <input type="text" id="trans_endtime" class="easyui-timespinner"  value="17:30" />
+                    <br/><br />
+                    申请理由：<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <textarea id="reason" rows="8" cols="100"></textarea><br />
+                        &nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply()">提交</a>
+                    
+                 </form> 
+            </div> 
             
-        </select>
-            <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply2()">提交</a>
-	
-</div>
- 
-<div title="出差申请"   style="padding:20px;"> 
-		<?php if ($teamlist[0]['teamid']!=1&&$power==3){ ?>
-        选择员工
-        <select id="uid3">
-            <?php for($i=0;$i<count($teamlist);$i++){
-                        echo "<option value='".$teamlist[$i]['uid']."'>".$teamlist[$i]['username'];	
-                  }
-            ?>	  
-        </select>&nbsp;&nbsp;&nbsp;&nbsp;
-        <?php }?>
-      
-        开始日期：
-            <input id="trans_begin_date3" type="text" style="width:100px" />
-        开始时间：
-        	<input type="text" id="trans_starttime3" class="easyui-timespinner"  value="08:30" />
-        结束日期：
-            <input id="trans_end_date3" type="text" style="width:100px" />
-        结束时间：
-        	<input type="text" id="trans_endtime3" class="easyui-timespinner"  value="17:30" />
-        <br/><br />
-        交通方式：
-        	<input id="transpot" type="text" style="width:100px" />
-        预算费用：
-        	<input id="fee" type="text" style="width:100px" />
-        出差事由：<br /><br/>
-        	&nbsp;&nbsp;&nbsp;&nbsp; 
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <textarea id="reason3" rows="8" cols="100"></textarea><br />
-            &nbsp;&nbsp;&nbsp;&nbsp; 
-            &nbsp;&nbsp;&nbsp;&nbsp;
-            <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply3()">提交</a>
-</div>
-
-
- 
-</div> 
+            
+            <div title="休假申请"  style="overflow:auto;padding:20px;"> 
+             <?php if ($teamlist[0]['teamid']!=1&&$power==3){ ?>
+                    选择员工
+                    <select id="uid2">
+                        <?php for($i=0;$i<count($teamlist);$i++){
+                                    echo "<option value='".$teamlist[$i]['uid']."'>".$teamlist[$i]['username'];	
+                              }
+                        ?>	  
+                    </select>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <?php }?>
+                    
+                    开始日期：
+                        <input id="trans_begin_date2" type="text" style="width:100px" />
+                    开始时间：
+                        <input type="text" id="trans_starttime2" class="easyui-timespinner"  value="08:30" />
+                    结束日期：
+                        <input id="trans_end_date2" type="text" style="width:100px" />
+                    结束时间：
+                        <input type="text" id="trans_endtime2" class="easyui-timespinner"  value="17:30" />
+                    <br/><br />
+                    休假类型：
+                    <select id="holiday">
+                        <option value="">请选择</option>
+                        <option value="年假">年假</option>
+                        <option value="病假">病假</option>
+                        <option value="婚假">婚假</option>
+                        <option value="产假">产假</option>
+                        <option value="其他">其他</option>
+                        
+                    </select>
+                        <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply2()">提交</a>
+                
+            </div>
+     
+            <div title="出差申请"   style="padding:20px;"> 
+                    <?php if ($teamlist[0]['teamid']!=1&&$power==3){ ?>
+                    选择员工
+                    <select id="uid3">
+                        <?php for($i=0;$i<count($teamlist);$i++){
+                                    echo "<option value='".$teamlist[$i]['uid']."'>".$teamlist[$i]['username'];	
+                              }
+                        ?>	  
+                    </select>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <?php }?>
+                  
+                    开始日期：
+                        <input id="trans_begin_date3" type="text" style="width:100px" />
+                    开始时间：
+                        <input type="text" id="trans_starttime3" class="easyui-timespinner"  value="08:30" />
+                    结束日期：
+                        <input id="trans_end_date3" type="text" style="width:100px" />
+                    结束时间：
+                        <input type="text" id="trans_endtime3" class="easyui-timespinner"  value="17:30" />
+                    <br/><br />
+                    交通方式：
+                        <input id="transpot" type="text" style="width:100px" />
+                    预算费用：
+                        <input id="fee" type="text" style="width:100px" />
+                    出差事由：<br /><br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <textarea id="reason3" rows="8" cols="100"></textarea><br />
+                        &nbsp;&nbsp;&nbsp;&nbsp; 
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply3()">提交</a>
+            </div>
+		</div> 
     
     
     
      
-    </div>
+    
     <script>
 	/************************************加班申请***************************************/
 	$('#trans_begin_date').datebox({	
