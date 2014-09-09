@@ -24,8 +24,7 @@ div.msg{margin:20px 0px}
 <body class="easyui-layout">
 	<div data-options="region:'north',border:false" style="height:60px;padding:10px;background:url(__TPL__/images/cube.jpg) repeat;">
     <!-- 顶部 -->
-        <img src="__TPL__/images/logo.png" width="48" style="float:left"/>
-        <h1>嘉银融资担保管理系统</h1>
+        <img src="__TPL__/images/logo.png" height="40" style="float:left"/> 
     </div>
     
 	<div data-options="region:'south',border:false" style="height:50px;padding:10px;background:url(__TPL__/images/cube.jpg) repeat;">

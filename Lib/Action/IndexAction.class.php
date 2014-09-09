@@ -8,6 +8,10 @@ class IndexAction extends Action {
 		$rs = $Model->getByLoginname($loginname);
 		if($rs)
 		{
+			if($rs['accountstatue']==1) {
+				$this->error('对不起，您的账户已被禁用！');	
+				return;
+			}
 			if($rs['password']==md5($password))
 			{
 				$_SESSION['uid']=$rs['uid'];
