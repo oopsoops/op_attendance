@@ -1317,7 +1317,13 @@ public function loginDetails(){
      /* 导出excel函数*/
      public function doexport(){
  
- 		
+ 		if(!file_exists('d:\excel')) {
+ 			mkdir('d:\excel');
+ 		}
+ 		if(!file_exists('d:\excel\forms')) {
+			mkdir('d:\excel\forms');
+		}
+ 			
 		$export_begin_time=$this->_post('export_begin_time');
 		
 		$export_end_time=$this->_post('export_end_time');
