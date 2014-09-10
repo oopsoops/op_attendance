@@ -97,6 +97,9 @@ class IndexAction extends Action {
 		echo dataToJson($data,count($data));
 	}
 	
+	public function home() {
+		R('Search/worktime');
+	}
 }
 
 ?>

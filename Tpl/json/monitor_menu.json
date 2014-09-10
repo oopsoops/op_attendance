@@ -8,10 +8,10 @@
             "url":"Monitor/monitorSearchInfo"
         }
 	},{
-		"text":"排班查询",
-		"iconCls":"icon-project",
+		"text":"排班设置",
+		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"Monitor/worktime"
+            "url":"Monitor/worktimeList"
         }
 	}]
 },{

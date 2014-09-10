@@ -12,9 +12,9 @@
 	</tr>
 	<tr>
 		<td>上班时间</td>
-		<td><?php echo substr($worktime['worktime1'],0,5)?></td>
+		<td><?php echo ($worktime)?substr($worktime['worktime1'],0,5):"未设定"?></td>
 		<td>下班时间</td>
-		<td><?php echo substr($worktime['worktime2'],0,5)?></td>
+		<td><?php echo ($worktime)?substr($worktime['worktime2'],0,5):"未设定"?></td>
 	</tr>
 </table>
 

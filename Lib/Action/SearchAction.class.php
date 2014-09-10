@@ -150,9 +150,13 @@ class SearchAction extends Action
 	public function worktime() {
 		$Model = M('staffinfo');
 		$uid = $_SESSION['uid'];
+		$today = date('Y-m-d');
 		$teamid = $Model->getFieldByUid($uid,'teamid');
 		$Model = M('worktime');
-		$rs = $Model->join('op_teaminfo ON op_teaminfo.tid = op_worktime.teamid')->where("teamid = $teamid")->select();
+		$rs = $Model
+		->join('op_teaminfo ON op_teaminfo.tid = op_worktime.teamid')
+		->where("teamid = $teamid AND workdate1<='$today' AND workdate2>='$today'")
+		->select();
 		$this->assign('worktime',$rs[0]);
 		$this->display();
 	} 
