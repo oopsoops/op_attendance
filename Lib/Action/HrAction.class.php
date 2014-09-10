@@ -1456,16 +1456,11 @@ public function loginDetails(){
              $objPHPExcel->setActiveSheetIndex(0);
 	
               $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-              if($objWriter->save('d://excel/forms/Forms'."$name".'.xls'))
-			  {
+              $objWriter->save('d://excel/forms/Forms'."$name".'.xls');
+			  
 				  
-				  $this->success ( '导入成功' );	
-				  }
-				  else
-				  {
-					  
-					  $this->error('导入失败');
-					  }
+				  $this->success ( '导出成功' );	
+			
               exit;
        }
 
