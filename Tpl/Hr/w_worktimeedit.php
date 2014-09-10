@@ -54,6 +54,7 @@ function doWorktimeEdit() {
 		url:'__APP__/Hr/doWorktimeEdit/id/'+id+'/start/'+start+'/end/'+end+'/startdate/'+startdate+'/enddate/'+enddate,
 		success:function(data) {
 			if (data=="ok") {
+				$('#grid_worktimelist').datagrid('loadData',{total:0,rows:[]});
 				$('#grid_worktimelist').datagrid('reload',{
 			        teamid: $('#worktimelist_teamid').val()
 			    });

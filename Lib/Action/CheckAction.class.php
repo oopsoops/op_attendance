@@ -79,17 +79,20 @@ class CheckAction extends Action {
 					$row['static'] = '未打卡(上午)';
 					$row['pid'] = 0;
 					$row['clocktime'] = "00:00:00";
+                    $row['type'] = 0;
 					$unusualModel->add($row);
 				} elseif (strtotime($rs[0]['clocktime'])>strtotime($worktime1)+10*60) {
 					//迟到
 					//echo $uid.':'.$rs[0]['clocktime'].">".$worktime1;
 					//echo "迟到"."<br/>";
 					$row['static'] = '迟到';
+                    $row['type'] = 0;
 					$unusualModel->add($row);
 				} else {
 					//正常
 					//echo $uid.':'.$rs[0]['clocktime']."<".$worktime1."<br/>";
 					$row['static'] = '正常';
+                    $row['type'] = 0;
 					$unusualModel->add($row);
 				}
 
@@ -102,17 +105,20 @@ class CheckAction extends Action {
 					$row['static'] = '未打卡(下午)';
 					$row['pid'] = 0;
 					$row['clocktime'] = "00:00:00";
+                    $row['type'] = 1;
 					$unusualModel->add($row);
 				} elseif (strtotime($rs[$k]['clocktime'])<strtotime($worktime2)) {
 					//早退
 					//echo $uid.':'.$rs[$k]['clocktime']."<".$worktime2;
 					//echo "早退"."<br/>";
 					$row['static'] = '早退';
+                    $row['type'] = 1;
 					$unusualModel->add($row);
 				} else {
 					//正常
 					//echo $uid.':'.$rs[$k]['clocktime'].">".$worktime2."<br/>";
 					$row['static'] = '正常';
+                    $row['type'] = 1;
 					$unusualModel->add($row);
 				}
                 

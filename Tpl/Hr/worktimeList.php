@@ -68,6 +68,7 @@ function doDeleteWorktime(id) {
                 url:'__APP__/Hr/doWorktimeDel/id/'+id,
                 success:function(data) {
                     if (data=="ok") {
+                        $('#grid_worktimelist').datagrid('loadData',{total:0,rows:[]});
                         $('#grid_worktimelist').datagrid('reload',{
                             teamid: $('#worktimelist_teamid').val()
                         });
@@ -82,6 +83,7 @@ function doDeleteWorktime(id) {
 }
 
 function worktimelist_fetchbyteamid() {
+    $('#grid_worktimelist').datagrid('loadData',{total:0,rows:[]});
     $('#grid_worktimelist').datagrid('reload',{
         teamid: $('#worktimelist_teamid').val()
     });
