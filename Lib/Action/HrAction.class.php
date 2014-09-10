@@ -1318,9 +1318,9 @@ public function loginDetails(){
      public function doexport(){
  
  		
-		$export_begin_time='2014-08-01';//$this->_post('export_begin_time');
+		$export_begin_time=$this->_post('export_begin_time');
 		
-		$export_end_time='2014-08-30';//$this->_post('export_end_time');
+		$export_end_time=$this->_post('export_end_time');
 		if($export_begin_time==''||$export_end_time=='')
 			{
 						$this->error('开始日期和结束日期不能同时为空！');
