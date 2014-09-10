@@ -31,7 +31,7 @@
                 <?php }?>  
                 <?php if($ccpower=='2'){?>
                 <th field="subboss" width="60" align="center" formatter="subbossFormatter">提交老板</th>  
-                <?php }?> 
+                <?php }?>   
                 
                
 
@@ -41,7 +41,7 @@
         </thead>  
     </table>
 <script>
-    
+   
 	function rejectFormatter(val,row){
 		return '<a href="javascript:void(0)" onclick="doReject('+row.id+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
@@ -52,19 +52,11 @@
 		return '<a href="javascript:void(0)" onclick="doSubm('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
 	}
 	function subbossFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doSubm('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="doSubboss('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
 	}
 	
-	function openccDetail(vid){
-		$('#main').tabs('close','申请详情');
-		$('#main').tabs('add',{
-						title:'申请详情',
-						//href:'__APP__/Account/account_details/pid/'+pid,
-						href:'__APP__/works/transitionDetail/vid/'+vid,
-						cache:false,
-						closable:true
-						});
-	}
+	
+	
 	function doReject(id){
 		
 		$.messager.confirm('提示', '确认要驳回该员工申请？', function(r){  
@@ -75,8 +67,8 @@
 					success:function(data){
 						if(data=="1"){
 							$.messager.alert("提示","驳回成功！");
-							$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
-							$('#grid_ccApprove').datagrid('load', { });
+							$('#grid_jbApprove').datagrid('loadData', { total:0, rows:[ ]});
+							$('#grid_jbApprove').datagrid('load', { });
 						}				
 					},
 					error:function(XMLHttpRequest,textStatus,errorThrown){
@@ -96,8 +88,8 @@
 					success:function(data){
 						if(data=="1"){
 							$.messager.alert("提示","批准成功！");
-							$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
-							$('#grid_ccApprove').datagrid('load', { });
+							$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
+							$('#grid_qjApprove').datagrid('load', { });
 						}				
 					},
 					error:function(XMLHttpRequest,textStatus,errorThrown){
@@ -117,6 +109,26 @@
 					success:function(data){
 						if(data=="1"){
 							$.messager.alert("提示","提交成功！");
+							$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
+							$('#grid_qjApprove').datagrid('load', { });
+						}				
+					},
+					error:function(XMLHttpRequest,textStatus,errorThrown){
+						alert(''+errorThrown);
+					}	
+				});
+			}
+		});
+	}
+    function doSubboss(id){
+		$.messager.confirm('提示', '确认要提交给老板审批？', function(r){
+			if (r){
+				$.ajax({
+					url:"__APP__/Works/sub2boss/vid/"+id,
+					type:'GET',
+					success:function(data){
+						if(data=="1"){
+							$.messager.alert("提示","提交成功！");
 							$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
 							$('#grid_ccApprove').datagrid('load', { });
 						}				
@@ -128,7 +140,6 @@
 			}
 		});
 	}
-    
     
 </script>
     

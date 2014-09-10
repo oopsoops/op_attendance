@@ -37,15 +37,7 @@
         </thead>  
     </table>
 <script>
-    function jbDetailFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="openjbDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
-	}
-	function qjDetailFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="openqjDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
-	}
-	function ccDetailFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="openccDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
-	}
+   
 	function rejectFormatter(val,row){
 		return '<a href="javascript:void(0)" onclick="doReject('+row.id+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
@@ -56,7 +48,7 @@
 		return '<a href="javascript:void(0)" onclick="doSubm('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
 	}
 	function subbossFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doSubm('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="doSubboss('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
 	}
 	
 	
@@ -124,7 +116,26 @@
 			}
 		});
 	}
-    
+    function doSubboss(id){
+		$.messager.confirm('提示', '确认要提交给老板审批？', function(r){
+			if (r){
+				$.ajax({
+					url:"__APP__/Works/sub2boss/vid/"+id,
+					type:'GET',
+					success:function(data){
+						if(data=="1"){
+							$.messager.alert("提示","提交成功！");
+							$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
+							$('#grid_ccApprove').datagrid('load', { });
+						}				
+					},
+					error:function(XMLHttpRequest,textStatus,errorThrown){
+						alert(''+errorThrown);
+					}	
+				});
+			}
+		});
+	}
     
 </script>
     

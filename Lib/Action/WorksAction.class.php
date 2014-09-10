@@ -305,6 +305,13 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			exit;
 		}
 		else{
+			$model=M('staffinfo');
+			$rs=$model->field("op_staffinfo.email")
+			->join("op_usertype on op_staffinfo.usertypeid=op_usertype.tid")
+			->where("op_usertype.power=2")
+			->select();
+			$email=$rs[0]['email'];
+			$this->sendMail($email);
 			$data="1";
 			echo $data;
 		}
@@ -312,6 +319,38 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 	}	
 	
 /*****************************************提交hr end*******************************************/	
+/*****************************************提交boss begin*******************************************/	
+	public function sub2boss(){
+		$id=$this->_get('vid');
+	//	echo $id;
+		$model=M('vacationstatus');
+		$rs=$model->getById($id);
+		$rs['status']=3;
+		$result=$model->save($rs);
+		if(!$result){
+			echo "操作失败,请重试！";
+			exit;
+		}
+		else{
+			$model=M('staffinfo');
+			$rs=$model->field("op_staffinfo.email")
+			->join("op_usertype on op_staffinfo.usertypeid=op_usertype.tid")
+			->where("op_usertype.power=5")
+			->select();
+			$email=$rs[0]['email'];
+			$this->sendMail($email);
+			$data="1";
+			echo $data;
+		}
+		
+	}	
+
+
+
+
+
+/*****************************************提交boss end*******************************************/	
+/*****************************************申请查询 begin*******************************************/	
 
 	public function applyQuery(){
 		$this->display();
@@ -338,7 +377,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		echo dataToJson($list,$num);
 	}
 
-
+/*****************************************提交hr end*******************************************/	
 	
 }
 	
