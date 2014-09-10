@@ -127,6 +127,7 @@
 		var enddate=$("#trans_end_date").combo("getValue");
 		var begintime=$('#trans_starttime').val();
 		var endtime=$("#trans_endtime").val();
+		var uid=$("#uid").val();
 		if(begindate==""||enddate==""){
 			$.messager.alert("提示","请同时填写开始日期和结束日期！");
 			return false;
@@ -154,7 +155,8 @@
 				begintime:begintime,
 				endtime:endtime,
 				reason:reason,
-				transdm:transdm
+				transdm:transdm,
+				uid:uid
 			},
 			type:'POST',
 			success:function(data){
@@ -187,6 +189,7 @@
 		var begintime=$('#trans_starttime2').val();
 		var endtime=$("#trans_endtime2").val();
 		var holiday=$("#holiday").val();
+		var uid=$("#uid2").val();
 		if(holiday==""){
 			$.messager.alert("提示","请休假类型！");
 			return false;
@@ -213,7 +216,8 @@
 				begintime:begintime,
 				endtime:endtime,
 				transdm:transdm,
-				holiday:holiday				
+				holiday:holiday,
+				uid:uid			
 			},
 			type:'POST',
 			success:function(data){
@@ -241,7 +245,7 @@
 	});
 	function apply3(){
 		var transdm="2";
-		
+		var uid=$("#uid3").val();
 		var begindate=$('#trans_begin_date3').combo("getValue");
 		var enddate=$("#trans_end_date3").combo("getValue");
 		var begintime=$('#trans_starttime3').val();
@@ -285,7 +289,8 @@
 				reason:reason,
 				transdm:transdm,
 				fee:fee,
-				transpot:transpot
+				transpot:transpot,
+				uid:uid
 			},
 			type:'POST',
 			success:function(data){

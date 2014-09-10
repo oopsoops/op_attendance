@@ -60,7 +60,11 @@
 			$transpot=$this->_post('transpot');
 			$fee=$this->_post('fee');
 			$holiday=$this->_post('holiday');
-			$uid = $_SESSION['uid'];
+			$id=$this->_post('uid');
+			if($id==""){
+				$uid = $_SESSION['uid'];
+			}else
+				$uid=$id;
 			$Model=M('userinfo');
 			$tidrow=$Model->getByUid($uid);
 			$tid=$tidrow['usertypeid'];
@@ -147,7 +151,7 @@
 		->where("uid='".$uid."'")
 		->select();
 		$power=$rs[0]['power'];
-		$this->assign('jbpower'.$power);
+		$this->assign('jbpower',$power);
 		$this->display();
 	}
 	public function ccApproval(){
@@ -158,7 +162,7 @@
 		->where("uid='".$uid."'")
 		->select();
 		$power=$rs[0]['power'];
-		$this->assign('ccpower'.$power);
+		$this->assign('ccpower',$power);
 		$this->display();
 	}
 	public function qjApproval(){
