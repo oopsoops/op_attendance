@@ -246,7 +246,7 @@ class HrAction extends Action {
 		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
 		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
 		->where($where)
-		->order('op_unusualtime.uid desc')
+		->order('op_unusualtime.uid asc,op_unusualtime.clockdate asc,op_unusualtime.type asc')
 		->limit("$start,$rows")
 		->select();
 		

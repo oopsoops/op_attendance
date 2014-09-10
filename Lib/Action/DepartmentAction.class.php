@@ -87,7 +87,7 @@ class DepartmentAction extends Action {
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
 		->where($where)
-		 ->order('op_unusualtime.uid desc')
+		 ->order('op_unusualtime.uid asc,op_unusualtime.clockdate asc,op_unusualtime.type asc')
 		->limit("$start,$rows")
 		->select();
 		
