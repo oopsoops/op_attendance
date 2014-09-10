@@ -1214,6 +1214,13 @@ public function loginDetails(){
 
 
 	/**************************************** Yu Yi ********************************************/
+	//排班列表
+	public function worktimelist() {
+    	$Model = M('teaminfo');
+    	$rs = $Model->select();
+    	$this->assign("teamlist",$rs);
+    	$this->display();
+    }
 	//获取排班列表
 	public function fetchWorktimeList() {
 		$page = $this->_post('page');
@@ -1222,9 +1229,10 @@ public function loginDetails(){
 		if($rows<1) $rows=10;
 		$start = ($page-1)*$rows;
 
+		$teamid = $this->_post('teamid');
     	$Model = M('worktime');
-    	$cc = $Model->count();
-    	$rs = $Model->join("op_teaminfo ON op_worktime.teamid = op_teaminfo.tid")->limit("$start,$rows")->select();
+    	$cc = $Model->where("teamid=$teamid")->count();
+    	$rs = $Model->join("op_teaminfo ON op_worktime.teamid = op_teaminfo.tid")->where("teamid=$teamid")->limit("$start,$rows")->select();
     	echo dataToJson($rs,$cc);
     }
     //修改窗口
@@ -1238,10 +1246,14 @@ public function loginDetails(){
     //执行修改
     public function doWorktimeEdit() {
     	$id = $this->_get('id');
+    	$startdate = $this->_get('startdate');
+    	$enddate = $this->_get('enddate');
     	$start = $this->_get('start');
     	$end = $this->_get('end');
     	$Model = M('worktime');
     	$row = $Model->getById($id);
+    	$row['workdate1'] = $startdate;
+    	$row['workdate2'] = $enddate;
     	$row['worktime1'] = $start;
     	$row['worktime2'] = $end;
     	$rs = $Model->save($row);
@@ -1254,13 +1266,17 @@ public function loginDetails(){
     //新增窗口
     public function w_worktimenew() {
     	$Model = M('teaminfo');
-    	$rs = $Model->where("tid NOT IN(SELECT teamid FROM op_worktime)")->select();
+    	$rs = $Model->select();
     	$this->assign("teaminfo",$rs);
+    	$teamid = $this->_get('teamid');
+    	$this->assign("teamid",$teamid);
     	$this->display();
     }
     //处理新增
     public function doWorktimeNew() {
     	$tid = $this->_get('tid');
+    	$startdate = $this->_get('startdate');
+    	$enddate = $this->_get('enddate');
     	$start = $this->_get('start');
     	$end = $this->_get('end');
     	if ($tid<1) {
@@ -1268,7 +1284,12 @@ public function loginDetails(){
     		return;
     	}
     	$Model = M('worktime');
+
+    	//$rs = $Model->select("workdate1<='$startdate' AND workdate2>='$enddate'");
+
     	$row['teamid'] = $tid;
+    	$row['workdate1'] = $startdate;
+    	$row['workdate2'] = $enddate;
     	$row['worktime1'] = $start.":00";
     	$row['worktime2'] = $end.":00";
     	$rs = $Model->add($row);
