@@ -332,6 +332,7 @@ public function newStaff() {
  	
 	
 		else {
+
 					
 					
 									$rsa = $userinfo->getByLoginname($loginname);
@@ -1464,16 +1465,42 @@ public function loginDetails(){
 	
               $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
               $objWriter->save('d://excel/forms/Forms'."$name".'.xls');
-			  
+			 
 				  
-				  $this->success ( '导出成功' );	
+			//$file='D:/excel/forms/'.$file;
+			//$file='../'.$file;
+           // header("Location:../op_attendance/excel"); 
+			self::list_files('D:\excel\forms');
+
+		  
+				  //$this->success ( '导出成功' );	
 			
-              exit;
        }
 
-	
-	
+
     /*********************************************************************************************/
+	
+	
+	function list_files($dir) 
+ { 
+     if(is_dir($dir))        //判断参数是否为目录
+     { 
+         if($handle = opendir($dir))         //打开目录，返回文件句柄
+         { 
+             while(($file = readdir($handle)) !== false)         //读文件夹返回文件名，
+                                                                 //成功，则该函数返回一个文件名，否则返回 false
+             { 
+                 if($file != "." && $file != ".." && $file != "Thumbs.db")       //三个文件不显示出来。进行判断。
+                 { 
+                     echo '<a target="_blank" href="'.$dir.$file.'">'.$file.'</a><br>'."\n";         //用 a 标签显示文件路径，和文件名。
+                 } 
+             } 
+             closedir($handle);      //关闭文件夹句柄。
+         } 
+     } 
+ }  
+	
+	
 }
 
 
