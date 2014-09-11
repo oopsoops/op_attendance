@@ -430,7 +430,7 @@ public function hrfetch_all_users(){
 				->join('op_department ON op_staffinfo.departmentid = op_department.did')
 				->join('op_teaminfo ON op_staffinfo.teamid = op_teaminfo.tid')
 				->join('op_userinfo ON op_staffinfo.uid = op_userinfo.uid')
-				->order('op_staffinfo.uid desc')
+				->order('op_staffinfo.uid asc')
 				->limit("$start,$rows")
 				->select();
 				
@@ -460,13 +460,13 @@ public function hrfetch_all_users(){
 											
 											if($username!='' && $where !='')
 											{
-												$where = "$where and op_staffinfo.username = $username ";
+												$where = "$where and op_staffinfo.username = '"."$username"."' ";
 												
 												}
 												
 												else if($username != '')
 												{
-													$where = "op_staffinfo.username = $username ";
+													$where = "op_staffinfo.username = '"."$username"."' ";
 													
 													
 													}
@@ -488,13 +488,14 @@ public function hrfetch_all_users(){
 									->join('op_teaminfo ON op_staffinfo.teamid = op_teaminfo.tid')
 									->join('op_userinfo ON op_staffinfo.uid = op_userinfo.uid')
 									->where($where)
-									->order('op_staffinfo.uid desc')
+									->order('op_staffinfo.uid asc')
 									->limit("$start,$rows")
 									->select();			
 					
 					
 					}
 			//echo $staffinfo->getLastSql();
+			
 			echo dataToJson($rs,$cc);
 			
 			}
@@ -584,7 +585,7 @@ public function hrfetch_all_users(){
 
 public function staffInfoModify(){
 	
-	$uid = 1003;// $this->_get('uid');
+	$uid = $this->_get('uid');
 			//部门
 		$department = M('department');
 		$category = $department->select();
@@ -931,7 +932,7 @@ public function loginDetails(){
 		$rs = $userinfo->field('op_log.uid as uid,op_log.logintime as logintime,op_log.quittime as quittime,op_userinfo.username as username')
 						->join('op_userinfo ON op_userinfo.uid = op_log.uid')
 						->where('op_log.uid =  "'.$uid.'"')
-						->order('op_log.logintime desc')
+						->order('op_log.logintime asc')
 						->limit("$start,$rows")
 						->select();
 		

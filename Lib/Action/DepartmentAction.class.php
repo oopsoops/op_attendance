@@ -18,7 +18,7 @@ class DepartmentAction extends Action {
 		
 		$start = ($page-1)*$rows;
 		
-		$uid = 1001;//$this->_post('uid');
+		$uid = $this->_post('uid');
 		
 		$search_chose=$this->_post('dpsearch_chose');
 				
