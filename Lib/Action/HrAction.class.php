@@ -296,7 +296,10 @@ public function newStaff() {
 		$staffinfo['usertypeid'] = $this->_post('stafftype');
 		
 		$staffinfo['username'] = $this->_post('staffname');
-		$staffinfo['holiday'] = $this->_post('holiday');
+		$staffinfo['LHoliday'] = $this->_post('lholiday');
+		$staffinfo['THoliday'] = $this->_post('tholiday');
+		$staffinfo['LRest'] = $this->_post('lrest');
+		$staffinfo['TRest'] = $this->_post('trest');
 		
 		$staffinfo['costcenterid'] = $this->_post('costcenter');
 		
@@ -586,7 +589,7 @@ public function hrfetch_all_users(){
 
 public function staffInfoModify(){
 	
-	$uid = $this->_get('uid');
+	$uid =  $this->_get('uid');
 			//部门
 		$department = M('department');
 		$category = $department->select();
@@ -604,7 +607,8 @@ public function staffInfoModify(){
 		
 	$staffinfo = M('staffinfo');
 	
-	$rs = $staffinfo->field('op_staffinfo.username as username,op_staffinfo.phone as phone,op_staffinfo.holiday as holiday,op_staffinfo.entrydate as entrydate,op_staffinfo.email as email,op_staffinfo.uid as uid,op_staffinfo.departmentid as did,op_userinfo.loginname as staffloginname,op_staffinfo.usertypeid as typeid,op_staffinfo.teamid as teamid,op_usertype.power as power,op_staffinfo.costcenterid as costcenter')
+	$rs = $staffinfo->field('op_staffinfo.username as username,op_staffinfo.phone as phone,op_staffinfo.entrydate as entrydate,op_staffinfo.email as email,op_staffinfo.uid as uid,op_staffinfo.departmentid as did,op_userinfo.loginname as staffloginname,op_staffinfo.usertypeid as typeid,op_staffinfo.teamid as teamid,op_usertype.power as power,op_staffinfo.costcenterid as costcenter,op_staffinfo.THoliday as tholiday,op_staffinfo.LHoliday as lholiday,op_staffinfo.TRest as
+	trest,op_staffinfo.LRest as lrest')
 	
 	->join('op_userinfo ON op_staffinfo.uid = op_userinfo.uid')
 	->join('op_usertype ON op_staffinfo.usertypeid = op_usertype.tid')
@@ -629,7 +633,10 @@ public function staff_modify_do(){
 	$stafftype = $this->_post('stafftype');
 	$phone = $this->_post('phone');
 	$email =  $this->_post('email');
-	$holiday = $this->_post('holiday');
+	$lholiday = $this->_post('lholiday');
+	$tholiday = $this->_post('tholiday');
+	$lrest = $this->_post('lrest');
+	$trest = $this->_post('trest');
 	$loginname =$this->_post('staffloginname');
 	$newuid =$this->_post('uid');
 	$modifyinfo = M('staffinfo');
@@ -710,7 +717,10 @@ public function staff_modify_do(){
 		$staffinfo['teamid'] =  $teamid;
 		$staffinfo['phone'] = $phone;
 		$staffinfo['email'] = $email;
-		$staffinfo['holiday'] = $holiday;
+		$staffinfo['LHoliday'] = $lholiday;
+		$staffinfo['THoliday'] = $tholiday;
+		$staffinfo['LRest'] = $lrest;
+		$staffinfo['TRest'] = $trest;
 		$staffinfo['usertypeid'] = $stafftype;
 		$staffinfo['updatetime'] = date('Y-m-d H:i:s');
 		
@@ -820,7 +830,10 @@ public function staff_modify_do(){
 		$staffinfo['teamid'] =  $teamid;
 		$staffinfo['phone'] = $phone;
 		$staffinfo['email'] = $email;
-		$staffinfo['holiday'] = $holiday;
+		$staffinfo['LHoliday'] = $lholiday;
+		$staffinfo['THoliday'] = $tholiday;
+		$staffinfo['LRest'] = $lrest;
+		$staffinfo['TRest'] = $trest;
 		$staffinfo['usertypeid'] = $stafftype;
 		$staffinfo['updatetime'] = date('Y-m-d H:i:s');
 		$modifyinfo->startTrans();
@@ -1051,7 +1064,7 @@ public function loginDetails(){
 				
 				$cc = $sample->count();
 				
-				$rs=$sample->field('uid,username,department,usertype,entrydate,costcenterid,phone,email,team')->limit("$start,$rows")->select();
+				$rs=$sample->field('uid,username,department,usertype,entrydate,costcenterid,phone,email,team,op_sample.THoliday as tholiday,op_sample.LHoliday as lholiday,op_sample.TRest as trest,op_sample.LRest as lrest')->limit("$start,$rows")->select();
 				
 				echo dataToJson($rs,$cc);
 				}
@@ -1182,7 +1195,60 @@ public function loginDetails(){
 		  				 {
 		  					  $cell = $cell->__toString();  
 		 				  }
-							   $data[$flag]['email'] =  $cell;
+						  
+						   $data[$flag]['email'] =  $cell;
+							  
+							  
+							  
+						  
+						  $cell =  $currentSheet->getCell('J'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+						   $data[$flag]['LHoliday'] =  $cell;  //去年剩余年假
+						   
+						   
+						  
+						  $cell =  $currentSheet->getCell('K'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+						  
+						   $data[$flag]['THoliday'] =  $cell;  //今年可用年假
+						   
+						  $cell =  $currentSheet->getCell('L'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+						   $data[$flag]['LRest'] =  $cell;  //去年剩余调休
+						  
+						  $cell =  $currentSheet->getCell('M'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+						  
+						  
+						   $data[$flag]['TRest'] =  $cell;  //今年可用调休
+						  
+						  
+						  
+						  
+						  
+						  
+						  
+						  
 							  
 	    
 							   $data[$flag]['updatetime'] =  date('Y-m-d H:i:s');
@@ -1319,10 +1385,10 @@ public function loginDetails(){
      /* 导出excel函数*/
      public function doexport(){
  
- 		if(!file_exists('d:\excel')) {
- 			mkdir('d:\excel');
+ 		if(!file_exists('.\excel')) {
+ 			mkdir('.\excel');
  		}
- 		if(!file_exists('d:\excel\forms')) {
+ 		if(!file_exists('.\excel\forms')) {
 			mkdir('d:\excel\forms');
 		}
  			
@@ -1341,10 +1407,10 @@ public function loginDetails(){
 		
 		   
           error_reporting(E_ALL);
-           date_default_timezone_set('Europe/London');
+           date_default_timezone_set('Asia/Shanghai');
           $objPHPExcel = new PHPExcel();
  			$clocktime=M('unusualtime');
-            $name=date('YndHis');
+            $name=date('YmdHis');
 			
             $data=$clocktime->field("op_unusualtime.uid as uid,op_staffinfo.username as name,clockdate,standardtime,static,type,
 			
@@ -1464,22 +1530,27 @@ public function loginDetails(){
              $objPHPExcel->setActiveSheetIndex(0);
 	
               $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-              $objWriter->save('d://excel/forms/Forms'."$name".'.xls');
+              $objWriter->save('D:/excel/forms/Forms'."$name".'.xls');
 			 
 				  
 			//$file='D:/excel/forms/'.$file;
 			//$file='../'.$file;
            // header("Location:../op_attendance/excel"); 
-			self::list_files('D:\excel\forms');
+			//self::list_files('.\excel');
 
 		  
-				  //$this->success ( '导出成功' );	
+				  $this->success ( '导出成功' );	
 			
        }
 
 
     /*********************************************************************************************/
-	
+	function listfile()
+	{
+		
+		self::list_files('E:\Coding\xampp\htdocs\op_attendance\excel');
+		
+		}
 	
 	function list_files($dir) 
  { 

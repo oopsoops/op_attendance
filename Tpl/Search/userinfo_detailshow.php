@@ -32,7 +32,29 @@
               <td>所在组：</td>
               <td colspan="2"><input type="text" name="teamid" readonly="readonly" value="<?php echo $userinfo['teamname'];?>" /></td>
               </tr>
-              
+              <tr>
+    	<td>去年剩余年假：</td>
+        <td><input type="text" name="lholiday"   value="<?php echo $userinfo['lholiday'];?>"/></td>
+        
+    </tr>
+    
+         <tr>
+    	<td>今年可用年假：</td>
+        <td><input type="text" name="tholiday"  value="<?php echo $userinfo['tholiday'];?>"/></td>
+        
+    </tr>
+    
+         <tr>
+    	<td>去年剩余调休：</td>
+        <td><input type="text" name="lrest" value="<?php echo $userinfo['lrest'];?>"/></td>
+        
+    </tr>
+    
+         <tr>
+    	<td>今年可用调休：</td>
+        <td><input type="text" name="trest"  value="<?php echo $userinfo['trest'];?>"/></td>
+        
+    </tr>
               <tr>
               <td>成本中心：</td>
               <td colspan="2"><input type="text" name="costcenter" readonly="readonly" value="<?php echo $userinfo['costcenter'];?>" /></td>

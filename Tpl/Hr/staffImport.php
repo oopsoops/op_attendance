@@ -40,6 +40,10 @@
                  <th field="entrydate" width="120" align="center">入职日期</th>
                  <th  field="phone" width="120" align="center">联系电话</th>
                  <th  field="email" width="120" align="center">Email</th>
+                 <th  field="lholiday" width="120" align="center">去年剩余年假</th>
+                 <th  field="tholiday" width="120" align="center">今年可用年假</th>
+                 <th  field="lrest" width="120" align="center">去年剩余调休</th>
+                 <th  field="trest" width="120" align="center">今年可用调休</th>
                 
                              
             </tr>  

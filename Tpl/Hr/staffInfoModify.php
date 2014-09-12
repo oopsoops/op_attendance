@@ -41,21 +41,39 @@
     	<td>员工工号：</td>
         <td><input type="text" name="uid" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['uid'];?>"/></td>
     
-    
-     <tr>
-    	<td>可休假天数：</td>
-        <td><input type="text" name="holiday" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['holiday'];?>"/></td>
-        
-    </tr>
-    
-    </tr>
-    
-    <tr>
+        <tr>
     	<td>员工姓名：</td>
         <td><input type="text" name="staffname" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['username'];?>"/></td>
     
     
     </tr>
+     <tr>
+    	<td>去年剩余年假：</td>
+        <td><input type="text" name="lholiday" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['lholiday'];?>"/></td>
+        
+    </tr>
+    
+         <tr>
+    	<td>今年可用年假：</td>
+        <td><input type="text" name="tholiday" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['tholiday'];?>"/></td>
+        
+    </tr>
+    
+         <tr>
+    	<td>去年剩余调休：</td>
+        <td><input type="text" name="lrest" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['lrest'];?>"/></td>
+        
+    </tr>
+    
+         <tr>
+    	<td>今年可用调休：</td>
+        <td><input type="text" name="trest" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['trest'];?>"/></td>
+        
+    </tr>
+    
+    </tr>
+    
+
     
         <tr>
     	<td>成本中心：</td>
