@@ -103,7 +103,7 @@ class SearchAction extends Action
 		->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->where($where)
-		 ->order('op_unusualtime.uid asc,op_unusualtime.clockdate asc,op_unusualtime.type asc')
+		 ->order('op_unusualtime.uid asc,op_unusualtime.clockdate asc,op_unusualtime.clocktime asc')
 		->limit("$start,$rows")
 		->select();
 		
