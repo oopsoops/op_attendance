@@ -27,6 +27,7 @@ class CheckAction extends Action {
 		for ($i=0; $i < count($uids); $i++) { 
 			$uid = $uids[$i]['uid'];
 			$teamid = $uids[$i]['teamid'];
+            echo '<a style="color:red">==============================================</a><br/>uid='.$uid.'<br/>';
             /*
 			//查询该用户所属组的排班情况
 			$Model = M('worktime');
@@ -51,77 +52,228 @@ class CheckAction extends Action {
                 }
                 $worktime1 = $worktime[0]['worktime1'];
                 $worktime2 = $worktime[0]['worktime2'];
+                echo "tt=<a style=\"color:red\">$tt</a>  worktime1=$worktime1   worktime2=$worktime2 <br/>";
 
-                //echo "uid=$uid tt=$tt worktime1=$worktime1   worktime2=$worktime2 <br/>";
+                if(strtotime($worktime1)<strtotime($worktime2)) {
+                    /***************************************************正常考勤时段***************************************************/
+                    echo '---正常考勤时段---<br/>';
 
-                $Model = M('clocktime');
-				$where = "clockdate BETWEEN '$tt' AND '$tt' AND uid = '$uid'";
-				$rs = $Model->where($where)->order('clocktime')->select();
-				//echo $Model->getLastSql()."<br>";
-				//print_r($rs);
-				//最后打卡时间
-				$k = count($rs)-1;
+                    //计算时间中间点
+                    $worktime_mid = date('H:i:g',(strtotime($worktime2)-strtotime($worktime1))/2);
 
-				$row['pid'] = $rs[0]['id'];
-				$row['uid'] = $uid;
-				$row['clockdate'] = $tt;
-				$row['clocktime'] = $rs[0]['clocktime'];
-				$row['standardtime'] = $worktime1;
+                    $worktime1_lasthour = date('H:i:g',(strtotime($worktime1) - 60*60));
+                    $worktime2_nexthour = date('H:i:g',(strtotime($worktime2) + 60*60));
+                    echo "worktime_mid=$worktime_mid <br/> worktime1_lasthour=$worktime1_lasthour <br/> worktime2_nexthour=$worktime2_nexthour <br/>";
 
-				//如果表中含有相同记录
-				//$rs = $unusualModel->where("clockdate BETWEEN '$tt' AND '$tt' AND uid = '$uid'")->delete();
+                    //查询当天打卡信息
+                    $Model = M('clocktime');
+                    $where = "clockdate BETWEEN '$tt' AND '$tt' AND clocktime>='$worktime1_lasthour' AND clocktime<='$worktime2_nexthour' AND uid = '$uid'";
+                    $rs = $Model->where($where)->order('clocktime')->select();
+                    //echo $Model->getLastSql()."<br>";
+                    echo '+++++++++++++++++++++++++++++++++++当天打卡信息++++++++++++++++++++++++++++++++++++++++<br/>';
+                    print_r($rs);
+                    echo '<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>';
 
-                
-				//早上考勤
-				if (!$rs || $rs[0]['clocktime']<=0 || strtotime($rs[0]['clocktime'])>strtotime("12:00:00")) {
-					//未打卡
-					//echo $uid.':'."未打卡(上午)"."<br/>";
-					$row['static'] = '未打卡(上午)';
-					$row['pid'] = 0;
-					$row['clocktime'] = "00:00:00";
                     $row['type'] = 0;
-					$unusualModel->add($row);
-				} elseif (strtotime($rs[0]['clocktime'])>strtotime($worktime1)+10*60) {
-					//迟到
-					//echo $uid.':'.$rs[0]['clocktime'].">".$worktime1;
-					//echo "迟到"."<br/>";
-					$row['static'] = '迟到';
-                    $row['type'] = 0;
-					$unusualModel->add($row);
-				} else {
-					//正常
-					//echo $uid.':'.$rs[0]['clocktime']."<".$worktime1."<br/>";
-					$row['static'] = '正常';
-                    $row['type'] = 0;
-					$unusualModel->add($row);
-				}
+                    $row['pid'] = $rs[0]['id'];
+                    $row['uid'] = $uid;
+                    $row['clockdate'] = $tt;
+                    $row['clocktime'] = $rs[0]['clocktime'];
+                    $row['standardtime'] = $worktime1;
 
-				$row['clocktime'] = $rs[$k]['clocktime'];
-				$row['standardtime'] = $worktime2;
-				//下午考勤
-				if (!$rs || $rs[$k]['clocktime']<=0 || strtotime($rs[$k]['clocktime'])<strtotime("12:00:00")) {
-					//未打卡
-					//echo $uid.':'."未打卡(下午)"."<br/>";
-					$row['static'] = '未打卡(下午)';
-					$row['pid'] = 0;
-					$row['clocktime'] = "00:00:00";
+                    //如果表中含有相同记录
+                    //$rs = $unusualModel->where("clockdate BETWEEN '$tt' AND '$tt' AND uid = '$uid'")->delete();
+
+                    //上班考勤
+                    if (!$rs || $rs[0]<=0 || strtotime($rs[0]['clocktime'])>strtotime($worktime_mid)) {
+                        //未打卡
+                        echo $uid.':'."未打卡(上班)"."<br/>";
+                        $row['static'] = '未打卡(上班)';
+                        $row['pid'] = 0;
+                        $row['clocktime'] = "00:00:00";
+                        $unusualModel->add($row);
+                    } elseif (strtotime($rs[0]['clocktime'])>strtotime($worktime1)+10*60) {
+                        //迟到
+                        echo $uid.':'.$rs[0]['clocktime'].">".$worktime1;
+                        echo "迟到"."<br/>";
+                        $row['static'] = '迟到';
+                        /*
+                        //删除此条打卡记录
+                        $row_del = $unusualModel->getById($rs[0]['id']);
+                        $unusualModel->delete($row_del);
+                        */
+                        $unusualModel->add($row);
+                    } else {
+                        //正常
+                        echo $uid.':'.$rs[0]['clocktime']."<".$worktime1."正常<br/>";
+                        $row['static'] = '正常';
+                        /*
+                        //删除此条打卡记录
+                        $row_del = $unusualModel->getById($rs[0]['id']);
+                        $unusualModel->delete($row_del);
+                        */
+                        $unusualModel->add($row);
+                    }
+
+                    //最后打卡时间
+                    $k = count($rs)-1;
                     $row['type'] = 1;
-					$unusualModel->add($row);
-				} elseif (strtotime($rs[$k]['clocktime'])<strtotime($worktime2)) {
-					//早退
-					//echo $uid.':'.$rs[$k]['clocktime']."<".$worktime2;
-					//echo "早退"."<br/>";
-					$row['static'] = '早退';
+                    $row['pid'] = $rs[$k]['id'];
+                    $row['clocktime'] = $rs[$k]['clocktime'];
+                    $row['standardtime'] = $worktime2;
+                    //下班考勤
+                    if (!$rs || $rs[$k]<=0 || strtotime($rs[$k]['clocktime'])<strtotime($worktime_mid)) {
+                        //未打卡
+                        echo $uid.':'."未打卡(下班)"."<br/>";
+                        $row['static'] = '未打卡(下班)';
+                        $row['pid'] = 0;
+                        $row['clocktime'] = "00:00:00";
+                        $unusualModel->add($row);
+                    } elseif (strtotime($rs[$k]['clocktime'])<strtotime($worktime2)) {
+                        //早退
+                        echo $uid.':'.$rs[$k]['clocktime']."<".$worktime2;
+                        echo "早退"."<br/>";
+                        $row['static'] = '早退';
+                        /*
+                        //删除此条打卡记录
+                        $row_del = $unusualModel->getById($rs[$k]['id']);
+                        $unusualModel->delete($row_del);
+                        */
+                        $unusualModel->add($row);
+                    } else {
+                        //正常
+                        echo $uid.':'.$rs[$k]['clocktime'].">".$worktime2."正常<br/>";
+                        $row['static'] = '正常';
+                        /*
+                        //删除此条打卡记录
+                        $row_del = $unusualModel->getById($rs[$k]['id']);
+                        $unusualModel->delete($row_del);
+                        */
+                        $unusualModel->add($row);
+                    }
+                } else {
+                    /***************************************************跨天考勤时段***************************************************/
+                    echo '---跨天考勤时段---<br/>';
+                    //计算时间中间点
+                    $worktime_mid = date('H:i:g',(strtotime($worktime2)+60*60*24+strtotime($worktime1))/2);
+
+                    $worktime1_lasthour = date('H:i:g',(strtotime($worktime1) - 60*60));
+                    $worktime2_nexthour = date('H:i:g',(strtotime($worktime2) + 60*60));
+                    echo "worktime_mid=$worktime_mid <br/> worktime1_lasthour=$worktime1_lasthour  <br/> worktime2_nexthour=$worktime2_nexthour <br/>";
+                    
+                    //上班考勤
+                    if(strtotime($worktime_mid)>strtotime($worktime1)) {
+                        //中间时间在第一天
+                        $_endtime = $worktime_mid;
+                    } else {
+                        //中间时间在第二天
+                        $_endtime = '23:59:59';
+                    }
+                    $Model = M('clocktime');
+                    $rs = $Model
+                    ->where("clockdate BETWEEN '$tt' AND '$tt' AND clocktime BETWEEN '$worktime1_lasthour' AND '$_endtime' AND uid='$uid'")
+                    ->order('clocktime')
+                    ->select();
+                    echo '+++++++++++++++++++++++++++++++++++上班打卡信息++++++++++++++++++++++++++++++++++++++++<br/>';
+                    print_r($rs);
+                    echo '<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>';
+
+                    $row['type'] = 0;
+                    $row['pid'] = $rs[0]['id'];
+                    $row['uid'] = $uid;
+                    $row['clockdate'] = $tt;
+                    $row['clocktime'] = $rs[0]['clocktime'];
+                    $row['standardtime'] = $worktime1;
+
+                    if($rs) {
+                        if(strtotime($rs[0]['clocktime'])<=strtotime($worktime1)+60*10) {
+                            //正常
+                            echo $uid.':'.$rs[0]['clocktime']."<".$worktime1."正常<br/>";
+                            $row['static'] = '正常';
+                            /*
+                            //删除此条打卡记录
+                            $row_del = $unusualModel->getById($rs[0]['id']);
+                            $unusualModel->delete($row_del);
+                            */
+                            $unusualModel->add($row);
+                        } else {
+                            //迟到
+                            echo $uid.':'.$rs[0]['clocktime'].">".$worktime1;
+                            echo "迟到"."<br/>";
+                            $row['static'] = '迟到';
+                            /*
+                            //删除此条打卡记录
+                            $row_del = $unusualModel->getById($rs[0]['id']);
+                            $unusualModel->delete($row_del);
+                            */
+                            $unusualModel->add($row);
+                        }
+                    } else {
+                        //未打卡
+                        echo $uid.':'."未打卡(上班)"."<br/>";
+                        $row['static'] = '未打卡(上班)';
+                        $row['pid'] = 0;
+                        $row['clocktime'] = "00:00:00";
+                        $unusualModel->add($row);
+                    }
+
+                    //下班考勤
+                    $tt_nextday = date('Y-m-d',strtotime($tt)+60*60*24);
+                    if(strtotime($worktime_mid)>strtotime($worktime1)) {
+                        //中间时间在第一天
+                        $Model = M('clocktime');
+                        $rs = $Model
+                        ->where("clockdate BETWEEN '$tt' AND '$tt' AND clocktime BETWEEN '$worktime_mid' AND '23:59:59' AND uid='$uid'")
+                        ->union("SELECT * FROM op_clocktime WHERE clockdate BETWEEN '$tt_nextday' AND '$tt_nextday' AND clocktime BETWEEN '00:00:00' AND '$worktime2_nexthour' AND uid='$uid'")
+                        //->order('clockdate,clocktime')
+                        ->select();
+                        //echo $Model->getLastSql();
+                    } else {
+                        //中间时间在第二天
+                        $Model = M('clocktime');
+                        $rs = $Model
+                        ->where("clockdate BETWEEN '$tt_nextday' AND '$tt_nextday' AND clocktime BETWEEN '$worktime_mid' AND '$worktime2_nexthour'")
+                        ->order('clockdate,clocktime')
+                        ->select();
+                    }
+                    
+                    echo '+++++++++++++++++++++++++++++++++++下班打卡信息++++++++++++++++++++++++++++++++++++++++<br/>';
+                    print_r($rs);
+                    echo '<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>';
+
+                    $k = count($rs) - 1;
                     $row['type'] = 1;
-					$unusualModel->add($row);
-				} else {
-					//正常
-					//echo $uid.':'.$rs[$k]['clocktime'].">".$worktime2."<br/>";
-					$row['static'] = '正常';
-                    $row['type'] = 1;
-					$unusualModel->add($row);
-				}
-                
+                    $row['pid'] = $rs[$k]['id'];
+                    $row['clocktime'] = $rs[$k]['clocktime'];
+                    $row['standardtime'] = $worktime2;
+
+                    $_clockdatetime = $rs[$k]['clockdate'].' '.$rs[$k]['clocktime'];
+                    $_workdatetime2 = $tt_nextday.' '.$worktime2;
+                    if($rs) {
+                        if(strtotime($_clockdatetime)>=strtotime($_workdatetime2)) {
+                            //正常
+                            echo $uid.':'.$_clockdatetime.">=".$_workdatetime2."正常<br/>";
+                            $row['static'] = '正常';
+                            $row['clockdate'] = $rs[$k]['clockdate'];
+                            $unusualModel->add($row);
+                        } else {
+                            //迟到
+                            echo $uid.':'.$_clockdatetime."<".$_workdatetime2;
+                            echo "早退"."<br/>";
+                            $row['static'] = '早退';
+                            $row['clockdate'] = $rs[$k]['clockdate'];
+                            $unusualModel->add($row);
+                        }
+                    } else {
+                        //未打卡
+                        echo $uid.':'."未打卡(下班)"."<br/>";
+                        $row['static'] = '未打卡(下班)';
+                        $row['pid'] = 0;
+                        $row['clockdate'] = $tt_nextday;
+                        $row['clocktime'] = "00:00:00";
+                        $unusualModel->add($row);
+                    }
+                }
 			}
 		}
     }
@@ -130,7 +282,7 @@ class CheckAction extends Action {
     	$start = $this->_get('start');
     	$end = $this->_get('end');
     	R('Check/checkClock',array($start,$end));
-    	//echo 'ok';
+    	echo 'ok';
     }
 
     //休假、出差条检测

@@ -1,3 +1,4 @@
+<?php date_default_timezone_set('PRC');?>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title><?php echo C('SITE_NAME');?></title>
 <link rel="stylesheet" type="text/css" href="__TPL__/css/css.css">
