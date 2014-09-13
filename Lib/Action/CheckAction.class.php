@@ -28,20 +28,15 @@ class CheckAction extends Action {
 			$uid = $uids[$i]['uid'];
 			$teamid = $uids[$i]['teamid'];
             echo '<a style="color:red">==============================================</a><br/>uid='.$uid.'<br/>';
-            /*
-			//查询该用户所属组的排班情况
-			$Model = M('worktime');
-            //$worktime = $Model->getByTeamid($teamid);
-            $worktime = $Model->select("teamid=$teamid AND workdate1<='$start' AND workdate2>='$end' ")->select();
-
-			$worktime1 = $worktime['worktime1'];
-			$worktime2 = $worktime['worktime2'];
-			$Model = M('clocktime');
-            */
             $worktimeModel = M('worktime');
 			//每一天
 			for ($j=0; $j <= $day; $j++) { 
 				$tt = date("Y-m-d",$time1 + 86400 * $j);
+                /*
+                if(date('w',strtotime($tt.' 12:00:00'))==6 || date('w',strtotime($tt.' 12:00:00'))==0) {
+                    continue;
+                }
+                */
                 //查询排班时间
                 $where = "teamid=$teamid AND workdate1<='$tt' AND workdate2>='$tt'";
                 //echo "where = $where";
@@ -59,10 +54,10 @@ class CheckAction extends Action {
                     echo '---正常考勤时段---<br/>';
 
                     //计算时间中间点
-                    $worktime_mid = date('H:i:g',(strtotime($worktime2)-strtotime($worktime1))/2);
+                    $worktime_mid = date('H:i:s',(strtotime($worktime2)-strtotime($worktime1))/2);
 
-                    $worktime1_lasthour = date('H:i:g',(strtotime($worktime1) - 60*60));
-                    $worktime2_nexthour = date('H:i:g',(strtotime($worktime2) + 60*60));
+                    $worktime1_lasthour = date('H:i:s',(strtotime($worktime1) - 60*60));
+                    $worktime2_nexthour = date('H:i:s',(strtotime($worktime2) + 60*60));
                     echo "worktime_mid=$worktime_mid <br/> worktime1_lasthour=$worktime1_lasthour <br/> worktime2_nexthour=$worktime2_nexthour <br/>";
 
                     //查询当天打卡信息
@@ -75,10 +70,11 @@ class CheckAction extends Action {
                     echo '<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>';
 
                     $row['type'] = 0;
-                    $row['pid'] = $rs[0]['id'];
+                    $row['vacid'] = $rs[0]['id'];
                     $row['uid'] = $uid;
                     $row['clockdate'] = $tt;
                     $row['clocktime'] = $rs[0]['clocktime'];
+                    $row['standarddate'] = $tt;
                     $row['standardtime'] = $worktime1;
 
                     //如果表中含有相同记录
@@ -89,7 +85,7 @@ class CheckAction extends Action {
                         //未打卡
                         echo $uid.':'."未打卡(上班)"."<br/>";
                         $row['static'] = '未打卡(上班)';
-                        $row['pid'] = 0;
+                        $row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
                         $unusualModel->add($row);
                     } elseif (strtotime($rs[0]['clocktime'])>strtotime($worktime1)+10*60) {
@@ -97,28 +93,18 @@ class CheckAction extends Action {
                         echo $uid.':'.$rs[0]['clocktime'].">".$worktime1;
                         echo "迟到"."<br/>";
                         $row['static'] = '迟到';
-                        /*
-                        //删除此条打卡记录
-                        $row_del = $unusualModel->getById($rs[0]['id']);
-                        $unusualModel->delete($row_del);
-                        */
                         $unusualModel->add($row);
                     } else {
                         //正常
                         echo $uid.':'.$rs[0]['clocktime']."<".$worktime1."正常<br/>";
                         $row['static'] = '正常';
-                        /*
-                        //删除此条打卡记录
-                        $row_del = $unusualModel->getById($rs[0]['id']);
-                        $unusualModel->delete($row_del);
-                        */
                         $unusualModel->add($row);
                     }
 
                     //最后打卡时间
                     $k = count($rs)-1;
                     $row['type'] = 1;
-                    $row['pid'] = $rs[$k]['id'];
+                    $row['vacid'] = $rs[$k]['id'];
                     $row['clocktime'] = $rs[$k]['clocktime'];
                     $row['standardtime'] = $worktime2;
                     //下班考勤
@@ -126,7 +112,7 @@ class CheckAction extends Action {
                         //未打卡
                         echo $uid.':'."未打卡(下班)"."<br/>";
                         $row['static'] = '未打卡(下班)';
-                        $row['pid'] = 0;
+                        $row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
                         $unusualModel->add($row);
                     } elseif (strtotime($rs[$k]['clocktime'])<strtotime($worktime2)) {
@@ -134,31 +120,21 @@ class CheckAction extends Action {
                         echo $uid.':'.$rs[$k]['clocktime']."<".$worktime2;
                         echo "早退"."<br/>";
                         $row['static'] = '早退';
-                        /*
-                        //删除此条打卡记录
-                        $row_del = $unusualModel->getById($rs[$k]['id']);
-                        $unusualModel->delete($row_del);
-                        */
                         $unusualModel->add($row);
                     } else {
                         //正常
                         echo $uid.':'.$rs[$k]['clocktime'].">".$worktime2."正常<br/>";
                         $row['static'] = '正常';
-                        /*
-                        //删除此条打卡记录
-                        $row_del = $unusualModel->getById($rs[$k]['id']);
-                        $unusualModel->delete($row_del);
-                        */
                         $unusualModel->add($row);
                     }
                 } else {
                     /***************************************************跨天考勤时段***************************************************/
                     echo '---跨天考勤时段---<br/>';
                     //计算时间中间点
-                    $worktime_mid = date('H:i:g',(strtotime($worktime2)+60*60*24+strtotime($worktime1))/2);
+                    $worktime_mid = date('H:i:s',(strtotime($worktime2)+60*60*24+strtotime($worktime1))/2);
 
-                    $worktime1_lasthour = date('H:i:g',(strtotime($worktime1) - 60*60));
-                    $worktime2_nexthour = date('H:i:g',(strtotime($worktime2) + 60*60));
+                    $worktime1_lasthour = date('H:i:s',(strtotime($worktime1) - 60*60));
+                    $worktime2_nexthour = date('H:i:s',(strtotime($worktime2) + 60*60));
                     echo "worktime_mid=$worktime_mid <br/> worktime1_lasthour=$worktime1_lasthour  <br/> worktime2_nexthour=$worktime2_nexthour <br/>";
                     
                     //上班考勤
@@ -179,10 +155,11 @@ class CheckAction extends Action {
                     echo '<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>';
 
                     $row['type'] = 0;
-                    $row['pid'] = $rs[0]['id'];
+                    $row['vacid'] = $rs[0]['id'];
                     $row['uid'] = $uid;
                     $row['clockdate'] = $tt;
                     $row['clocktime'] = $rs[0]['clocktime'];
+                    $row['standarddate'] = $tt;
                     $row['standardtime'] = $worktime1;
 
                     if($rs) {
@@ -190,29 +167,19 @@ class CheckAction extends Action {
                             //正常
                             echo $uid.':'.$rs[0]['clocktime']."<".$worktime1."正常<br/>";
                             $row['static'] = '正常';
-                            /*
-                            //删除此条打卡记录
-                            $row_del = $unusualModel->getById($rs[0]['id']);
-                            $unusualModel->delete($row_del);
-                            */
                             $unusualModel->add($row);
                         } else {
                             //迟到
                             echo $uid.':'.$rs[0]['clocktime'].">".$worktime1;
                             echo "迟到"."<br/>";
                             $row['static'] = '迟到';
-                            /*
-                            //删除此条打卡记录
-                            $row_del = $unusualModel->getById($rs[0]['id']);
-                            $unusualModel->delete($row_del);
-                            */
                             $unusualModel->add($row);
                         }
                     } else {
                         //未打卡
                         echo $uid.':'."未打卡(上班)"."<br/>";
                         $row['static'] = '未打卡(上班)';
-                        $row['pid'] = 0;
+                        $row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
                         $unusualModel->add($row);
                     }
@@ -243,7 +210,7 @@ class CheckAction extends Action {
 
                     $k = count($rs) - 1;
                     $row['type'] = 1;
-                    $row['pid'] = $rs[$k]['id'];
+                    $row['vacid'] = $rs[$k]['id'];
                     $row['clocktime'] = $rs[$k]['clocktime'];
                     $row['standardtime'] = $worktime2;
 
@@ -268,13 +235,14 @@ class CheckAction extends Action {
                         //未打卡
                         echo $uid.':'."未打卡(下班)"."<br/>";
                         $row['static'] = '未打卡(下班)';
-                        $row['pid'] = 0;
+                        $row['vacid'] = 0;
                         $row['clockdate'] = $tt_nextday;
                         $row['clocktime'] = "00:00:00";
                         $unusualModel->add($row);
                     }
                 }
 			}
+            $this->checkOverwork($start,$end,$uid);
 		}
     }
 
@@ -333,13 +301,24 @@ class CheckAction extends Action {
     	$vacList = $vacModel->where("uid='$uid' AND isapproved=1 AND transtype=1 AND begindate BETWEEN '$start' AND '$end' ")->order('applytime')->select();
     	//print_r($vacList);
     	for($i=0;$i<count($vacList);$i++) {
+
+            $_vacBegindate = $vacList[$i]['begindate'];
+            $_vacBegintime = $vacList[$i]['begintime'];
+            $_vacEnddate = $vacList[$i]['enddate'];
+            $_vacEndtime = $vacList[$i]['endtime'];
+
     		$unusModel = M('unusualtime');
     		//查询请假时段异常记录
     		$beginDatetime = $vacList[$i]['begindate'].' '.$vacList[$i]['begintime'];
     		$endDatetime = $vacList[$i]['enddate'].' '.$vacList[$i]['endtime'];
-    		$unsuList = $unusModel->where("uid='$uid' AND standardtime BETWEEN '$beginDatetime' AND '$endDatetime'")->order('clockdate,clocktime')->select();
-    		//print_r($unsuList);
+    		$unsuList = $unusModel
+            ->where("type=1 AND uid='$uid' AND CONCAT(clockdate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")
+            ->order('clockdate,clocktime')->select();
+    		echo "============================考勤记录======================<br/>";
+            print_r($unsuList);
+            echo "<br/>===========================================================<br/>";
     		for($j=0;$j<count($unsuList);$j++) {
+                /*
     			$unsuList[$j]['vacid'] = $vacList[$i]['id'];
     			//判断该条是上午 or 下午
     			if(strtotime($unsuList[$j]['standardtime'])<strtotime('12:00:00')) {
@@ -367,6 +346,29 @@ class CheckAction extends Action {
     					$unsuList[$j]['ps'] = '加班';
     				}
     			}
+                */
+                $cl_startDatetime = $unsuList[$j]['clockdate'].' '.$_vacEndtime;
+                $cl_endDatetime = date('Y-m-d H:i:s',(strtotime($cl_startDatetime)+60*60));
+                //在clocktime表里查询新下班打卡时间段
+                $clockModel = M('clocktime');
+                $rs = $clockModel
+                ->where("uid='$uid' AND CONCAT(clockdate,' ',clocktime) BETWEEN '$cl_startDatetime' AND '$cl_endDatetime'")
+                ->order('clockdate,clocktime')
+                ->select();
+                echo "============================打卡记录======================<br/>";
+                echo "SQL:".$clockModel->getLastSql()."<br/>";
+                print_r($rs);
+                echo "<br/>===========================================================<br/>";
+                if(!$rs) {
+                    $unsuList[$j]['static'] = '早退';
+                    $unsuList[$j]['ps'] = '加班';
+                } else {
+                    $k = count($rs) - 1;
+                    $unsuList[$j]['clocktime'] = $rs[$k]['clocktime'];
+                    $unsuList[$j]['static'] = '正常';
+                    $unsuList[$j]['ps'] = '加班';
+                }
+                $unsuList[$j]['standardtime'] = $vacList[$i]['endtime'];
     			$rs = $unusModel->save($unsuList[$j]);
     			//print_r($unsuList[$j]);
     			if(!$rs) {
