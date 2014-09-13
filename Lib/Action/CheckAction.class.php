@@ -32,11 +32,11 @@ class CheckAction extends Action {
 			//每一天
 			for ($j=0; $j <= $day; $j++) { 
 				$tt = date("Y-m-d",$time1 + 86400 * $j);
-                /*
+                //echo $tt."星期：".date('w',strtotime($tt.' 12:00:00'))."<br/>";
                 if(date('w',strtotime($tt.' 12:00:00'))==6 || date('w',strtotime($tt.' 12:00:00'))==0) {
                     continue;
                 }
-                */
+                
                 //查询排班时间
                 $where = "teamid=$teamid AND workdate1<='$tt' AND workdate2>='$tt'";
                 //echo "where = $where";
