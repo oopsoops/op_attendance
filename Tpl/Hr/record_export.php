@@ -11,7 +11,7 @@
 	        <td>结束日期：</td>
 	        <td><input name="export_end_time"   id="export_end_time" type="text" style="width:100px" /></td>
 	        <td><input type="submit"  value="导出" style="width:80px" /></td>
-	        <td><a class="easyui-linkbutton" onclick="import_clear()">清空</a></td>
+	        <td><a class="easyui-linkbutton" onclick="export_clear()">清空</a></td>
 	        <!-- <td><a class="easyui-linkbutton" iconCls="icon-search" onclick="checkClock()">分析</a></td> -->
 	    </tr>
     </table>

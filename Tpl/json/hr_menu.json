@@ -59,6 +59,12 @@
 		 "attributes":{  
             "url":"Hr/record_export"
         }
+	},{
+		"text":"年假调休",
+		"iconCls":"icon-project",
+		 "attributes":{  
+            "url":"Hr/vacation"
+        }
 	}]
 },{
 	"text":"员工管理",
