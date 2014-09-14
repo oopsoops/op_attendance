@@ -65,6 +65,7 @@
 				$uid = $_SESSION['uid'];
 			}else
 				$uid=$id;
+			
 			$Model=M('userinfo');
 			$tidrow=$Model->getByUid($uid);
 			$tid=$tidrow['usertypeid'];
@@ -139,6 +140,49 @@
 			echo "1";
 			
 		}
+		
+		public function allJbApply(){
+			$begindate=$this->_post('begindate');
+			$enddate=$this->_post('enddate');
+			$begintime=$this->_post('begintime');
+			$endtime=$this->_post('endtime');
+			$reason=$this->_post('reason');
+			$transdm=$this->_post('transdm');
+			$id=$this->_post('uid');
+			if($id==""){
+				$uid = $_SESSION['uid'];
+			}else
+				$uid=$id;
+			$model=M('staffinfo');
+			$row=$model->getByUid($uid);
+			$tid=$row['teamid'];
+			$did=$row['departmentid'];
+			$rows=$model->field("op_staffinfo.uid")
+				->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
+				->where("op_usertype.power=4")->select();
+			$manager=$rows[0]['uid'];
+			
+			$num=$model->where("teamid='".$tid."'")->count();
+			$rows=$model->where("teamid='".$tid."'")->select();
+			for($i=0;$i<$num;$i++){
+				$uid=$rows[$i]['uid'];
+				$astatus['uid']=$uid;
+				$astatus['transtype']=$transdm;
+				$astatus['begindate']=$begindate;
+				$astatus['begintime']=$begintime;
+				$astatus['status']="1";
+				$astatus['enddate']=$enddate;
+				$astatus['endtime']=$endtime;
+				$astatus['applytime']=date('Y-m-d H:i:s');
+				$astatus['departmanagerid']=$manager;
+				$astatus['reason']=$reason;
+				$model=M('vacationstatus');
+				$rs=$model->add($astatus);
+			}
+			echo "1";
+			
+		
+		}
 /*****************************************员工事务申请页面end*****************************************/
 
 /*****************************************审批页面begin*****************************************/
@@ -198,7 +242,7 @@
 		}
 		else if($power==5){
 			$status=3;
-			$where="status=3 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+			$where="status=3  and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
 		}else{
 			$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
 		}
@@ -208,7 +252,7 @@
 		$num=$model->where($where)->count();
 	//	echo $model->where($where)->getLastSql();
 		$list=$model->field("op_vacationstatus.uid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,
-op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus.transpot,op_staffinfo.holiday as days,		op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.fee,op_vacationstatus.transpot,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate")
+op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus.transpot as days,		op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.fee,op_vacationstatus.transpot,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->join("op_teaminfo ON op_staffinfo.teamid=op_teaminfo.tid")
 		->join("op_department ON op_staffinfo.departmentid=op_department.did")
@@ -216,10 +260,39 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		->order("op_vacationstatus.applytime desc")
 		->limit("$start,$rows")
 		->select();
-		//echo $model->where($where)->getLastSql();
+	//	echo $model->where($where)->getLastSql();
 		echo dataToJson($list,$num);
 		
 	}
+	
+	public function jbAllApply(){
+		$uid = $_SESSION['uid'];
+		$typeid=$this->_get('tid');
+		$page = $this->_post('page');
+		if($page<1) $page=1;
+		$rows = $this->_post('rows');
+		if($rows<1) $rows=10;
+		$start = ($page-1)*$rows;
+		
+		
+		
+		$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+		$model=M('vacationstatus');
+		$num=$model->where($where)->count();
+	//	echo $model->where($where)->getLastSql();
+		$list=$model->field("distinct teamname,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,	op_vacationstatus.begindate,op_vacationstatus.enddate,reason")
+		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
+		->join("op_teaminfo ON op_staffinfo.teamid=op_teaminfo.tid")
+		->join("op_department ON op_staffinfo.departmentid=op_department.did")
+		->where($where)
+		->order("op_vacationstatus.applytime desc")
+		->limit("$start,$rows")
+		->select();
+	//	echo $model->where($where)->getLastSql();
+		echo dataToJson($list,$num);
+		
+	}
+	
 	
 
 /*****************************************审批页面end*****************************************/
@@ -272,6 +345,22 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			echo $data;
 		}
 	}
+	
+	public function rejectallTrans(){
+		$vid=$this->_post('applytime');
+		$model=M('vacationstatus');
+		$rs=$model->getByApplytime($vid);
+		$rs['isrejected']=1;
+		$result=$model->save($rs);
+		if(!$result){
+			echo "驳回失败,请重试！";
+			exit;
+		}
+		else{
+			$data="1";
+			echo $data;
+		}
+	}
 
 /*****************************************驳回申请end*******************************************/		
 /*****************************************批准申请begin*******************************************/
@@ -292,6 +381,25 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			echo $data;
 		}
 	}
+	
+	public function approveallTrans(){
+		
+		$id=$this->_post('applytime');
+		
+		$model=M('vacationstatus');
+		$rs=$model->getByApplytime($id);
+		$rs['isapproved']=1;
+		$result=$model->save($rs);
+		if(!$result){
+			echo "操作失败,请重试！";
+			exit;
+		}
+		else{
+			$data="1";
+			echo $data;
+		}
+	}
+
 
 /*****************************************批准申请end*******************************************/		
 	
