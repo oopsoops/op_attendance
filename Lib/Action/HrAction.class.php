@@ -187,40 +187,27 @@ class HrAction extends Action {
 			
 			
 		
-		if($department!=''&$where!='')
+		if($department!='')
 		{
 			$where="$where and op_department.departmentname like '%$department%' ";
 			}
 			
-			else if ($department!='')
-			{
-				$where="op_department.departmentname like '%$department%' ";
-				}
-		
-		if($username!=''&$where!='') {
+			
+		if($username!='') {
 			$where= "$where and username='"."$username"."' ";
 		}
-		else if($username!='')
-		{
-			$where= "username='"."$username"."' ";
-			}
 		
 		
-		if($search_begin_time!=''&$where!='') {
+		
+		if($search_begin_time!='') {
 			$where= "$where and op_unusualtime.clockdate>='"."$search_begin_time"."' ";
 		}
-		else if($search_begin_time!='')
-		{
-			$where= "op_unusualtime.clockdate>='"."$search_begin_time"."' ";
-			}
 		
-		if($search_end_time!=''&$where!='') {
+		
+		if($search_end_time!='') {
 			$where = "$where and op_unusualtime.clockdate<='"."$search_end_time"."' ";
 		}
-		else if($search_end_time!='')
-		{
-			$where = "op_unusualtime.clockdate<='"."$search_end_time"."' ";
-			}
+		
 	   
 	   
 
@@ -1609,6 +1596,7 @@ public function loginDetails(){
 		
 		$username=$this->_post('username');
 		$uid=$this->_post('uid');
+		$department=$this->_post('department');
 		
 		$staff=M('staffinfo');
 		
@@ -1619,12 +1607,20 @@ public function loginDetails(){
 			$where = " $where and op_staffinfo.uid = '"."$uid"."' " ;
 		}
 		
-		if($username!=''&$where!='') {
+		if($username!='') {
 			$where= "$where and username='"."$username"."' ";
 		}
 		
+		if($department!='')
+		{
+			
+			$where="$where and op_department.departmentname like '%$department%' ";
+			
+			}
+		
 		$cc = $staff
 		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
+		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->where($where)
 		 ->count();
 		 
@@ -1632,12 +1628,12 @@ public function loginDetails(){
 		 
 		$vacation=$staff
 		->field("op_staffinfo.uid as uid,op_staffinfo.username as username,op_staffinfo.THoliday as tholiday,op_staffinfo.TRest as trest,
-		op_staffinfo.LHoliday as lholiday,op_staffinfo.LRest as lrest,op_department.departmentname as department
+		op_staffinfo.LHoliday as lholiday,op_staffinfo.LRest as lrest,op_department.departmentname as department,op_department.did as did
 		")
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
 		->where($where)
-		->order('op_staffinfo.uid asc')
+		->order('op_department.did asc,op_staffinfo.uid asc')
 		->limit("$start,$rows")
 		->select();
 		
@@ -1651,7 +1647,7 @@ public function loginDetails(){
 		
 		
 		
-		public function exportVacation()
+public function exportVacation()
 		{
 			if(!file_exists('d:\excel')) {
  			mkdir('d:\excel');
@@ -1664,6 +1660,7 @@ public function loginDetails(){
 		
 		$uid=$this->_post('uid');
 		
+		$department=$this->_post('departmen');
 					
 		
 		$where= "(op_usertype.power<5 or op_usertype.power=7)";
@@ -1672,10 +1669,16 @@ public function loginDetails(){
 			$where = " $where and op_staffinfo.uid = '"."$uid"."' " ;
 		}
 		
-		if($username!=''&$where!='') {
+		if($username!='') {
 			$where= "$where and username='"."$username"."' ";
 		}
 		
+		if($department!='')
+		{
+			
+			$where="$where and op_department.departmentname like '%$department%' ";
+			
+			}
 		   
           error_reporting(E_ALL);
            date_default_timezone_set('Asia/Shanghai');
@@ -1685,15 +1688,16 @@ public function loginDetails(){
 			
 		$vacation=$staff
 		->field("op_staffinfo.uid as uid,op_staffinfo.username as username,op_staffinfo.THoliday as tholiday,op_staffinfo.TRest as trest,
-		op_staffinfo.LHoliday as lholiday,op_staffinfo.LRest as lrest,op_department.departmentname as department
+		op_staffinfo.LHoliday as lholiday,op_staffinfo.LRest as lrest,op_department.departmentname as department,op_department.did as did
 		")
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
 		->where($where)
-		->order('op_staffinfo.uid asc')
+		->order('op_department.did asc,op_staffinfo.uid asc')
 		->select();
 		$flag=0;
 			foreach($vacation as $k => $temp){
+				$pdata[$flag]['department']=$temp['department'];
 				$pdata[$flag]['uid']=$temp['uid'];
 				$pdata[$flag]['username']=$temp['username'];
 				$pdata[$flag]['tholiday']=$temp['tholiday'];
@@ -1722,12 +1726,13 @@ public function loginDetails(){
 		  $objPHPExcel->setActiveSheetIndex(0)
  
                          //Excel的第A列，uid是你查出数组的键值，下面以此类推
-                           ->setCellValue('A'.$num, '员工工号')    
-                           ->setCellValue('B'.$num,'员工姓名' )
-                           ->setCellValue('C'.$num, '今年可用年假')
-                            ->setCellValue('D'.$num, '今年可用调休')
-                             ->setCellValue('E'.$num, '去年剩余年假')
-                               ->setCellValue('F'.$num, '去年剩余调休');
+                           ->setCellValue('A'.$num, '员工部门')    
+                           ->setCellValue('B'.$num,'员工工号' )
+						    ->setCellValue('C'.$num,'员工姓名' )
+                           ->setCellValue('D'.$num, '今年可用年假')
+                            ->setCellValue('E'.$num, '今年可用调休')
+                             ->setCellValue('F'.$num, '去年剩余年假')
+                               ->setCellValue('G'.$num, '去年剩余调休');
 		  
 		  
 		  
@@ -1739,12 +1744,13 @@ public function loginDetails(){
               $objPHPExcel->setActiveSheetIndex(0)
  
                          //Excel的第A列，uid是你查出数组的键值，下面以此类推
-                           ->setCellValue('A'.$num, $v['uid'])    
-                           ->setCellValue('B'.$num, $v['username'])
-                           ->setCellValue('C'.$num, $v['tholiday'])
-                            ->setCellValue('D'.$num, $v['trest'])
-                             ->setCellValue('E'.$num, $v['lholiday'])
-                               ->setCellValue('F'.$num, $v['lrest']);
+                           ->setCellValue('A'.$num, $v['department'])    
+                           ->setCellValue('B'.$num, $v['uid'])
+						    ->setCellValue('C'.$num, $v['username'])
+                           ->setCellValue('D'.$num, $v['tholiday'])
+                            ->setCellValue('E'.$num, $v['trest'])
+                             ->setCellValue('F'.$num, $v['lholiday'])
+                               ->setCellValue('G'.$num, $v['lrest']);
 							   
 							   
              }

@@ -6,6 +6,8 @@
 	<table class="tb">
 	    
 		<tr>
+           <td>员工部门：</td>
+	        <td><input name="department"   id="department" type="text" style="width:100px" /></td>
 	    	<td>员工姓名：</td>
 	        <td><input name="username"  id="username" type="text" style="width:100px" /></td>
 	        <td>员工工号：</td>
@@ -67,7 +69,7 @@ function export_clear()
 
 function hrsearch_vacationmanage() {
 	$('#grid_hrvacationmanage').datagrid('loadData', { total:0, rows:[]});
-	$('#grid_hrvacationmanage').datagrid('load', {username:$('#username').val(), uid:$('#uid').val()});
+	$('#grid_hrvacationmanage').datagrid('load', {username:$('#username').val(),department:$('#department').val(), uid:$('#uid').val()});
 	
 }
 
