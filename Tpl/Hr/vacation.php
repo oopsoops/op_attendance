@@ -16,7 +16,7 @@
             
 	        <!-- <td><a class="easyui-linkbutton" iconCls="icon-search" onclick="checkClock()">分析</a></td> -->
 	    </tr>
-       <tr></tr>
+      
     </table>
  </form>
 </div>
