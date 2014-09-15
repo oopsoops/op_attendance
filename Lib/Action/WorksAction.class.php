@@ -66,7 +66,7 @@
 			}else
 				$uid=$id;
 			
-			$Model=M('userinfo');
+			$Model=M('staffinfo');
 			$tidrow=$Model->getByUid($uid);
 			$tid=$tidrow['usertypeid'];
 			$Model=M('usertype');
@@ -74,12 +74,13 @@
 			$power=$powerrow['power'];
 			$status=1;
 			if($power==1||$power==3||$power==7){
-				$model=M('userinfo');
+				$model=M('staffinfo');
 				$row=$model->getByUid($uid);
 				$departmentid=$row['departmentid'];
+				$model=M('userinfo');
 				$rows=$model->field("op_userinfo.uid,op_userinfo.email")
 				->join('op_usertype ON op_userinfo.usertypeid=op_usertype.tid ')
-				->where("op_usertype.power=4")->select();
+				->where("op_usertype.power=4 and op_userinfo.departmentid='".$departmentid."'")->select();
 				$managerid=$rows[0]['uid'];
 				$email=$rows[0]['email'];
 			}
@@ -136,7 +137,7 @@
 			}
 			
 			$model->commit();
-			$this->sendMail($email);
+	//		$this->sendMail($email);
 			echo "1";
 			
 		}
@@ -159,7 +160,7 @@
 			$did=$row['departmentid'];
 			$rows=$model->field("op_staffinfo.uid")
 				->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
-				->where("op_usertype.power=4")->select();
+				->where("op_usertype.power=4 and op_staffinfo.departmentid='".$did."'")->select();
 			$manager=$rows[0]['uid'];
 			
 			$num=$model->where("teamid='".$tid."'")->count();
@@ -266,8 +267,8 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 	}
 	
 	public function jbAllApply(){
-		$uid = "100004";//$_SESSION['uid'];
-		$typeid="1";//$this->_get('tid');
+		$uid = $_SESSION['uid'];
+		$typeid=$this->_get('tid');
 		$page = $this->_post('page');
 		if($page<1) $page=1;
 		$rows = $this->_post('rows');
@@ -436,7 +437,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			->where("op_usertype.power=2")
 			->select();
 			$email=$rs[0]['email'];
-			$this->sendMail($email);
+	//		$this->sendMail($email);
 			$data="1";
 			echo $data;
 		}
@@ -463,7 +464,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			->where("op_usertype.power=5")
 			->select();
 			$email=$rs[0]['email'];
-			$this->sendMail($email);
+	//		$this->sendMail($email);
 			$data="1";
 			echo $data;
 		}
