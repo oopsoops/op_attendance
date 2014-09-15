@@ -33,25 +33,25 @@
               <td colspan="2"><input type="text" name="teamid" readonly="readonly" value="<?php echo $userinfo['teamname'];?>" /></td>
               </tr>
               <tr>
-    	<td>去年剩余年假：</td>
+    	<td>去年剩余年假（天）：</td>
         <td><input type="text" name="lholiday"   value="<?php echo $userinfo['lholiday'];?>"/></td>
         
     </tr>
     
          <tr>
-    	<td>今年可用年假：</td>
+    	<td>今年可用年假（天）：</td>
         <td><input type="text" name="tholiday"  value="<?php echo $userinfo['tholiday'];?>"/></td>
         
     </tr>
     
          <tr>
-    	<td>去年剩余调休：</td>
+    	<td>去年剩余调休（小时）：</td>
         <td><input type="text" name="lrest" value="<?php echo $userinfo['lrest'];?>"/></td>
         
     </tr>
     
          <tr>
-    	<td>今年可用调休：</td>
+    	<td>今年可用调休（小时）：</td>
         <td><input type="text" name="trest"  value="<?php echo $userinfo['trest'];?>"/></td>
         
     </tr>

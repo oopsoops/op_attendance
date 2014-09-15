@@ -303,7 +303,13 @@ public function newStaff() {
 					
 		$staffinfo['updatetime'] = date('Y-m-d H:i:s');
 		
+		if(fmod(floatval($staffinfo['LHoliday']*10),5)!=0||fmod(floatval($staffinfo['THoliday']*10),5)!=0||fmod(floatval($staffinfo['LRest']*10),5)!=0||fmod(floatval($staffinfo['TRest']*10)		
+		,5)!=0)
+	{
+		echo 'timeerror';
+			    exit;
 		
+		}
 		
 		
 		if($loginname=='')
@@ -633,7 +639,13 @@ public function staff_modify_do(){
 	$unusualtimeinfo=M('unusualtime');
 	
 	//$power = M('usertype');
-	
+	if(fmod(floatval($lholiday*10),5)!=0||fmod(floatval($tholiday*10),5)!=0||fmod(floatval($lrest*10),5)!=0||fmod(floatval($trest*10),5)!=0)
+	{
+		echo 'timeerror';
+			    exit;
+		
+		}
+		
 
 		//$power=$power->getByTid($stafftype);
 		//判断是否修改uid
@@ -1729,10 +1741,10 @@ public function exportVacation()
                            ->setCellValue('A'.$num, '员工部门')    
                            ->setCellValue('B'.$num,'员工工号' )
 						    ->setCellValue('C'.$num,'员工姓名' )
-                           ->setCellValue('D'.$num, '今年可用年假')
-                            ->setCellValue('E'.$num, '今年可用调休')
-                             ->setCellValue('F'.$num, '去年剩余年假')
-                               ->setCellValue('G'.$num, '去年剩余调休');
+                           ->setCellValue('D'.$num, '今年可用年假（天）')
+                            ->setCellValue('E'.$num, '今年可用调休（小时）')
+                             ->setCellValue('F'.$num, '去年剩余年假（天）')
+                               ->setCellValue('G'.$num, '去年剩余调休（小时）');
 		  
 		  
 		  

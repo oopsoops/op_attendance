@@ -48,25 +48,25 @@
     
     </tr>
      <tr>
-    	<td>去年剩余年假：</td>
+    	<td>去年剩余年假（天）：</td>
         <td><input type="text" name="lholiday" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['lholiday'];?>"/></td>
         
     </tr>
     
          <tr>
-    	<td>今年可用年假：</td>
+    	<td>今年可用年假（天）：</td>
         <td><input type="text" name="tholiday" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['tholiday'];?>"/></td>
         
     </tr>
     
          <tr>
-    	<td>去年剩余调休：</td>
+    	<td>去年剩余调休（小时）：</td>
         <td><input type="text" name="lrest" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['lrest'];?>"/></td>
         
     </tr>
     
          <tr>
-    	<td>今年可用调休：</td>
+    	<td>今年可用调休（小时）：</td>
         <td><input type="text" name="trest" class="easyui-validatebox" required missingMessage="必填" value="<?php echo $userinfo[0]['trest'];?>"/></td>
         
     </tr>
@@ -143,9 +143,13 @@ function modify_staff_do() {
 			return $('#form_modify_staff').form('validate');
 		},  
 		success:function(data){ 
+		if(data=='timeerror')
+		{
+			  $.messager.alert('提示', '年假或调休的最小单位为0.5！'); 
+			
+			}
 		
-		
-		  if(data =='haveexist')
+		  else if(data =='haveexist')
 		  {
 			  
 			  $.messager.alert('提示', '该登录账户名称已存在！'); 

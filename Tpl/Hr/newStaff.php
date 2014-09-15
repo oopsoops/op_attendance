@@ -53,25 +53,25 @@
     </tr>
     
      <tr>
-    	<td>去年剩余年假：</td>
+    	<td>去年剩余年假（天）：</td>
         <td><input type="text" name="lholiday" class="easyui-validatebox" required missingMessage="必填" value="0.0"/></td>
         
     </tr>
     
          <tr>
-    	<td>今年可用年假：</td>
+    	<td>今年可用年假（天）：</td>
         <td><input type="text" name="tholiday" class="easyui-validatebox" required missingMessage="必填" value="0.0"/></td>
         
     </tr>
     
          <tr>
-    	<td>去年剩余调休：</td>
+    	<td>去年剩余调休（小时）：</td>
         <td><input type="text" name="lrest" class="easyui-validatebox" required missingMessage="必填" value="0.0"/></td>
         
     </tr>
     
          <tr>
-    	<td>今年可用调休：</td>
+    	<td>今年可用调休（小时）：</td>
         <td><input type="text" name="trest" class="easyui-validatebox" required missingMessage="必填" value="0.0"/></td>
         
     </tr>
@@ -161,7 +161,13 @@ function new_staff_do() {
 		},  
 		success:function(data){  
 		
-			if(data == 'loginexist')
+		if(data=='timeerror')
+		{
+			  $.messager.alert('提示', '年假或调休的最小单位为0.5！'); 
+			
+			}
+		
+			else if(data == 'loginexist')
 			{
 				$.messager.alert('提示','该登录账号已经存在！');
 				
