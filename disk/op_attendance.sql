@@ -9,7 +9,7 @@
  Target Server Version : 50509
  File Encoding         : utf-8
 
- Date: 09/13/2014 23:12:17 PM
+ Date: 09/16/2014 00:30:55 AM
 */
 
 SET NAMES utf8;
@@ -71,13 +71,13 @@ CREATE TABLE `op_log` (
   `logintime` datetime DEFAULT NULL,
   `quittime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 --  Records of `op_log`
 -- ----------------------------
 BEGIN;
-INSERT INTO `op_log` VALUES ('1', '1002', '2014-09-11 21:35:03', null), ('2', '100002', '2014-09-12 00:54:13', null), ('3', '100003', '2014-09-13 19:27:17', null), ('4', '100002', '2014-09-13 20:00:03', null), ('5', '100002', '2014-09-13 20:40:14', null), ('6', '100005', '2014-09-13 20:41:17', null), ('7', '100004', '2014-09-13 20:41:25', null), ('8', '100005', '2014-09-13 20:42:18', null), ('9', '100002', '2014-09-13 20:46:49', null);
+INSERT INTO `op_log` VALUES ('1', '1002', '2014-09-12 23:45:42', null);
 COMMIT;
 
 -- ----------------------------
@@ -94,6 +94,10 @@ CREATE TABLE `op_sample` (
   `phone` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `team` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
+  `THoliday` float NOT NULL DEFAULT '0',
+  `LHoliday` float NOT NULL DEFAULT '0',
+  `TRest` float NOT NULL DEFAULT '0',
+  `LRest` float NOT NULL DEFAULT '0',
   PRIMARY KEY (`uid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -101,7 +105,7 @@ CREATE TABLE `op_sample` (
 --  Records of `op_sample`
 -- ----------------------------
 BEGIN;
-INSERT INTO `op_sample` VALUES ('888', '张XX', '1', '1', '2008-08-08', '2', '137XXXXXXXX', '2', 'oops@juying.com');
+INSERT INTO `op_sample` VALUES ('888', '张XX', '1', '1', '2008-08-08', '2', '137XXXXXXXX', '2', 'oops@juying.com', '7', '3.5', '2.5', '6');
 COMMIT;
 
 -- ----------------------------
@@ -112,15 +116,18 @@ CREATE TABLE `op_staffinfo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` varchar(11) NOT NULL,
   `username` varchar(255) NOT NULL,
-  `departmentid` int(11) DEFAULT NULL,
+  `departmentid` int(11) NOT NULL,
   `phone` varchar(255) DEFAULT NULL,
   `costcenterid` int(11) DEFAULT NULL,
   `entrydate` date DEFAULT NULL,
-  `usertypeid` int(11) DEFAULT NULL,
+  `usertypeid` int(11) NOT NULL,
   `teamid` int(11) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `updatetime` datetime DEFAULT NULL,
-  `holiday` float DEFAULT NULL,
+  `LHoliday` float NOT NULL DEFAULT '0',
+  `THoliday` float NOT NULL DEFAULT '0',
+  `LRest` float NOT NULL DEFAULT '0',
+  `TRest` float NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
@@ -128,7 +135,7 @@ CREATE TABLE `op_staffinfo` (
 --  Records of `op_staffinfo`
 -- ----------------------------
 BEGIN;
-INSERT INTO `op_staffinfo` VALUES ('1', '100001', '产线员工', '1', null, '1', '2014-06-19', '1', '2', null, '2014-06-19 14:06:50', null), ('2', '100002', '人事经理', '2', null, '1', '2014-06-19', '2', '1', '732121339@qq.com', '2014-06-19 23:29:00', null), ('3', '100003', '产线班长', '1', '1111', '1', '2014-07-03', '3', '2', null, '2014-07-15 21:24:09', null), ('4', '100004', '部门经理', '1', '2323', '1', '2014-07-01', '4', '1', null, '2014-07-01 21:24:46', null), ('5', '100005', '老板', '1', '212', '1', '2014-07-01', '5', '1', '732121339@qq.com', '2014-07-08 21:25:22', null), ('6', '100006', '管理员', '1', '121', '1', '2014-07-01', '6', '1', null, '2014-07-01 21:26:18', null), ('8', '100010', '李伟', '1', '13000000000', '1', '2014-09-08', '1', '2', 'ewewe@163.com', '2014-09-08 18:17:57', null), ('9', '100011', 'C组员工1', '1', '13000000000', '1', '2014-09-09', '1', '4', 'dsfwe@163.com', '2014-09-09 20:39:23', null);
+INSERT INTO `op_staffinfo` VALUES ('1', '1001', '产线员工', '1', null, '1', '2014-06-19', '1', '2', null, '2014-06-19 14:06:50', '0', '0', '0', '0'), ('2', '1002', '人事经理', '2', null, '1', '2014-06-19', '2', '1', '732121339@qq.com', '2014-06-19 23:29:00', '0', '0', '0', '0'), ('3', '1003', '产线班长', '1', '1111', '1', '2014-07-03', '3', '2', null, '2014-07-15 21:24:09', '0', '0', '0', '0'), ('4', '1004', '部门经理', '1', '2323', '1', '2014-07-01', '4', '1', null, '2014-07-01 21:24:46', '0', '0', '0', '0'), ('5', '1005', '老板', '1', '212', '1', '2014-07-01', '5', '1', '732121339@qq.com', '2014-07-08 21:25:22', '0', '0', '0', '0'), ('6', '1006', '管理员', '1', '121', '1', '2014-07-01', '6', '1', null, '2014-07-01 21:26:18', '0', '0', '0', '0'), ('8', '1010', '李伟', '1', '13000000000', '1', '2014-09-08', '1', '2', 'ewewe@163.com', '2014-09-08 18:17:57', '0', '0', '0', '0'), ('9', '1011', 'C组员工1', '1', '13000000000', '1', '2014-09-09', '1', '4', 'dsfwe@163.com', '2014-09-09 20:39:23', '0', '0', '0', '0');
 COMMIT;
 
 -- ----------------------------
@@ -192,7 +199,7 @@ CREATE TABLE `op_userinfo` (
 --  Records of `op_userinfo`
 -- ----------------------------
 BEGIN;
-INSERT INTO `op_userinfo` VALUES ('1', '100001', 'test', '827ccb0eea8a706c4c34a16891f84e7b', '产线员工', '0', '1', null, '1', '2014-06-19', '1', null, '2014-06-19 14:06:50'), ('2', '100002', 'hr', '827ccb0eea8a706c4c34a16891f84e7b', '人事经理', '0', '2', null, '1', '2014-06-19', '2', '732121339@qq.com', '2014-06-19 23:29:00'), ('3', '100003', 'monitor', '827ccb0eea8a706c4c34a16891f84e7b', '产线班长', '0', '1', null, '1', '2014-07-07', '3', null, '2014-07-12 17:38:26'), ('4', '100004', 'dpmanager', '827ccb0eea8a706c4c34a16891f84e7b', '部门经理', '0', '1', null, '1', '2014-07-01', '4', null, '2014-07-10 17:39:28'), ('5', '100005', 'boss', '827ccb0eea8a706c4c34a16891f84e7b', '老板', '0', '1', null, '1', '2014-06-04', '5', '732121339@qq.com', '2014-07-19 17:40:04'), ('6', '100006', 'admin', '827ccb0eea8a706c4c34a16891f84e7b', '管理员', '0', '1', null, '1', '2014-07-01', '6', null, '2014-07-19 17:40:37'), ('1000000', '100007', 'officestaff', '827ccb0eea8a706c4c34a16891f84e7b', '办公室员工', '0', '1', null, '1', '2014-09-07', '7', null, '2014-09-07 14:39:09'), ('1000001', '100011', 'worker1', '827ccb0eea8a706c4c34a16891f84e7b', 'C组员工1', '1', '1', '13000000000', '1', '2014-09-09', '1', 'dsfwe@163.com', '2014-09-09 20:39:23');
+INSERT INTO `op_userinfo` VALUES ('1', '1001', 'test', '827ccb0eea8a706c4c34a16891f84e7b', '产线员工', '0', '1', null, '1', '2014-06-19', '1', null, '2014-06-19 14:06:50'), ('2', '1002', 'hr', '827ccb0eea8a706c4c34a16891f84e7b', '人事经理', '0', '2', null, '1', '2014-06-19', '2', '732121339@qq.com', '2014-06-19 23:29:00'), ('3', '1003', 'monitor', '827ccb0eea8a706c4c34a16891f84e7b', '产线班长', '0', '1', null, '1', '2014-07-07', '3', null, '2014-07-12 17:38:26'), ('4', '1004', 'dpmanager', '827ccb0eea8a706c4c34a16891f84e7b', '部门经理', '0', '1', null, '1', '2014-07-01', '4', null, '2014-07-10 17:39:28'), ('5', '1005', 'boss', '827ccb0eea8a706c4c34a16891f84e7b', '老板', '0', '1', null, '1', '2014-06-04', '5', '732121339@qq.com', '2014-07-19 17:40:04'), ('6', '1006', 'admin', '827ccb0eea8a706c4c34a16891f84e7b', '管理员', '0', '1', null, '1', '2014-07-01', '6', null, '2014-07-19 17:40:37'), ('1000000', '1007', 'officestaff', '827ccb0eea8a706c4c34a16891f84e7b', '办公室员工', '0', '1', null, '1', '2014-09-07', '7', null, '2014-09-07 14:39:09'), ('1000001', '1011', 'worker1', '827ccb0eea8a706c4c34a16891f84e7b', 'C组员工1', '1', '1', '13000000000', '1', '2014-09-09', '1', 'dsfwe@163.com', '2014-09-09 20:39:23');
 COMMIT;
 
 -- ----------------------------
@@ -238,14 +245,7 @@ CREATE TABLE `op_vacationstatus` (
   `holiday` char(40) DEFAULT NULL,
   `transpot` char(40) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-
--- ----------------------------
---  Records of `op_vacationstatus`
--- ----------------------------
-BEGIN;
-INSERT INTO `op_vacationstatus` VALUES ('1', '100002', '3', '1', '0', '1', null, null, '5', '2014-09-08', '17:00:00', '2014-09-08', '19:00:00', '2014-09-13 20:40:57', 'hr加班', null, null, null);
-COMMIT;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 --  Table structure for `op_vacationtype`
@@ -282,7 +282,7 @@ CREATE TABLE `op_worktime` (
 --  Records of `op_worktime`
 -- ----------------------------
 BEGIN;
-INSERT INTO `op_worktime` VALUES ('1', '1', '2014-01-01', '08:00:00', '2014-12-31', '17:00:00'), ('2', '2', '2014-01-01', '20:00:00', '2014-12-31', '01:00:00'), ('3', '3', '2014-01-01', '08:30:00', '2014-12-31', '17:30:00'), ('4', '4', '2014-01-01', '08:00:00', '2014-12-31', '17:00:00');
+INSERT INTO `op_worktime` VALUES ('1', '1', '2014-01-01', '08:30:00', '2014-12-31', '17:30:00'), ('2', '2', '2014-01-01', '08:00:00', '2014-12-31', '17:00:00'), ('3', '3', '2014-01-01', '08:30:00', '2014-12-31', '17:30:00'), ('4', '4', '2014-01-01', '08:00:00', '2014-12-31', '17:00:00');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
