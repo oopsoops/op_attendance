@@ -16,7 +16,7 @@
    <table class="easyui-datagrid"   
             id="grid_hrimportsample"
                 
-            style="height:430px"
+            style="height:380px"
             
             singleSelect="true"
             striped="true"
