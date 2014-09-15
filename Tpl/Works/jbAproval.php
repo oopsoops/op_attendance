@@ -86,10 +86,10 @@
 		return '<a href="javascript:void(0)" onclick="doSubboss('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
 	}
 	function rejectallFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doallReject('+row.applytime+')"><img src="__TPL__/images/del.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="doallReject('+row.teamid+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
 	function approveallFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doallApprove('+row.applytime+')"><img src="__TPL__/images/check.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="doallApprove('+row.teamid+')"><img src="__TPL__/images/check.png" width="16"/></a>';
 	}
 	
 	
@@ -115,14 +115,16 @@
 		});
 	}
 	
-	function doallReject(applytime){
+	function doallReject(teamid){
 		
 		$.messager.confirm('提示', '确认要驳回该条产线加班申请？', function(r){  
 			if (r){
 				$.ajax({
 					url:"__APP__/Works/rejectallTrans",
 					type:'POST',
-					data:{applytime:applytime},
+					data:{
+						teamid:teamid
+					},
 					success:function(data){
 						if(data=="1"){
 							$.messager.alert("提示","驳回成功！");
@@ -138,13 +140,15 @@
 		});
 	}
 	
-	function doallApprove(applytime){
-		alert("ss");
+	function doallApprove(teamid){
 		$.messager.confirm('提示', '确认要批准该条生产线加班申请？', function(r){  
 			if (r){
 				$.ajax({
 					url:"__APP__/Works/approveallTrans",
-					type:'GET',
+					type:'POST',
+					data:{
+						teamid:teamid
+					},
 					success:function(data){
 						if(data=="1"){
 							$.messager.alert("提示","批准成功！");
