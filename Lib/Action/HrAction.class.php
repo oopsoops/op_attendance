@@ -1784,6 +1784,112 @@ public function exportVacation()
 			
 			
 			}
+			
+			
+			
+			
+			
+				//excel到数据库
+	public function doimportvacation()
+	{	
+		$tmp_file = $_FILES ['import_xls'] ['tmp_name'];
+		
+		$file_types = explode ( ".", $_FILES ['import_xls'] ['name'] );
+		
+		$file_type = $file_types [count ( $file_types ) - 1];
+		
+		
+				
+				
+		 if (strtolower ( $file_type ) != "xlsx" && strtolower ( $file_type ) != "xls")              
+		 {
+			  $this->error ( '不是Excel文件，重新选择' );
+			 
+			  
+		 }
+		
+		
+		$PHPExcel = new PHPExcel();     
+		
+		$PHPReader = new PHPExcel_Reader_Excel5(); 
+		
+		
+		
+		
+		$PHPExcel = $PHPReader->load($tmp_file);
+	 	
+		$currentSheet = $PHPExcel->getSheet(0);
+		
+		$allColumn = $currentSheet->getHighestColumn();
+		
+		$allRow = $currentSheet->getHighestRow();
+		
+		$currentSheet = $PHPExcel->getSheet(0);
+		
+		$allColumn = $currentSheet->getHighestColumn();
+		
+		$allRow = $currentSheet->getHighestRow();
+		
+		$k=0;
+		$staff=M('staffinfo');
+		
+			for($currentRow = 2; $currentRow<=$allRow; $currentRow++){
+	 					
+						$cellB =  $currentSheet->getCell('B'.$currentRow)->getValue();
+	 				
+						 if($cellB instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cellB = $cellB->__toString();  
+		 				  }
+		   
+	 						  $data[$k]['uid'] = $cellB;//创建二维数组
+
+ 						$cellD =  $currentSheet->getCell('D'.$currentRow)->getValue();
+						
+						
+							  $data[$k]['THoliday'] = $cellD;
+
+   						   $cellE =  $currentSheet->getCell('E'.$currentRow)->getValue();
+	    	 										
+						      $data[$k]['TRest'] = $cellE;//date("H:i:s",strtotime($n));
+							  
+							$cellF =  $currentSheet->getCell('F'.$currentRow)->getValue();
+	    	 										
+						      $data[$k]['LHoliday'] = $cellF;//date("H:i:s",strtotime($n));
+							  
+							  
+							    $cellG =  $currentSheet->getCell('G'.$currentRow)->getValue();
+	    	 										
+						      $data[$k]['LRest'] = $cellE;//date("H:i:s",strtotime($n));
+		
+  			
+  					 $k++;  //for
+ 
+			}//for
+         
+		// $kucun=M('clocktime');//M方法
+		 for($i=0;$i<$k;$i++)
+		 {
+			 
+		  $staffinfo=$staff->getByUid($data[$i]['uid']);
+		  $staffinfo['THoliday']=$data[$i]['THoliday'];
+		  $staffinfo['TRest']=$data[$i]['TRest'];
+		  $staffinfo['LHoliday']=$data[$i]['LHoliday'];
+		  $staffinfo['LRest']=$data[$i]['LRest'];
+		  $result=$staff->save($staffinfo);
+		 		 		  
+		 }
+		  
+		  	
+			  $this->success ( '员工休假调休导入成功！' );	
+		 
+
+	
+	
+	
+	}
+	
 		
 		
 }
