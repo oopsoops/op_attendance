@@ -1869,6 +1869,7 @@ public function exportVacation()
 			}//for
          
 		// $kucun=M('clocktime');//M方法
+		$staff->startTrans();
 		 for($i=0;$i<$k;$i++)
 		 {
 			 
@@ -1878,10 +1879,16 @@ public function exportVacation()
 		  $staffinfo['LHoliday']=$data[$i]['LHoliday'];
 		  $staffinfo['LRest']=$data[$i]['LRest'];
 		  $result=$staff->save($staffinfo);
+		  
+		  if($result===false)
+		  {		
+			   $this->error( '第 '.++$i.' 行之后员工休假调休数据导入失败！uid = '.$data[$i-1]['uid'] );	
+			   exit();
+		  }
 		 		 		  
 		 }
 		  
-		  	
+		  	$staff->commit();
 			  $this->success ( '员工休假调休导入成功！' );	
 		 
 
