@@ -37,7 +37,7 @@ class HrAction extends Action {
 		$import_end_time=$this->_post('import_end_time');
 		$kucun=M('clocktime');
 		$kucun->where("uid is not null")->delete();
-		
+		$kucun->startTrans();
 			if($import_begin_time==''||$import_end_time=='')
 				{
 						$this->error('开始日期和结束日期不能同时为空！');
@@ -119,16 +119,17 @@ class HrAction extends Action {
 		  $result=$kucun->addAll($data);
 		  if(!$result)
 		  {
+			  $kucun->rollback();
 			  
-			  
-			  $this->error('导入数据库失败');
+			  $this->error('导入失败！');
 			  exit();
 		  }
 		  else
 		  {
+			  $kucun->commit();
 		  	R('Check/checkClock',array($import_begin_time,$import_end_time));
 			  $kucun->where("id is not null")->delete();
-			  $this->success ( '导入成功' );	
+			  $this->success ( '导入成功！' );	
 		  }
 
 	
@@ -1274,7 +1275,7 @@ public function loginDetails(){
 		  else
 		  {
 
-			  $this->success ( '导入成功' );	
+			  $this->success ( '导入成功！' );	
 		  }
 				
 	}
