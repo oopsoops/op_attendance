@@ -26,17 +26,6 @@
                 <th field="applytime" width="140" align="center">申请时间</th>
                 <th field="rejiect" width="40" align="center" formatter="rejectFormatter">驳回</th>
                 <th field="approve" width="40" align="center" formatter="approveFormatter">批准</th>
-                <?php if($jbpower=='4'){?>
-                <th field="subm" width="50" align="center" formatter="submitFormatter">提交HR</th>  
-                <?php }?>  
-                <?php if($jbpower=='2'){?>
-                <th field="subboss" width="60" align="center" formatter="subbossFormatter">提交老板</th>  
-                <?php }?>    
-                
-               
-
-                 
-                             
             </tr>  
         </thead>  
     </table>
@@ -77,14 +66,10 @@
 		return '<a href="javascript:void(0)" onclick="doReject('+row.id+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
 	function approveFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+')"><img src="__TPL__/images/check.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.nums+')"><img src="__TPL__/images/check.png" width="16"/></a>';
 	}
-	function submitFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doSubm('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
-	}
-	function subbossFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doSubboss('+row.id+')"><img src="__TPL__/images/handfor.png" width="16"/></a>';
-	}
+	
+	
 	function rejectallFormatter(val,row){
 		return '<a href="javascript:void(0)" onclick="doallReject('+row.teamid+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
@@ -166,68 +151,49 @@
 	
 	
 	
-	function doApprove(id){
-		
-		$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
-			if (r){
-				$.ajax({
-					url:"__APP__/Works/approveTrans/vid/"+id,
-					type:'GET',
-					success:function(data){
-						if(data=="1"){
-							$.messager.alert("提示","批准成功！");
-							$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
-							$('#grid_qjApprove').datagrid('load', { });
-						}				
-					},
-					error:function(XMLHttpRequest,textStatus,errorThrown){
-						alert(''+errorThrown);
-					}	
-				});
-			}
-		});
+	function doApprove(id,nums){
+		if(nums<=3){
+			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
+				if (r){
+					$.ajax({
+						url:"__APP__/Works/approveTrans/vid/"+id,
+						type:'GET',
+						success:function(data){
+							if(data=="1"){
+								$.messager.alert("提示","批准成功！");
+								$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
+								$('#grid_qjApprove').datagrid('load', { });
+							}				
+						},
+						error:function(XMLHttpRequest,textStatus,errorThrown){
+							alert(''+errorThrown);
+						}	
+					});
+				}
+			});
+		}else{
+			$.messager.confirm('提示', '加班时间大于3天需要提交人事经理，是否提交？', function(r){  
+				if (r){
+					$.ajax({
+						url:"__APP__/Works/sub2hr/vid/"+id,
+						type:'GET',
+						success:function(data){
+							if(data=="1"){
+								$.messager.alert("提示","提交成功！");
+								$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
+								$('#grid_qjApprove').datagrid('load', { });
+							}				
+						},
+						error:function(XMLHttpRequest,textStatus,errorThrown){
+							alert(''+errorThrown);
+						}	
+					});
+				}
+			});
+		}
 	}
-	
-	function doSubm(id){
-		$.messager.confirm('提示', '确认要提交给人事经理审批？', function(r){
-			if (r){
-				$.ajax({
-					url:"__APP__/Works/sub2hr/vid/"+id,
-					type:'GET',
-					success:function(data){
-						if(data=="1"){
-							$.messager.alert("提示","提交成功！");
-							$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
-							$('#grid_qjApprove').datagrid('load', { });
-						}				
-					},
-					error:function(XMLHttpRequest,textStatus,errorThrown){
-						alert(''+errorThrown);
-					}	
-				});
-			}
-		});
-	}
-    function doSubboss(id){
-		$.messager.confirm('提示', '确认要提交给老板审批？', function(r){
-			if (r){
-				$.ajax({
-					url:"__APP__/Works/sub2boss/vid/"+id,
-					type:'GET',
-					success:function(data){
-						if(data=="1"){
-							$.messager.alert("提示","提交成功！");
-							$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
-							$('#grid_ccApprove').datagrid('load', { });
-						}				
-					},
-					error:function(XMLHttpRequest,textStatus,errorThrown){
-						alert(''+errorThrown);
-					}	
-				});
-			}
-		});
-	}
+
+    
     
 </script>
     

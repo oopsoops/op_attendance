@@ -160,6 +160,7 @@
 			},
 			type:'POST',
 			success:function(data){
+			//	alert(data);
 				if(data=="1"){
 					$.messager.alert("提示","提交成功！");
 				}				
