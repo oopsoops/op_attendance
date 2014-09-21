@@ -1382,14 +1382,355 @@ public function loginDetails(){
 	
 	
  
-     /* 导出excel函数*/
+   
+    /*********************************************************************************************/
+	/*
+	function listfile()
+	{
+		
+		self::list_files('E:\Coding\xampp\htdocs\op_attendance\excel');
+		
+		}
+	
+	function list_files($dir) 
+ { 
+     if(is_dir($dir))        //判断参数是否为目录
+     { 
+         if($handle = opendir($dir))         //打开目录，返回文件句柄
+         { 
+             while(($file = readdir($handle)) !== false)         //读文件夹返回文件名，
+                                                                 //成功，则该函数返回一个文件名，否则返回 false
+             { 
+                 if($file != "." && $file != ".." && $file != "Thumbs.db")       //三个文件不显示出来。进行判断。
+                 { 
+                     echo '<a target="_blank" href="'.$dir.$file.'">'.$file.'</a><br>'."\n";         //用 a 标签显示文件路径，和文件名。
+                 } 
+             } 
+             closedir($handle);      //关闭文件夹句柄。
+         } 
+     } 
+ }  
+	
+	*/
+	
+	
+	
+	public function hrfetch_all_vacation()
+	{
+		$page = $this->_post('page');
+		
+		if($page<1) $page=1;
+		
+		$rows = $this->_post('rows');
+		
+		if($rows<1) $rows=10;
+		
+		$start = ($page-1)*$rows;
+		
+		$username=$this->_post('username');
+		$uid=$this->_post('uid');
+		$department=$this->_post('department');
+		
+		$staff=M('staffinfo');
+		
+		
+		$where= "(op_usertype.power<5 or op_usertype.power=7)";
+			
+		if($uid!='') {
+			$where = " $where and op_staffinfo.uid = '"."$uid"."' " ;
+		}
+		
+		if($username!='') {
+			$where= "$where and username='"."$username"."' ";
+		}
+		
+		if($department!='')
+		{
+			
+			$where="$where and op_department.departmentname like '%$department%' ";
+			
+			}
+		
+		$cc = $staff
+		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
+		->join('op_department ON op_staffinfo.departmentid=op_department.did')
+		->where($where)
+		 ->count();
+		 
+		 
+		 
+		$vacation=$staff
+		->field("op_staffinfo.uid as uid,op_staffinfo.username as username,op_staffinfo.THoliday as tholiday,op_staffinfo.TRest as trest,
+		op_staffinfo.LHoliday as lholiday,op_staffinfo.LRest as lrest,op_department.departmentname as department,op_department.did as did
+		")
+		->join('op_department ON op_staffinfo.departmentid=op_department.did')
+		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
+		->where($where)
+		->order('op_department.did asc,op_staffinfo.uid asc')
+		->limit("$start,$rows")
+		->select();
+		
+	//echo $staff->getLastSql();
+	echo dataToJson($vacation,$cc);
+		
+		}
+		
+		
+		
+		
+		
+		
+public function exportVacation()
+		{
+			if(!file_exists('..\excel')) {
+ 			mkdir('..\excel');
+ 		}
+ 		if(!file_exists('..\excel\vacation')) {
+			mkdir('..\excel\vacation');
+		}
+ 			
+		$username=$this->_post('username');
+		
+		$uid=$this->_post('uid');
+		
+		$department=$this->_post('departmen');
+					
+		
+		$where= "(op_usertype.power<5 or op_usertype.power=7)";
+			//$where= "(op_usertype.power<17)";
+		if($uid!='') {
+			$where = " $where and op_staffinfo.uid = '"."$uid"."' " ;
+		}
+		
+		if($username!='') {
+			$where= "$where and username='"."$username"."' ";
+		}
+		
+		if($department!='')
+		{
+			
+			$where="$where and op_department.departmentname like '%$department%' ";
+			
+			}
+		   
+          error_reporting(E_ALL);
+           date_default_timezone_set('Asia/Shanghai');
+          $objPHPExcel = new PHPExcel();
+ 			$staff=M('staffinfo');
+            $name=date('YmdHis');
+			
+		$vacation=$staff
+		->field("op_staffinfo.uid as uid,op_staffinfo.username as username,op_staffinfo.THoliday as tholiday,op_staffinfo.TRest as trest,
+		op_staffinfo.LHoliday as lholiday,op_staffinfo.LRest as lrest,op_department.departmentname as department,op_department.did as did
+		")
+		->join('op_department ON op_staffinfo.departmentid=op_department.did')
+		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
+		->where($where)
+		->order('op_department.did asc,op_staffinfo.uid asc')
+		->select();
+		$flag=0;
+			foreach($vacation as $k => $temp){
+				$pdata[$flag]['department']=$temp['department'];
+				$pdata[$flag]['uid']=$temp['uid'];
+				$pdata[$flag]['username']=$temp['username'];
+				$pdata[$flag]['tholiday']=$temp['tholiday'];
+				$pdata[$flag]['trest']=$temp['trest'];
+				$pdata[$flag]['lholiday']=$temp['lholiday'];
+				$pdata[$flag]['lrest']=$temp['lrest'];
+				$flag=$flag+1;
+				
+				
+				
+				}
+			
+			
+			
+        /*以下是一些设置 ，什么作者  标题啊之类的*/
+          $objPHPExcel->getProperties()->setCreator("OOPS")
+                                ->setLastModifiedBy("OOPS")
+                                ->setTitle("数据EXCEL导出")
+                                ->setSubject("数据EXCEL导出")
+                                ->setDescription("年假调休导出")
+                                ->setKeywords("excel")
+                               ->setCategory("result file");
+          /*以下就是对处理Excel里的数据， 横着取数据，主要是这一步，其他基本都不要改*/
+		  
+		  $num=1;
+		  $objPHPExcel->setActiveSheetIndex(0)
+ 
+                         //Excel的第A列，uid是你查出数组的键值，下面以此类推
+                           ->setCellValue('A'.$num, '员工部门')    
+                           ->setCellValue('B'.$num,'员工工号' )
+						    ->setCellValue('C'.$num,'员工姓名' )
+                           ->setCellValue('D'.$num, '今年可用年假（天）')
+                            ->setCellValue('E'.$num, '今年可用调休（小时）')
+                             ->setCellValue('F'.$num, '去年剩余年假（天）')
+                               ->setCellValue('G'.$num, '去年剩余调休（小时）');
+		  
+		  
+		  
+		  
+		  
+         foreach($pdata as $k => $v){
+ 
+             $num=$k+2;
+              $objPHPExcel->setActiveSheetIndex(0)
+ 
+                         //Excel的第A列，uid是你查出数组的键值，下面以此类推
+                           ->setCellValue('A'.$num, $v['department'])    
+                           ->setCellValue('B'.$num, $v['uid'])
+						    ->setCellValue('C'.$num, $v['username'])
+                           ->setCellValue('D'.$num, $v['tholiday'])
+                            ->setCellValue('E'.$num, $v['trest'])
+                             ->setCellValue('F'.$num, $v['lholiday'])
+                               ->setCellValue('G'.$num, $v['lrest']);
+							   
+							   
+             }
+ 
+            $objPHPExcel->getActiveSheet()->setTitle('年假调休报表');
+             $objPHPExcel->setActiveSheetIndex(0);
+	
+              $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+              $objWriter->save('../excel/vacation/Vacation'."$name".'.xls');
+			 
+				  
+			//$file='D:/excel/forms/'.$file;
+			//$file='../'.$file;
+           // header("Location:../op_attendance/excel"); 
+			//self::list_files('.\excel');
+				//self::list_files_vacation();
+		  
+				 $this->success ( '年假调休报表导出成功' );	
+			
+			
+			}
+			
+			
+			
+			
+			
+				//excel到数据库
+	public function doimportvacation()
+	{	
+		$tmp_file = $_FILES ['import_xls'] ['tmp_name'];
+		
+		$file_types = explode ( ".", $_FILES ['import_xls'] ['name'] );
+		
+		$file_type = $file_types [count ( $file_types ) - 1];
+		
+		
+				
+				
+		 if (strtolower ( $file_type ) != "xlsx" && strtolower ( $file_type ) != "xls")              
+		 {
+			  $this->error ( '不是Excel文件，重新选择' );
+			 
+			  
+		 }
+		
+		
+		$PHPExcel = new PHPExcel();     
+		
+		$PHPReader = new PHPExcel_Reader_Excel5(); 
+		
+		
+		
+		
+		$PHPExcel = $PHPReader->load($tmp_file);
+	 	
+		$currentSheet = $PHPExcel->getSheet(0);
+		
+		$allColumn = $currentSheet->getHighestColumn();
+		
+		$allRow = $currentSheet->getHighestRow();
+		
+		$currentSheet = $PHPExcel->getSheet(0);
+		
+		$allColumn = $currentSheet->getHighestColumn();
+		
+		$allRow = $currentSheet->getHighestRow();
+		
+		$k=0;
+		$staff=M('staffinfo');
+		
+			for($currentRow = 2; $currentRow<=$allRow; $currentRow++){
+	 					
+						$cellB =  $currentSheet->getCell('B'.$currentRow)->getValue();
+	 				
+						 if($cellB instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cellB = $cellB->__toString();  
+		 				  }
+		   
+	 						  $data[$k]['uid'] = $cellB;//创建二维数组
+
+ 						$cellD =  $currentSheet->getCell('D'.$currentRow)->getValue();
+						
+						
+							  $data[$k]['THoliday'] = $cellD;
+
+   						   $cellE =  $currentSheet->getCell('E'.$currentRow)->getValue();
+	    	 										
+						      $data[$k]['TRest'] = $cellE;//date("H:i:s",strtotime($n));
+							  
+							$cellF =  $currentSheet->getCell('F'.$currentRow)->getValue();
+	    	 										
+						      $data[$k]['LHoliday'] = $cellF;//date("H:i:s",strtotime($n));
+							  
+							  
+							    $cellG =  $currentSheet->getCell('G'.$currentRow)->getValue();
+	    	 										
+						      $data[$k]['LRest'] = $cellE;//date("H:i:s",strtotime($n));
+		
+  			
+  					 $k++;  //for
+ 
+			}//for
+         
+		// $kucun=M('clocktime');//M方法
+		$staff->startTrans();
+		 for($i=0;$i<$k;$i++)
+		 {
+			 
+		  $staffinfo=$staff->getByUid($data[$i]['uid']);
+		  $staffinfo['THoliday']=$data[$i]['THoliday'];
+		  $staffinfo['TRest']=$data[$i]['TRest'];
+		  $staffinfo['LHoliday']=$data[$i]['LHoliday'];
+		  $staffinfo['LRest']=$data[$i]['LRest'];
+		  $result=$staff->save($staffinfo);
+		  
+		  if($result===false)
+		  {		
+			   $this->error( '第 '.++$i.' 行之后员工休假调休数据导入失败！uid = '.$data[$i-1]['uid'] );	
+			   exit();
+		  }
+		 		 		  
+		 }
+		  
+		  	$staff->commit();
+			  $this->success ( '员工休假调休导入成功！' );	
+		 
+
+	
+	
+	
+	}
+	
+		
+		/*************************************************************************************/
+		
+		
+		
+		 /* 导出excel函数*/
      public function doexport(){
  
- 		if(!file_exists('d:\excel')) {
- 			mkdir('d:\excel');
+		if(!file_exists('..\excel')) {
+ 			mkdir('..\excel');
  		}
- 		if(!file_exists('d:\excel\forms')) {
-			mkdir('d:\excel\forms');
+ 		if(!file_exists('..\excel\attendance')) {
+			mkdir('..\excel\attendance');
 		}
  			
 		$export_begin_time=$this->_post('export_begin_time');
@@ -1512,28 +1853,9 @@ public function loginDetails(){
                                 ->setKeywords("excel")
                                ->setCategory("result file");
           /*以下就是对处理Excel里的数据， 横着取数据，主要是这一步，其他基本都不要改*/
-		  
-		  
-		  
-		  
-		  
-		  $num=1;
-		  $objPHPExcel->setActiveSheetIndex(0)
- 
-                         //Excel的第A列，uid是你查出数组的键值，下面以此类推
-                           ->setCellValue('A'.$num, '员工工号')    
-                           ->setCellValue('B'.$num,'员工姓名' )
-                           ->setCellValue('C'.$num, '工作开始日期')
-                            ->setCellValue('D'.$num, '工作结束日期')
-                             ->setCellValue('E'.$num, '工作开始时间')
-                               ->setCellValue('F'.$num, '工作结束时间');
-		  
-		  		  
-		  
-		  
          foreach($pdata as $k => $v){
  
-             $num=$k+2;
+             $num=$k+1;
               $objPHPExcel->setActiveSheetIndex(0)
  
                          //Excel的第A列，uid是你查出数组的键值，下面以此类推
@@ -1549,31 +1871,28 @@ public function loginDetails(){
              $objPHPExcel->setActiveSheetIndex(0);
 	
               $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-              $objWriter->save('D:/excel/forms/Forms'."$name".'.xls');
-			 
-				  
-			//$file='D:/excel/forms/'.$file;
-			//$file='../'.$file;
-           // header("Location:../op_attendance/excel"); 
-			//self::list_files('.\excel');
+              $objWriter->save('../excel/attendance/Forms'."$name".'.xls');
+			
+				 /* 
+			$file='D:/excel/forms/'.$file;
+			$file='../'.$file;
+			*/
+          // header("Location:D:/excel/forms/Forms20140913000103.xls"); 
+			//self::list_files_attendance();
 
-		  
-				  $this->success ( '导出成功' );	
+		  	 $this->success ( '考勤报表导出成功' );
+					
 			
        }
 
 
     /*********************************************************************************************/
-	/*
-	function listfile()
-	{
-		
-		self::list_files('E:\Coding\xampp\htdocs\op_attendance\excel');
-		
-		}
+
 	
-	function list_files($dir) 
+	function list_files_attendance() 
  { 
+ $dir='..\excel\attendance/';
+ 	$ip=gethostbyname($_ENV['COMPUTERNAME']);
      if(is_dir($dir))        //判断参数是否为目录
      { 
          if($handle = opendir($dir))         //打开目录，返回文件句柄
@@ -1583,322 +1902,46 @@ public function loginDetails(){
              { 
                  if($file != "." && $file != ".." && $file != "Thumbs.db")       //三个文件不显示出来。进行判断。
                  { 
-                     echo '<a target="_blank" href="'.$dir.$file.'">'.$file.'</a><br>'."\n";         //用 a 标签显示文件路径，和文件名。
+                     echo '<a target="_blank" href="'.'http://'.$ip.'/excel/attendance/'.$file.'">'.$file.'</a><br>'."\n";         //用 a 标签显示文件路径，和文件名。
                  } 
              } 
              closedir($handle);      //关闭文件夹句柄。
          } 
      } 
  }  
-	
-	*/
-	
-	
-	
-	public function hrfetch_all_vacation()
-	{
-		$page = $this->_post('page');
-		
-		if($page<1) $page=1;
-		
-		$rows = $this->_post('rows');
-		
-		if($rows<1) $rows=10;
-		
-		$start = ($page-1)*$rows;
-		
-		$username=$this->_post('username');
-		$uid=$this->_post('uid');
-		$department=$this->_post('department');
-		
-		$staff=M('staffinfo');
 		
 		
-		$where= "(op_usertype.power<5 or op_usertype.power=7)";
+		
+		
 			
-		if($uid!='') {
-			$where = " $where and op_staffinfo.uid = '"."$uid"."' " ;
-		}
-		
-		if($username!='') {
-			$where= "$where and username='"."$username"."' ";
-		}
-		
-		if($department!='')
-		{
-			
-			$where="$where and op_department.departmentname like '%$department%' ";
-			
-			}
-		
-		$cc = $staff
-		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
-		->join('op_department ON op_staffinfo.departmentid=op_department.did')
-		->where($where)
-		 ->count();
-		 
-		 
-		 
-		$vacation=$staff
-		->field("op_staffinfo.uid as uid,op_staffinfo.username as username,op_staffinfo.THoliday as tholiday,op_staffinfo.TRest as trest,
-		op_staffinfo.LHoliday as lholiday,op_staffinfo.LRest as lrest,op_department.departmentname as department,op_department.did as did
-		")
-		->join('op_department ON op_staffinfo.departmentid=op_department.did')
-		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
-		->where($where)
-		->order('op_department.did asc,op_staffinfo.uid asc')
-		->limit("$start,$rows")
-		->select();
-		
-	//echo $staff->getLastSql();
-	echo dataToJson($vacation,$cc);
-		
-		}
+	function list_files_vacation() 
+ { $dir='..\excel\vacation/';
+ 	$ip=gethostbyname($_ENV['COMPUTERNAME']);
+     if(is_dir($dir))        //判断参数是否为目录
+     { 
+         if($handle = opendir($dir))         //打开目录，返回文件句柄
+         { 
+             while(($file = readdir($handle)) !== false)         //读文件夹返回文件名，
+                                                                 //成功，则该函数返回一个文件名，否则返回 false
+             { 
+                 if($file != "." && $file != ".." && $file != "Thumbs.db")       //三个文件不显示出来。进行判断。
+                 { 
+                     echo '<a target="_blank" href="'.'http://'.$ip.'/excel/vacation/'.$file.'">'.$file.'</a><br>'."\n";         //用 a 标签显示文件路径，和文件名。
+                 } 
+             } 
+             closedir($handle);      //关闭文件夹句柄。
+         } 
+     } 
+ }  
 		
 		
 		
 		
 		
 		
-public function exportVacation()
-		{
-			if(!file_exists('d:\excel')) {
- 			mkdir('d:\excel');
- 		}
- 		if(!file_exists('d:\excel\vacation')) {
-			mkdir('d:\excel\vacation');
-		}
- 			
-		$username=$this->_post('username');
-		
-		$uid=$this->_post('uid');
-		
-		$department=$this->_post('departmen');
-					
-		
-		$where= "(op_usertype.power<5 or op_usertype.power=7)";
-			//$where= "(op_usertype.power<17)";
-		if($uid!='') {
-			$where = " $where and op_staffinfo.uid = '"."$uid"."' " ;
-		}
-		
-		if($username!='') {
-			$where= "$where and username='"."$username"."' ";
-		}
-		
-		if($department!='')
-		{
-			
-			$where="$where and op_department.departmentname like '%$department%' ";
-			
-			}
-		   
-          error_reporting(E_ALL);
-           date_default_timezone_set('Asia/Shanghai');
-          $objPHPExcel = new PHPExcel();
- 			$staff=M('staffinfo');
-            $name=date('YmdHis');
-			
-		$vacation=$staff
-		->field("op_staffinfo.uid as uid,op_staffinfo.username as username,op_staffinfo.THoliday as tholiday,op_staffinfo.TRest as trest,
-		op_staffinfo.LHoliday as lholiday,op_staffinfo.LRest as lrest,op_department.departmentname as department,op_department.did as did
-		")
-		->join('op_department ON op_staffinfo.departmentid=op_department.did')
-		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
-		->where($where)
-		->order('op_department.did asc,op_staffinfo.uid asc')
-		->select();
-		$flag=0;
-			foreach($vacation as $k => $temp){
-				$pdata[$flag]['department']=$temp['department'];
-				$pdata[$flag]['uid']=$temp['uid'];
-				$pdata[$flag]['username']=$temp['username'];
-				$pdata[$flag]['tholiday']=$temp['tholiday'];
-				$pdata[$flag]['trest']=$temp['trest'];
-				$pdata[$flag]['lholiday']=$temp['lholiday'];
-				$pdata[$flag]['lrest']=$temp['lrest'];
-				$flag=$flag+1;
-				
-				
-				
-				}
-			
-			
-			
-        /*以下是一些设置 ，什么作者  标题啊之类的*/
-          $objPHPExcel->getProperties()->setCreator("OOPS")
-                                ->setLastModifiedBy("OOPS")
-                                ->setTitle("数据EXCEL导出")
-                                ->setSubject("数据EXCEL导出")
-                                ->setDescription("年假调休导出")
-                                ->setKeywords("excel")
-                               ->setCategory("result file");
-          /*以下就是对处理Excel里的数据， 横着取数据，主要是这一步，其他基本都不要改*/
-		  
-		  $num=1;
-		  $objPHPExcel->setActiveSheetIndex(0)
- 
-                         //Excel的第A列，uid是你查出数组的键值，下面以此类推
-                           ->setCellValue('A'.$num, '员工部门')    
-                           ->setCellValue('B'.$num,'员工工号' )
-						    ->setCellValue('C'.$num,'员工姓名' )
-                           ->setCellValue('D'.$num, '今年可用年假（天）')
-                            ->setCellValue('E'.$num, '今年可用调休（小时）')
-                             ->setCellValue('F'.$num, '去年剩余年假（天）')
-                               ->setCellValue('G'.$num, '去年剩余调休（小时）');
-		  
-		  
-		  
-		  
-		  
-         foreach($pdata as $k => $v){
- 
-             $num=$k+2;
-              $objPHPExcel->setActiveSheetIndex(0)
- 
-                         //Excel的第A列，uid是你查出数组的键值，下面以此类推
-                           ->setCellValue('A'.$num, $v['department'])    
-                           ->setCellValue('B'.$num, $v['uid'])
-						    ->setCellValue('C'.$num, $v['username'])
-                           ->setCellValue('D'.$num, $v['tholiday'])
-                            ->setCellValue('E'.$num, $v['trest'])
-                             ->setCellValue('F'.$num, $v['lholiday'])
-                               ->setCellValue('G'.$num, $v['lrest']);
-							   
-							   
-             }
- 
-            $objPHPExcel->getActiveSheet()->setTitle('年假调休报表');
-             $objPHPExcel->setActiveSheetIndex(0);
-	
-              $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-              $objWriter->save('D:/excel/vacation/Vacation'."$name".'.xls');
-			 
-				  
-			//$file='D:/excel/forms/'.$file;
-			//$file='../'.$file;
-           // header("Location:../op_attendance/excel"); 
-			//self::list_files('.\excel');
-
-		  
-				  $this->success ( '导出成功' );	
-			
-			
-			}
-			
-			
-			
-			
-			
-				//excel到数据库
-	public function doimportvacation()
-	{	
-		$tmp_file = $_FILES ['import_xls'] ['tmp_name'];
-		
-		$file_types = explode ( ".", $_FILES ['import_xls'] ['name'] );
-		
-		$file_type = $file_types [count ( $file_types ) - 1];
 		
 		
-				
-				
-		 if (strtolower ( $file_type ) != "xlsx" && strtolower ( $file_type ) != "xls")              
-		 {
-			  $this->error ( '不是Excel文件，重新选择' );
-			 
-			  
-		 }
-		
-		
-		$PHPExcel = new PHPExcel();     
-		
-		$PHPReader = new PHPExcel_Reader_Excel5(); 
-		
-		
-		
-		
-		$PHPExcel = $PHPReader->load($tmp_file);
-	 	
-		$currentSheet = $PHPExcel->getSheet(0);
-		
-		$allColumn = $currentSheet->getHighestColumn();
-		
-		$allRow = $currentSheet->getHighestRow();
-		
-		$currentSheet = $PHPExcel->getSheet(0);
-		
-		$allColumn = $currentSheet->getHighestColumn();
-		
-		$allRow = $currentSheet->getHighestRow();
-		
-		$k=0;
-		$staff=M('staffinfo');
-		
-			for($currentRow = 2; $currentRow<=$allRow; $currentRow++){
-	 					
-						$cellB =  $currentSheet->getCell('B'.$currentRow)->getValue();
-	 				
-						 if($cellB instanceof PHPExcel_RichText)     //富文本转换字符串   
-           
-		  				 {
-		  					  $cellB = $cellB->__toString();  
-		 				  }
-		   
-	 						  $data[$k]['uid'] = $cellB;//创建二维数组
-
- 						$cellD =  $currentSheet->getCell('D'.$currentRow)->getValue();
-						
-						
-							  $data[$k]['THoliday'] = $cellD;
-
-   						   $cellE =  $currentSheet->getCell('E'.$currentRow)->getValue();
-	    	 										
-						      $data[$k]['TRest'] = $cellE;//date("H:i:s",strtotime($n));
-							  
-							$cellF =  $currentSheet->getCell('F'.$currentRow)->getValue();
-	    	 										
-						      $data[$k]['LHoliday'] = $cellF;//date("H:i:s",strtotime($n));
-							  
-							  
-							    $cellG =  $currentSheet->getCell('G'.$currentRow)->getValue();
-	    	 										
-						      $data[$k]['LRest'] = $cellE;//date("H:i:s",strtotime($n));
-		
-  			
-  					 $k++;  //for
- 
-			}//for
-         
-		// $kucun=M('clocktime');//M方法
-		$staff->startTrans();
-		 for($i=0;$i<$k;$i++)
-		 {
-			 
-		  $staffinfo=$staff->getByUid($data[$i]['uid']);
-		  $staffinfo['THoliday']=$data[$i]['THoliday'];
-		  $staffinfo['TRest']=$data[$i]['TRest'];
-		  $staffinfo['LHoliday']=$data[$i]['LHoliday'];
-		  $staffinfo['LRest']=$data[$i]['LRest'];
-		  $result=$staff->save($staffinfo);
-		  
-		  if($result===false)
-		  {		
-			   $this->error( '第 '.++$i.' 行之后员工休假调休数据导入失败！uid = '.$data[$i-1]['uid'] );	
-			   exit();
-		  }
-		 		 		  
-		 }
-		  
-		  	$staff->commit();
-			  $this->success ( '员工休假调休导入成功！' );	
-		 
-
-	
-	
-	
-	}
-	
-		
+		/***********************************************************************************/
 		
 }
 

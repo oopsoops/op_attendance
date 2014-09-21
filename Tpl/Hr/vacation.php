@@ -15,7 +15,7 @@
 	        <td>  <a class="easyui-linkbutton" iconCls="icon-search" onclick="hrsearch_vacationmanage()">搜索</a></td>
 	        <td><a class="easyui-linkbutton" onclick="export_clear()">清空</a></td>
             <td><input type="submit"  value="导出" style="width:80px" /></td>
-            
+             <td><a class="easyui-linkbutton" onclick="downloadvacation()">下载</a></td>
 	        <!-- <td><a class="easyui-linkbutton" iconCls="icon-search" onclick="checkClock()">分析</a></td> -->
 	    </tr>
       
@@ -73,6 +73,17 @@ function hrsearch_vacationmanage() {
 	
 }
 
+
+function downloadvacation(){
+	$('#main').tabs('close','年假调休报表下载');
+	$('#main').tabs('add',{
+						title:'年假调休报表下载',
+						//href:'__APP__/Account/account_details/pid/'+pid,
+						href:'__APP__/hr/list_files_vacation',
+						cache:false,
+						closable:true
+						});
+}
 </script>
 
 

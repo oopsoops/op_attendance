@@ -12,6 +12,7 @@
 	        <td><input name="export_end_time"   id="export_end_time" type="text" style="width:100px" /></td>
 	        <td><input type="submit"  value="导出" style="width:80px" /></td>
 	        <td><a class="easyui-linkbutton" onclick="export_clear()">清空</a></td>
+            <td><a class="easyui-linkbutton" onclick="download()">下载</a></td>
 	        <!-- <td><a class="easyui-linkbutton" iconCls="icon-search" onclick="checkClock()">分析</a></td> -->
 	    </tr>
     </table>
@@ -46,7 +47,16 @@ function export_clear()
 	$('#exportForm').form('clear');
 }
 	
-
+function download(){
+	$('#main').tabs('close','考勤报表下载');
+	$('#main').tabs('add',{
+						title:'考勤报表下载',
+						//href:'__APP__/Account/account_details/pid/'+pid,
+						href:'__APP__/hr/list_files_attendance',
+						cache:false,
+						closable:true
+						});
+}
 
 
 </script>
