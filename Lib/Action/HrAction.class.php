@@ -1064,7 +1064,7 @@ public function loginDetails(){
 				
 				$cc = $sample->count();
 				
-				$rs=$sample->field('uid,username,department,usertype,entrydate,costcenterid,phone,email,team,op_sample.THoliday as tholiday,op_sample.LHoliday as lholiday,op_sample.TRest as trest,op_sample.LRest as lrest')->limit("$start,$rows")->select();
+				$rs=$sample->field('uid,username,department,usertype,entrydate,costcenterid,loginname,phone,email,team,op_sample.THoliday as tholiday,op_sample.LHoliday as lholiday,op_sample.TRest as trest,op_sample.LRest as lrest')->limit("$start,$rows")->select();
 				
 				echo dataToJson($rs,$cc);
 				}
@@ -1127,6 +1127,7 @@ public function loginDetails(){
 		 				  }
 		   
 	 						 $data[$flag]['uid'] = $cell;//创建二维数组
+							 $datauser[$flag]['uid'] = $cell;
 
  						$cell =  $currentSheet->getCell('B'.$currentRow)->getValue();
 	    	 				
@@ -1136,7 +1137,7 @@ public function loginDetails(){
 		  					  $cell = $cell->__toString();  
 		 				  }
 							$data[$flag]['username'] = $cell;
-						
+							$datauser[$flag]['username'] = $cell;
 
    						$cell =  $currentSheet->getCell('C'.$currentRow)->getValue();
 	    	 				
@@ -1146,6 +1147,7 @@ public function loginDetails(){
 		  					  $cell = $cell->__toString();  
 		 				  }
 							$data[$flag]['departmentid'] =  $cell;
+							$datauser[$flag]['departmentid'] = $cell;
 										   
 							$cell =  $currentSheet->getCell('D'.$currentRow)->getValue();
 	    	 				
@@ -1164,6 +1166,7 @@ public function loginDetails(){
 		  					  $cell = $cell->__toString();  
 		 				  }
 							   $data[$flag]['usertypeid'] =  $cell;
+							   $datauser[$flag]['usertypeid'] = $cell;
 							   
 							   	$cell =  $currentSheet->getCell('F'.$currentRow)->getValue();
 	    	 				
@@ -1173,11 +1176,17 @@ public function loginDetails(){
 		  					  $cell = $cell->__toString();  
 		 				  }
 							   $data[$flag]['costcenterid'] = $cell;
-							   
+							   $datauser[$flag]['costcenterid'] = $cell;
 							   	$cell =  $currentSheet->getCell('G'.$currentRow)->getValue();
 	    	 				
+								$jd = GregorianToJD(1, 1, 1970); 
+								$celldate = JDToGregorian($jd+intval($cell)-25569); 
 				
-							   $data[$flag]['entrydate'] =  date("Y-m-d",time($cell));
+								$dataexplode=explode("/",$celldate);
+		 				 
+							  $data[$flag]['entrydate'] = date("Y-m-d",mktime(0,0,0,$dataexplode[0],$dataexplode[1],$dataexplode[2]));
+								 $datauser[$flag]['entrydate'] = $data[$flag]['entrydate'];
+							   
 							   
 							   $cell =  $currentSheet->getCell('H'.$currentRow)->getValue();
 	    	 				
@@ -1187,7 +1196,7 @@ public function loginDetails(){
 		  					  $cell = $cell->__toString();  
 		 				  }
 							   $data[$flag]['phone'] = $cell;
-							   
+							   $datauser[$flag]['phone'] = $cell;
 							   $cell =  $currentSheet->getCell('I'.$currentRow)->getValue();
 	    	 				
 						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
@@ -1197,7 +1206,7 @@ public function loginDetails(){
 		 				  }
 						  
 						   $data[$flag]['email'] =  $cell;
-							  
+							  $datauser[$flag]['email'] = $cell;
 							  
 							  
 						  
@@ -1243,16 +1252,22 @@ public function loginDetails(){
 						   $data[$flag]['TRest'] =  $cell;  //今年可用调休
 						  
 						  
-						  
-						  
-						  
-						  
-						  
-						  
-							  
+						  			  
 	    
 							   $data[$flag]['updatetime'] =  date('Y-m-d H:i:s');
-		
+								 $datauser[$flag]['updatetime'] = date('Y-m-d H:i:s');
+								  $datauser[$flag]['accountstatue'] =0;
+							 $cell =  $currentSheet->getCell('N'.$currentRow)->getValue();
+	    	 				
+						 if($cell instanceof PHPExcel_RichText)     //富文本转换字符串   
+           
+		  				 {
+		  					  $cell = $cell->__toString();  
+		 				  }
+						  
+						  
+						   $datauser[$flag]['loginname'] =  $cell;  //今年可用调休
+						   $datauser[$flag]['password']=md5('12345');
   			
   					 $flag++;  //for
  
@@ -1262,20 +1277,75 @@ public function loginDetails(){
 								
 		
 		  $infotable=M('staffinfo');//M方法
+		  
+		  $userinfo = M('userinfo');
+		   for($i=0;$i<$flag;$i++)
+		 {
+			 
+		  $staffinfo=$infotable->getByUid($data[$i]['uid']);
+		  $id=$data[$i]['uid'];
+		  if(count($staffinfo)>0)
+		  {
+			 $is= $infotable->where("op_staffinfo.uid=$id")->delete();
+			 
+		  }
+		  
+		
+		 		 		  
+		 }
+		  
+		  		  
 		  $result=$infotable->addAll($data);
 		  
 		  if(!$result)
 		  {
 			 // $result->rollback();
-			  $this->error('导入失败，请检查格式从新导入！');
+			  $this->error('员工信息导入失败，请检查格式从新导入！');
 			  //echo $infotable->getLastSql();
 			  
 			  exit();
 		  }
 		  else
 		  {
-
-			  $this->success ( '导入成功！' );	
+			  
+			  $temp=0;
+			  
+			  //排除无效的userinfo
+	   			 for($i=0;$i<$flag;$i++)
+				 {
+			 
+					  $staffinfo=$userinfo->getByUid($datauser[$i]['uid']);
+					  $staffloginname=$userinfo->getByLoginname($datauser[$i]['loginname']);
+					  
+					  if(count($staffinfo)==0&&count($staffloginname)==0&&$datauser[$i]['loginname']!='')
+		 				 {
+							
+							  $dataadduser[$temp]=$datauser[$i];
+							  $temp++;
+							  
+							 
+							  }
+		  
+		
+		 		 		  
+				 }
+				 
+				 //添加有效的userinfo
+				 if(count($dataadduser)>0)
+				 {
+					      $rs = $userinfo->addAll($dataadduser);
+							  
+							  if(!$rs)
+							  {
+								
+								$this->error ('部分员工登录账户导入失败，请核对！' );
+								  
+								exit();
+								  
+								  }
+							  	
+				 }
+				 $this->success ( '导入成功！' );
 		  }
 				
 	}
@@ -1891,8 +1961,17 @@ public function exportVacation()
 	
 	function list_files_attendance() 
  { 
- $dir='..\excel\attendance/';
- 	$ip=gethostbyname($_ENV['COMPUTERNAME']);
+ 
+ 		if(!file_exists('..\excel')) {
+ 			mkdir('..\excel');
+ 		}
+ 		if(!file_exists('..\excel\attendance')) {
+			mkdir('..\excel\attendance');
+		}
+ 
+    $dir='..\excel\attendance/';
+ 	//$ip=gethostbyname($_ENV['COMPUTERNAME']);
+	$ip='222.209.200.172:3824';
      if(is_dir($dir))        //判断参数是否为目录
      { 
          if($handle = opendir($dir))         //打开目录，返回文件句柄
@@ -1915,8 +1994,18 @@ public function exportVacation()
 		
 			
 	function list_files_vacation() 
- { $dir='..\excel\vacation/';
- 	$ip=gethostbyname($_ENV['COMPUTERNAME']);
+ { 
+ 
+ 	if(!file_exists('..\excel')) {
+ 			mkdir('..\excel');
+ 		}
+ 		if(!file_exists('..\excel\vacation')) {
+			mkdir('..\excel\vacation');
+		}
+ 
+    $dir='..\excel\vacation/';
+ 	//$ip=gethostbyname($_ENV['COMPUTERNAME']);
+	$ip='222.209.200.172:3824';
      if(is_dir($dir))        //判断参数是否为目录
      { 
          if($handle = opendir($dir))         //打开目录，返回文件句柄

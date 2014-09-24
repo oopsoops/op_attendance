@@ -44,6 +44,7 @@
                  <th  field="tholiday" width="120" align="center">今年可用年假</th>
                  <th  field="lrest" width="120" align="center">去年剩余调休</th>
                  <th  field="trest" width="120" align="center">今年可用调休</th>
+                  <th  field="loginname" width="120" align="center">登陆账号</th>
                 
                              
             </tr>  
