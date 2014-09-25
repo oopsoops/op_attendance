@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50516
 File Encoding         : 65001
 
-Date: 2014-09-24 23:04:28
+Date: 2014-09-25 23:23:20
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -123,7 +123,7 @@ CREATE TABLE `op_staffinfo` (
   `username` varchar(255) NOT NULL,
   `departmentid` int(11) NOT NULL,
   `phone` varchar(255) DEFAULT NULL,
-  `costcenterid` int(11) DEFAULT NULL,
+  `costcenterid` varchar(255) NOT NULL DEFAULT '0',
   `entrydate` date DEFAULT NULL,
   `usertypeid` int(11) NOT NULL,
   `teamid` int(11) DEFAULT NULL,
