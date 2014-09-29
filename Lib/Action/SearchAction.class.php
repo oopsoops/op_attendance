@@ -134,7 +134,7 @@ class SearchAction extends Action
 		 
 	    $info=$userdetails
 		->field("op_staffinfo.uid as uid,op_staffinfo.username as username,op_staffinfo.phone as phone,op_staffinfo.email as email,op_staffinfo.entrydate as entrydate,op_usertype.typename as typename,op_department.departmentname as department,op_teaminfo.teamname as teamname,op_staffinfo.THoliday as tholiday,op_staffinfo.LHoliday as lholiday,op_staffinfo.TRest as
-	trest,op_staffinfo.LRest as lrest")
+	trest,op_staffinfo.LRest as lrest,op_staffinfo.costcenterid as costcenter")
 		->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid')
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->join('op_teaminfo ON op_staffinfo.teamid = op_teaminfo.tid')
