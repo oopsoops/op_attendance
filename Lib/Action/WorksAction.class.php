@@ -37,6 +37,7 @@
 				$mail->Password = "13579superk24680";
 				$mail->AddReplyTo("superdragon@163.com","系统");
 				$mail->From = "superdragon@163.com";
+				$mail->FromName="系统";
 				$mail->AddAddress($email);
 			//	$mail->AddAddress("732121339@qq.com");
 				$mail->Subject = "工作申请审批提醒";
@@ -48,6 +49,32 @@
 			} 
 			
 		}
+		public function sendRemindMail($email,$content){
+			try { 
+				$mail=new PHPMailer();
+				$mail->Mailer="stmp";
+				$mail->IsSMTP();
+				$mail->SMTPAuth = true;
+				$mail->Port = 25; 
+				$mail->CharSet = "utf-8";
+				$mail->Host = "smtp.163.com";
+				$mail->Username = "superdragon@163.com";
+				$mail->Password = "13579superk24680";
+				$mail->AddReplyTo("superdragon@163.com","系统");
+				$mail->From = "superdragon@163.com";
+				$mail->FromName="系统";
+				$mail->AddAddress($email);
+			//	$mail->AddAddress("732121339@qq.com");
+				$mail->Subject = "工作申请审批状态提醒";
+				$mail->Body = $content;
+				$mail->IsHTML(true);
+				$mail->Send();
+			} catch (phpmailerException $e) { 
+					echo "邮件发送失败：".$e->errorMessage(); 
+			} 
+		}
+		
+		
 		
 		//申请事务提交
 		public function dealApply(){
@@ -101,8 +128,8 @@
 				$departmentid=$row['departmentid'];
 				$rows=$model->field("op_staffinfo.uid,op_staffinfo.email")
 				->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
-				->where("op_usertype.power=2")->select();
-				$status=2;
+				->where("op_usertype.power=5")->select();
+				$status=3;
 				$email=$rows[0]['email'];
 				
 			}
@@ -131,6 +158,9 @@
 				$astatus['holiday']=$holiday;
 				$day=$this->getDaysByPb($begindate,$enddate,$begintime,$endtime,$uid);
 		//		$day=$this->getDaysByPb("2014-09-25","2014-09-25","08:00","17:00","1003");
+			}
+			if($holiday=="婚假"||$holiday=="产假"){
+				$days=30;
 			}
 			if($day!=""){
 				$astatus['days']=$day;
@@ -245,7 +275,7 @@
 		}
 		else if($power==5){
 			$status=3;
-			$where="status=3  and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+			$where="(status=3 or (bossid='".$uid."' and status=2)) and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
 		}else{
 			$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
 		}
@@ -255,10 +285,11 @@
 		$num=$model->where($where)->count();
 	//	echo $model->where($where)->getLastSql();
 		$list=$model->field("op_vacationstatus.uid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,
-op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus.transpot as days,op_vacationstatus.days as nums,	op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.fee,op_vacationstatus.status,op_vacationstatus.transpot,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate")
+op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus.transpot as days,op_vacationstatus.days as nums,op_usertype.power,	op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.fee,op_vacationstatus.status,op_vacationstatus.transpot,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->join("op_teaminfo ON op_staffinfo.teamid=op_teaminfo.tid")
 		->join("op_department ON op_staffinfo.departmentid=op_department.did")
+		->join("op_usertype ON op_staffinfo.usertypeid=op_usertype.tid")
 		->where($where)
 		->order("op_vacationstatus.applytime desc")
 		->limit("$start,$rows")
@@ -267,6 +298,8 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		echo dataToJson($list,$num);
 		
 	}
+	
+	
 	
 	public function jbAllApply(){
 		$uid = $_SESSION['uid'];
@@ -341,13 +374,21 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		$vid=$this->_get('vid');
 		$model=M('vacationstatus');
 		$rs=$model->getById($vid);
+		$uid=$rs['uid'];
+		
 		$rs['isrejected']=1;
 		$result=$model->save($rs);
+		
 		if(!$result){
 			echo "驳回失败,请重试！";
 			exit;
 		}
 		else{
+			$model=M('staffinfo');
+			$row=$model->getByUid($uid);
+			$email=$row['email'];
+			$content="你的工作申请已被驳回，请登录考勤系统查看。";
+			$this->sendRemindMail($email,$content);
 			$data="1";
 			echo $data;
 		}
@@ -382,6 +423,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		
 		$model=M('vacationstatus');
 		$rs=$model->getById($id);
+		$uid=$rs['uid'];
 		$rs['isapproved']=1;
 		$result=$model->save($rs);
 		if(!$result){
@@ -389,6 +431,11 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			exit;
 		}
 		else{
+			$model=M('staffinfo');
+			$row=$model->getByUid($uid);
+			$email=$row['email'];
+			$content="你的工作申请已批准，请登录考勤系统查看详情。";
+			$this->sendRemindMail($email,$content);
 			$data="1";
 			echo $data;
 		}
@@ -423,8 +470,11 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 	public function sub2hr(){
 		$id=$this->_get('vid');
 		$model=M('vacationstatus');
+		$hruid=$this->getHrUid();
 		$rs=$model->getById($id);
+		$uid=$rs['uid'];
 		$rs['status']=2;
+		$rs['hrmanagerid']=$hruid;
 		$result=$model->save($rs);
 		if(!$result){
 			echo "操作失败,请重试！";
@@ -437,7 +487,12 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			->where("op_usertype.power=2")
 			->select();
 			$email=$rs[0]['email'];
-	//		$this->sendMail($email);
+			$this->sendMail($email);
+			$model=M('staffinfo');
+			$row=$model->getByUid($uid);
+			$email=$row['email'];
+			$content="你的工作申请已提交人事经理审批。";
+			$this->sendRemindMail($email,$content);
 			$data="1";
 			echo $data;
 		}
@@ -450,7 +505,10 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		$id=$this->_get('vid');
 		$model=M('vacationstatus');
 		$rs=$model->getById($id);
+		$uid=$rs['uid'];
+		$bossid=$this->getBossUid();
 		$rs['status']=3;
+		$rs['bossid']=$bossid;
 		$result=$model->save($rs);
 		if(!$result){
 			echo "操作失败,请重试！";
@@ -463,13 +521,36 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			->where("op_usertype.power=5")
 			->select();
 			$email=$rs[0]['email'];
-	//		$this->sendMail($email);
+			$this->sendMail($email);
+			$model=M('staffinfo');
+			$row=$model->getByUid($uid);
+			$email=$row['email'];
+			$content="你的工作申请已提交老板审批。";
+			$this->sendRemindMail($email,$content);
 			$data="1";
 			echo $data;
 		}
 		
 	}	
-
+	
+	public function getHrUid(){
+		$model=M('staffinfo');
+		$rs=$model->field("op_staffinfo.uid")
+			->join("op_usertype on op_staffinfo.usertypeid=op_usertype.tid")
+			->where("op_usertype.power=2")
+			->select();
+			$uid=$rs[0]['uid'];
+			return $uid;
+	}
+	public function getBossUid(){
+		$model=M('staffinfo');
+		$rs=$model->field("op_staffinfo.uid")
+			->join("op_usertype on op_staffinfo.usertypeid=op_usertype.tid")
+			->where("op_usertype.power=5")
+			->select();
+			$uid=$rs[0]['uid'];
+			return $uid;
+	}
 
 
 
@@ -480,7 +561,12 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 	public function applyQuery(){
 		$this->display();
 	}
-
+	public function myApprove(){
+		$this->display();
+	}
+	
+	
+	
 	public function getMyApply(){
 		$uid = $_SESSION['uid'];
 		$page = $this->_post('page');
@@ -491,7 +577,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		$model=M('vacationstatus');
 		$where="op_vacationstatus.uid='".$uid."' ";
 		$num=$model->where($where)->count();
-		$list=$model->field("op_vacationstatus.begindate,op_vacationstatus.uid,op_vacationstatus.enddate,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.isapproved,op_vacationstatus.isrejected,op_vacationstatus.transtype,op_staffinfo.username,op_vacationtype.typemc,op_vacationstatus.applytime")
+		$list=$model->field("op_vacationstatus.begindate,op_vacationstatus.uid,op_vacationstatus.enddate,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.isapproved,op_vacationstatus.isrejected,op_vacationstatus.transtype,op_staffinfo.username,op_vacationtype.typemc,op_vacationstatus.applytime,op_vacationstatus.status")
 		->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid")
 		->join("op_vacationtype on op_vacationstatus.transtype=op_vacationtype.typedm")
 		->where($where)
@@ -501,110 +587,134 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 //		echo $model->where($where)->getLastSql();
 		echo dataToJson($list,$num);
 	}
+	
+	public function getMyApprove(){
+		$uid = $_SESSION['uid'];
+		
+		$page = $this->_post('page');
+		if($page<1) $page=1;
+		$rows = $this->_post('rows');
+		if($rows<1) $rows=10;
+		$start = ($page-1)*$rows;
+		
+		$model=M('staffinfo');
+		$row=$model->getByUid($uid);
+		$usertypeid=$row['usertypeid'];
+		$model=M('usertype');
+		$row=$model->getByTid($usertypeid);
+		$power=$row['power'];
+		$model=M('vacationstatus');
+		$where="";
+		if($power==2){
+			$where="op_vacationstatus.hrmanagerid='".$uid."' or op_vacationstatus.departmanagerid='".$uid."'";
+		}
+		if($power==4){
+			$where="op_vacationstatus.departmanagerid='".$uid."'";
+		}
+		if($power==5){
+			$where="op_vacationstatus=3 or op_vacationstatus.bossid='".$uid."'";
+		}
+		$num=$model->where($where)->count();
+		$list=$model->field("op_vacationstatus.begindate,op_vacationstatus.uid,op_vacationstatus.enddate,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.isapproved,op_vacationstatus.isrejected,op_vacationstatus.transtype,op_staffinfo.username,op_vacationtype.typemc,op_vacationstatus.applytime,op_vacationstatus.status")
+		->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid")
+		->join("op_vacationtype on op_vacationstatus.transtype=op_vacationtype.typedm")
+		->where($where)
+		->order("op_vacationstatus.applytime desc")
+		->limit("$start,$rows")
+		->select();
+	//	echo $model->getLastSql();
+		echo dataToJson($list,$num);
+	}
 
 /*****************************************提交hr end*******************************************/	
 
 /*****************************************根据排版设置计算请假天数begin*******************************************/	
 	public function getDaysByPb($begindate,$enddate,$begintime,$endtime,$uid){
-//		$begindate=$this->_post('begindate');
-//		$enddate=$this->_post('enddate');
-//		$begintime=$this->_post('begintime');
-//		$endtime=$this->_post('endtime');
-//		$uid=$this->_post('uid');
+	//	$begindate="2014-09-08";
+	//	$enddate="2014-09-28";
+	//	$begintime="08:00";
+	//	$endtime="17:00";
 		$model=M('staffinfo');
-		$row=$model->getByUid($uid);
-		
-		$tid="2";//$row['teamid'];
+		$row=$model->getByUid($uid);		
+		$tid=$row['teamid'];
 		$model=M('worktime');
 		$where="((workdate1<='".$begindate."' and workdate2>='".$begindate."' and workdate2<='".$enddate."')or(workdate1<='".$begindate."' and workdate2>='".$enddate."')or(workdate1<='".$enddate."' and workdate2>='".$enddate."' and workdate1>='".$begindate."')or(workdate1>='".$begindate."' and workdate2<='".$enddate."'))and teamid='".$tid."'";
-		$rows=$model->where($where)->select();
-		if(!$rows){
+		$worktimeRow=$model->where($where)->select();
+		$length=$model->where($where)->count();
+		if(!$worktimeRow){
 			return 0;
 		}
-		$nums=0;
-		$number=-1;
-		$where1="workdate1<='".$begindate."' and workdate2>='".$begindate."' and workdate2<'".$enddate."' and teamid='".$tid."'";
-		$where2="workdate1<'".$begindate."' and workdate2>'".$enddate."' and teamid='".$tid."'";
-		$where3="workdate1<='".$enddate."' and workdate2>='".$enddate."' and workdate1>'".$begindate."' and teamid='".$tid."'";
-		$where4="workdate1>='".$begindate."' and workdate2<='".$enddate."' and teamid='".$tid."'";
-		$rows=$model->field("TIMESTAMPDIFF(day,'".$begindate."',workdate2)as days,worktime1,worktime2")->where($where1)->select();
-	//	$len=$model->where($where1)->count();
-	//	echo $model->getLastSql(); 
-		if(!$rows){
-		}else{
-			echo "where1";
-			$nums+=$rows[0]['days'];
-			$number++;
-			$time1=$rows[0]['worktime2'];
-			$time2=$rows[0]['worktime1'];
-		}
-		
-		$rows=$model->field("TIMESTAMPDIFF(day,'".$begindate."','".$enddate."')as days,worktime1,worktime2")->where($where2)->select();
-		if(!$rows){
-		}else{
-			echo "where2";
-			$nums+=$rows[0]['days'];
-			$number++;
-			$time1=$rows[0]['worktime2'];
-			$time2=$rows[0]['worktime1'];
-		}
-		$rows=$model->field("TIMESTAMPDIFF(day,workdate1,'".$enddate."')as days,worktime1,worktime2")->where($where3)->select();
-		if(!$rows){
-		}else{
-			echo "where3";
-			$nums+=$rows[0]['days'];
-			$number++;
-			$time2=$rows[0]['worktime1'];
-			$time1=$rows[0]['worktime2'];
-		}
-		$rows=$model->field("TIMESTAMPDIFF(day,workdate1,workdate2)as days")->where($where4)->select();
-//		echo $model->getLastSql(); 
-		$len=$model->where($where4)->count();
-		if(!$rows){
-		}else{
-			echo "where4";
-			for($i=0;$i<$len;$i++){
-				$nums+=$rows[$i]['days'];
-				$number++;
+		$date=$begindate;
+		$days=0;
+		while($date<=$enddate){
+			//如果是开始那天就要计算是全天还是半天
+			if($date==$begindate){
+				$rows=$model->where("workdate1<='".$date."' and workdate2>='".$date."'")->select();
+				$end=$rows[0]['worktime2'];
+				$end="2014-01-01 ".$end;
+				$begin="2014-01-01 ".$begintime;
+				//如果结束的时间比开始时间小，说明是跨天，则减少一天
+				if($begin>$end){
+					$days--;
+				}
+				$rows=$model->field("TIMESTAMPDIFF(hour,'".$begin."','".$end."')as hour")->where("workdate1<='".$date."' and workdate2>='".$date."'")->select();
+				if(!$rows){
+					return 0;
+				}
+				$hour=$rows[0]['hour'];
+				if($hour<0){
+					$hour+=24;
+				}
+				if($hour<=4){
+					$days+=0.5;
+				}else{
+					$days+=1;
+				}
 			}
+			//如果是结束那天且开始和结束不是一天
+			else if($date==$enddate&&$begindate!=$enddate){
+				$rows=$model->where("workdate1<='".$date."' and workdate2>='".$date."'")->select();
+				$begin=$rows[0]['worktime1'];
+				$begin="2014-01-01 ".$begin;
+				$end="2014-01-01 ".$endtime;
+				$rows=$model->field("TIMESTAMPDIFF(hour,'".$begin."','".$end."')as hour")->where("workdate1<='".$date."' and workdate2>='".$date."'")->select();
+				if(!$rows){
+					return 0;
+				}
+				$hour=$rows[0]['hour'];
+				if($hour<0){
+					$hour+=24;
+				}
+				if($hour<=4){
+					$days+=0.5;
+				}else{
+					$days+=1;
+				}
+			}
+			
+			//既不是结束也不是开始
+			else if ($date>$begindate&&$date<$enddate){
+				for($i=0;$i<$length;$i++){
+					if($date<=$worktimeRow[$i]['workdate2']&&$date>=$worktimeRow[$i]['workdate1']){
+						$days++;
+					}
+				}
+			}
+			//变为下一天
+			$date=$this->getNextDay($date);
 		}
-		$nums+=$number;
-		if($begindate==$enddate){
-			$nums=0;
-		}
-		//******************************计算小时****************************************//
-		$begin="2014-01-01 ".$begintime;
-		$end="2014-01-01 ".$time1;
-		$rows=$model->field("TIMESTAMPDIFF(hour,'".$begin."','".$end."')as hour")->select();
-		$hour=$rows[0]['hour'];
-		if($hour<0){
-			$nums--;
-			$hour=$hour+24;
-		}
-		if($hour<=4){
-			$nums=$nums+0.5;
-		}else{
-			$nums+=1;
-		}
-		
-		$begin="2014-01-01 ".$time2;
-		$end="2014-01-01 ".$endtime;
-		$rows=$model->field("TIMESTAMPDIFF(hour,'".$begin."','".$end."')as hour")->select();
-		
-		$hour2=$rows[0]['hour'];
-		if($hour2<0){
-			$nums--;
-			$hour2=$hour+24;
-		}
-		if($hour2<=4){
-			$nums=$nums+0.5;
-		}else{
-			$nums+=1;
-		}
-		$nums--;
-		return $nums;
+		return $days;
 		
 		
+	
+	}
+	
+	//得到日期的下一天
+	public function getNextDay($date){
+		$model=M('usertype');
+		$rows=$model->field("date_add('".$date."',interval 1 day)as day")->select();
+		$newDate=$rows[0]['day'];
+		return $newDate;
 	}
 
 /*****************************************根据排版设置计算请假天数begin*******************************************/	

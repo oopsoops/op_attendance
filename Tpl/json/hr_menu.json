@@ -15,19 +15,19 @@
 		"text":"加班审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"works/jbAproval"
+            "url":"Works/jbAproval"
         }
 	},{
 		"text":"出差审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"works/ccApproval"
+            "url":"Works/ccApproval"
         }
 	},{
 		"text":"休假审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"works/qjApproval"
+            "url":"Works/qjApproval"
         }
 	},{
 		"text":"事务申请",
@@ -40,6 +40,12 @@
 		"iconCls":"icon-pass",
 		 "attributes":{  
 			"url":"Works/applyQuery"
+		 }
+	},{
+		"text":"我的审批",
+		"iconCls":"icon-pass",
+		 "attributes":{  
+			"url":"Works/myApprove"
 		 }
 	},{
 		"text":"排班设置",

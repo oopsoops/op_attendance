@@ -66,7 +66,7 @@
 		return '<a href="javascript:void(0)" onclick="doReject('+row.id+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
 	function approveFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.nums+')"><img src="__TPL__/images/check.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.nums+','+row.power+')"><img src="__TPL__/images/check.png" width="16"/></a>';
 	}
 	
 	
@@ -137,8 +137,8 @@
 					success:function(data){
 						if(data=="1"){
 							$.messager.alert("提示","批准成功！");
-							$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
-							$('#grid_qjApprove').datagrid('load', { });
+							$('#grid_jbApprove').datagrid('loadData', { total:0, rows:[ ]});
+							$('#grid_jbApprove').datagrid('load', { });
 						}				
 					},
 					error:function(XMLHttpRequest,textStatus,errorThrown){
@@ -152,7 +152,27 @@
 	
 	
 	function doApprove(id,nums){
-		if(nums<=3){
+		if(power==4&&status=="3"){
+			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
+				if (r){
+					$.ajax({
+						url:"__APP__/Works/sub2hr/vid/"+id,
+						type:'GET',
+						success:function(data){
+							if(data=="1"){
+								$.messager.alert("提示","提交成功！");
+								$('#grid_jbApprove').datagrid('loadData', { total:0, rows:[ ]});
+								$('#grid_jbApprove').datagrid('load', { });
+							}				
+						},
+						error:function(XMLHttpRequest,textStatus,errorThrown){
+							alert(''+errorThrown);
+						}	
+					});
+				}
+			});
+		}
+		else if(nums<=3){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({
@@ -161,8 +181,8 @@
 						success:function(data){
 							if(data=="1"){
 								$.messager.alert("提示","批准成功！");
-								$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
-								$('#grid_qjApprove').datagrid('load', { });
+								$('#grid_jbApprove').datagrid('loadData', { total:0, rows:[ ]});
+								$('#grid_jbApprove').datagrid('load', { });
 							}				
 						},
 						error:function(XMLHttpRequest,textStatus,errorThrown){

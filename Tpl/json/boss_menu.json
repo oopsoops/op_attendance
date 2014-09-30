@@ -15,25 +15,25 @@
 		"text":"加班审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"works/jbAproval"
+            "url":"Works/jbAproval"
         }
 	},{
 		"text":"出差审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"works/ccApproval"
+            "url":"Works/ccApproval"
         }
 	},{
 		"text":"休假审批",
 		"iconCls":"icon-doccheck",
 		 "attributes":{  
-            "url":"works/qjApproval"
+            "url":"Works/qjApproval"
         }
 	},{
-		"text":"申请查询",
+		"text":"我的审批",
 		"iconCls":"icon-pass",
 		 "attributes":{  
-			"url":"Password/passwordChange"
+			"url":"Works/myApprove"
 		 }
 	}]
 },{

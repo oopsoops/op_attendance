@@ -38,7 +38,7 @@
             
             <div title="休假申请"  style="overflow:auto;padding:20px;"> 
              <?php if ($teamlist[0]['teamid']!=1&&$power==3){ ?>
-                    选择员工
+                    选择员工：
                     <select id="uid2">
                         <?php for($i=0;$i<count($teamlist);$i++){
                                     echo "<option value='".$teamlist[$i]['uid']."'>".$teamlist[$i]['username'];	
@@ -73,7 +73,7 @@
      
             <div title="出差申请"   style="padding:20px;"> 
                     <?php if ($teamlist[0]['teamid']!=1&&$power==3){ ?>
-                    选择员工
+                    选择员工：
                     <select id="uid3">
                         <?php for($i=0;$i<count($teamlist);$i++){
                                     echo "<option value='".$teamlist[$i]['uid']."'>".$teamlist[$i]['username'];	

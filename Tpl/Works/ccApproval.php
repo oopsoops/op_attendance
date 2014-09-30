@@ -39,7 +39,7 @@
 		return '<a href="javascript:void(0)" onclick="doReject('+row.id+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
 	function approveFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.nums+','+row.status+')"><img src="__TPL__/images/check.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.nums+','+row.status+','+row.power+')"><img src="__TPL__/images/check.png" width="16"/></a>';
 	}
 	
 	
@@ -54,8 +54,8 @@
 					success:function(data){
 						if(data=="1"){
 							$.messager.alert("提示","驳回成功！");
-							$('#grid_jbApprove').datagrid('loadData', { total:0, rows:[ ]});
-							$('#grid_jbApprove').datagrid('load', { });
+							$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
+							$('#grid_ccApprove').datagrid('load', { });
 						}				
 					},
 					error:function(XMLHttpRequest,textStatus,errorThrown){
@@ -66,36 +66,17 @@
 		});
 	}
 	function doApprove(id,nums,status){
-		if(nums<=3||(status=="2"&&nums>3&&nums<=5)||status=="3"){
+		if(power==4&&status=="3"){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
-				if (r){
-					$.ajax({
-						url:"__APP__/Works/approveTrans/vid/"+id,
-						type:'GET',
-						success:function(data){
-							if(data=="1"){
-								$.messager.alert("提示","批准成功！");
-								$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
-								$('#grid_qjApprove').datagrid('load', { });
-							}				
-						},
-						error:function(XMLHttpRequest,textStatus,errorThrown){
-							alert(''+errorThrown);
-						}	
-					});
-				}
-			});
-		}else if(nums>3&&nums<=5){
-			$.messager.confirm('提示', '出差时间大于3天需要人事经理审核，是否提交？', function(r){  
 				if (r){
 					$.ajax({
 						url:"__APP__/Works/sub2hr/vid/"+id,
 						type:'GET',
 						success:function(data){
 							if(data=="1"){
-								$.messager.alert("提示","提交成功！");
-								$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
-								$('#grid_qjApprove').datagrid('load', { });
+								$.messager.alert("提示","批准成功！");
+								$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
+								$('#grid_ccApprove').datagrid('load', { });
 							}				
 						},
 						error:function(XMLHttpRequest,textStatus,errorThrown){
@@ -105,7 +86,48 @@
 				}
 			});
 		}
-		else if(nums>5){
+		
+		
+		else if((status=="1"&&nums<3)||(status=="2"&&nums>=3&&nums<5)||(status=="2"&&power==4)||(status=="3"&&nums>=5)){
+			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
+				if (r){
+					$.ajax({
+						url:"__APP__/Works/approveTrans/vid/"+id,
+						type:'GET',
+						success:function(data){
+							if(data=="1"){
+								$.messager.alert("提示","批准成功！");
+								$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
+								$('#grid_ccApprove').datagrid('load', { });
+							}				
+						},
+						error:function(XMLHttpRequest,textStatus,errorThrown){
+							alert(''+errorThrown);
+						}	
+					});
+				}
+			});
+		}else if(nums>=3&&status=="1"){
+			$.messager.confirm('提示', '出差时间大于3天需要人事经理审核，是否提交？', function(r){  
+				if (r){
+					$.ajax({
+						url:"__APP__/Works/sub2hr/vid/"+id,
+						type:'GET',
+						success:function(data){
+							if(data=="1"){
+								$.messager.alert("提示","提交成功！");
+								$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
+								$('#grid_ccApprove').datagrid('load', { });
+							}				
+						},
+						error:function(XMLHttpRequest,textStatus,errorThrown){
+							alert(''+errorThrown);
+						}	
+					});
+				}
+			});
+		}
+		else if(nums>=5&&status=="2"){
 			$.messager.confirm('提示', '出差时间大于5天需要老板审核，是否提交？', function(r){  
 				if (r){
 					$.ajax({
@@ -114,8 +136,8 @@
 						success:function(data){
 							if(data=="1"){
 								$.messager.alert("提示","提交成功！");
-								$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
-								$('#grid_qjApprove').datagrid('load', { });
+								$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
+								$('#grid_ccApprove').datagrid('load', { });
 							}				
 						},
 						error:function(XMLHttpRequest,textStatus,errorThrown){

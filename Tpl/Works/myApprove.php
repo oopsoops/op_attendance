@@ -9,7 +9,7 @@
             pagination="true"
             rownumbers="true"
             pageList="[5,10,15]"
-            url="__APP__/Works/getMyApply"
+            url="__APP__/Works/getMyApprove"
             >
             
         <thead>
@@ -21,7 +21,7 @@
                 <th field="enddate" width="80" align="center">结束日期</th>
                 <th field="endtime" width="80" align="center">结束时间</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
-                <th field="statusinfo" width="80" align="center" formatter="statusFormatter">状态</th>
+                <th field="statusinfo" width="160" align="center" formatter="statusFormatter">状态</th>
             </tr>  
         </thead>  
     </table>
@@ -32,11 +32,11 @@
 	   }
 		else if(row.isrejected==1){
 			return '已驳回'
-		}else if(row.status=="2"&&row.isapproved==0&&row.isrejected==0){
+		}else if(row.status=="2"){
 			return '人事经理审批中';
-		}else if(row.status=="3"&&row.isapproved==0&&row.isrejected==0){
+		}else if(row.status=="3"){
 			return '老板审批中';
-		}else if(row.status=="1"&&row.isapproved==0&&row.isrejected==0){
+		}else if(row.status=="1"){
 			return '部门经理审批中';
 		}
 		
