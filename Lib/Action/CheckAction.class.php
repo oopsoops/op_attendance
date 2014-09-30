@@ -59,13 +59,13 @@ class CheckAction extends Action {
                     //计算时间中间点
                     $worktime_mid = date('H:i:s',(strtotime($worktime2)-strtotime($worktime1))/2);
 
-                    $worktime1_lasthour = date('H:i:s',(strtotime($worktime1) - 60*60));
-                    $worktime2_nexthour = date('H:i:s',(strtotime($worktime2) + 60*60));
-                    echo "worktime_mid=$worktime_mid <br/> worktime1_lasthour=$worktime1_lasthour <br/> worktime2_nexthour=$worktime2_nexthour <br/>";
+                    $worktime1_last2hour = date('H:i:s',(strtotime($worktime1) - 60*60*2));
+                    $worktime2_next2hour = date('H:i:s',(strtotime($worktime2) + 60*60*2));
+                    echo "worktime_mid=$worktime_mid <br/> worktime1_last2hour=$worktime1_last2hour <br/> worktime2_next2hour=$worktime2_next2hour <br/>";
 
                     //查询当天打卡信息
                     $Model = M('clocktime');
-                    $where = "clockdate BETWEEN '$tt' AND '$tt' AND clocktime>='$worktime1_lasthour' AND clocktime<='$worktime2_nexthour' AND uid = '$uid'";
+                    $where = "clockdate BETWEEN '$tt' AND '$tt' AND clocktime>='$worktime1_last2hour' AND clocktime<='$worktime2_next2hour' AND uid = '$uid'";
                     $rs = $Model->where($where)->order('clocktime')->select();
                     //echo $Model->getLastSql()."<br>";
                     echo '+++++++++++++++++++++++++++++++++++当天打卡信息++++++++++++++++++++++++++++++++++++++++<br/>';
@@ -136,9 +136,9 @@ class CheckAction extends Action {
                     //计算时间中间点
                     $worktime_mid = date('H:i:s',(strtotime($worktime2)+60*60*24+strtotime($worktime1))/2);
 
-                    $worktime1_lasthour = date('H:i:s',(strtotime($worktime1) - 60*60));
-                    $worktime2_nexthour = date('H:i:s',(strtotime($worktime2) + 60*60));
-                    echo "worktime_mid=$worktime_mid <br/> worktime1_lasthour=$worktime1_lasthour  <br/> worktime2_nexthour=$worktime2_nexthour <br/>";
+                    $worktime1_last2hour = date('H:i:s',(strtotime($worktime1) - 60*60*2));
+                    $worktime2_next2hour = date('H:i:s',(strtotime($worktime2) + 60*60*2));
+                    echo "worktime_mid=$worktime_mid <br/> worktime1_last2hour=$worktime1_last2hour  <br/> worktime2_next2hour=$worktime2_next2hour <br/>";
                     
                     //上班考勤
                     if(strtotime($worktime_mid)>strtotime($worktime1)) {
@@ -150,7 +150,7 @@ class CheckAction extends Action {
                     }
                     $Model = M('clocktime');
                     $rs = $Model
-                    ->where("clockdate BETWEEN '$tt' AND '$tt' AND clocktime BETWEEN '$worktime1_lasthour' AND '$_endtime' AND uid='$uid'")
+                    ->where("clockdate BETWEEN '$tt' AND '$tt' AND clocktime BETWEEN '$worktime1_last2hour' AND '$_endtime' AND uid='$uid'")
                     ->order('clocktime')
                     ->select();
                     echo '+++++++++++++++++++++++++++++++++++上班打卡信息++++++++++++++++++++++++++++++++++++++++<br/>';
@@ -194,7 +194,7 @@ class CheckAction extends Action {
                         $Model = M('clocktime');
                         $rs = $Model
                         ->where("clockdate BETWEEN '$tt' AND '$tt' AND clocktime BETWEEN '$worktime_mid' AND '23:59:59' AND uid='$uid'")
-                        ->union("SELECT * FROM op_clocktime WHERE clockdate BETWEEN '$tt_nextday' AND '$tt_nextday' AND clocktime BETWEEN '00:00:00' AND '$worktime2_nexthour' AND uid='$uid'")
+                        ->union("SELECT * FROM op_clocktime WHERE clockdate BETWEEN '$tt_nextday' AND '$tt_nextday' AND clocktime BETWEEN '00:00:00' AND '$worktime2_next2hour' AND uid='$uid'")
                         //->order('clockdate,clocktime')
                         ->select();
                         //echo $Model->getLastSql();
@@ -202,7 +202,7 @@ class CheckAction extends Action {
                         //中间时间在第二天
                         $Model = M('clocktime');
                         $rs = $Model
-                        ->where("clockdate BETWEEN '$tt_nextday' AND '$tt_nextday' AND clocktime BETWEEN '$worktime_mid' AND '$worktime2_nexthour'")
+                        ->where("clockdate BETWEEN '$tt_nextday' AND '$tt_nextday' AND clocktime BETWEEN '$worktime_mid' AND '$worktime2_next2hour'")
                         ->order('clockdate,clocktime')
                         ->select();
                     }
