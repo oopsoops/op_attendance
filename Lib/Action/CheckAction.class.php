@@ -41,12 +41,16 @@ class CheckAction extends Action {
                 */
                 
                 //查询排班时间
-                $where = "teamid=$teamid AND workdate1<='$tt' AND workdate2>='$tt'";
+                $where = "(teamid=$teamid OR uid='$uid') AND workdate1<='$tt' AND workdate2>='$tt'";
                 //echo "where = $where";
-                $worktime = $worktimeModel->where($where)->select();
+                //查询当天排班情况，如果uid字段有值，则取该条。
+                $worktime = $worktimeModel
+                ->where($where)
+                ->order("uid desc")
+                ->select();
                 if(!$worktime) {
-                    echo "no worktime set by the $tt";
-                    return;
+                    echo "uid=$uid has no worktime set by the $tt<br/>";
+                    continue;
                 }
                 $worktime1 = $worktime[0]['worktime1'];
                 $worktime2 = $worktime[0]['worktime2'];
@@ -260,15 +264,23 @@ class CheckAction extends Action {
     public function checkVacation($start,$end,$uid) {
     	$vacModel = M('vacationstatus');
     	//查询所有请假条
-    	$vacList = $vacModel->where("uid='$uid' AND isapproved=1 AND transtype IN (2,3) AND begindate BETWEEN '$start' AND '$end' ")->order('applytime')->select();
+    	$vacList = $vacModel
+        ->where("uid='$uid' AND isapproved=1 AND transtype IN (2,3) AND (
+            (begindate >= '$start' AND begindate <= '$end' AND enddate >= '$end') OR 
+            (enddate <= '$end' AND begindate <= '$start' AND enddate >= '$start') OR
+            (begindate >= '$start' AND enddate <= '$end') OR
+            (begindate <= '$start' AND enddate >= '$start' AND begindate <= '$end' AND enddate >= '$end')
+            )")
+        ->order('applytime')
+        ->select();
     	//print_r($vacList);
     	for($i=0;$i<count($vacList);$i++) {
-    		$unusModel = M('unusualtime');
+    		$unusualModel = M('unusualtime');
     		//查询请假时段异常记录
     		$beginDatetime = $vacList[$i]['begindate'].' '.$vacList[$i]['begintime'];
     		$endDatetime = $vacList[$i]['enddate'].' '.$vacList[$i]['endtime'];
-    		$unsuList = $unusModel->where("uid='$uid' AND static<>'正常' AND CONCAT(clockdate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
-    		//echo $unusModel->getLastSql();
+    		$unsuList = $unusualModel->where("uid='$uid' AND static<>'正常' AND CONCAT(clockdate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
+    		//echo $unusualModel->getLastSql();
     		//print_r($unsuList);
     		for($j=0;$j<count($unsuList);$j++) {
     			$unsuList[$j]['static'] = '正常';
@@ -278,7 +290,7 @@ class CheckAction extends Action {
     				$unsuList[$j]['ps'] = '出差';
     			}
     			$unsuList[$j]['vacid'] = $vacList[$i]['id'];
-    			$rs = $unusModel->save($unsuList[$j]);
+    			$rs = $unusualModel->save($unsuList[$j]);
     			//print_r($unsuList[$j]);
     			if(!$rs) {
     				echo 'error';
@@ -299,9 +311,20 @@ class CheckAction extends Action {
    
    //加班条检测
     public function checkOverwork($start,$end,$uid) {
+        echo '<span style="color:orange">加班条检测开始</span><br/>';
     	$vacModel = M('vacationstatus');
-    	//查询所有请假条
-    	$vacList = $vacModel->where("uid='$uid' AND isapproved=1 AND transtype=1 AND begindate BETWEEN '$start' AND '$end' ")->order('applytime')->select();
+    	//查询所有加班条
+    	$vacList = $vacModel
+        //->where("uid='$uid' AND isapproved=1 AND transtype=1 AND begindate BETWEEN '$start' AND '$end' ")
+        ->where("uid='$uid' AND isapproved=1 AND transtype=1 AND (
+            (begindate >= '$start' AND begindate <= '$end' AND enddate >= '$end') OR 
+            (enddate <= '$end' AND begindate <= '$start' AND enddate >= '$start') OR
+            (begindate >= '$start' AND enddate <= '$end') OR
+            (begindate <= '$start' AND enddate >= '$start' AND begindate <= '$end' AND enddate >= '$end')
+            )")
+        ->order('applytime')
+        ->select();
+        //echo $vacModel->getLastSql()."<br/>";
     	//print_r($vacList);
     	for($i=0;$i<count($vacList);$i++) {
 
@@ -310,77 +333,123 @@ class CheckAction extends Action {
             $_vacEnddate = $vacList[$i]['enddate'];
             $_vacEndtime = $vacList[$i]['endtime'];
 
-    		$unusModel = M('unusualtime');
-    		//查询请假时段异常记录
-    		$beginDatetime = $vacList[$i]['begindate'].' '.$vacList[$i]['begintime'];
-    		$endDatetime = $vacList[$i]['enddate'].' '.$vacList[$i]['endtime'];
-    		$unsuList = $unusModel
-            ->where("type=1 AND uid='$uid' AND CONCAT(clockdate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")
-            ->order('clockdate,clocktime')->select();
-    		echo "============================考勤记录======================<br/>";
-            print_r($unsuList);
-            echo "<br/>===========================================================<br/>";
-    		for($j=0;$j<count($unsuList);$j++) {
-                /*
-    			$unsuList[$j]['vacid'] = $vacList[$i]['id'];
-    			//判断该条是上午 or 下午
-    			if(strtotime($unsuList[$j]['standardtime'])<strtotime('12:00:00')) {
-    				//如果是上午
-    				//更改standardtime
-    				$unsuList[$j]['standardtime'] = $vacList[$i]['begintime'];
-    				if(strtotime($unsuList[$j]['clocktime'])>strtotime($vacList[$i]['begintime'])) {
-    					//迟到
-    					$unsuList[$j]['static'] = '迟到';
-    					$unsuList[$j]['ps'] = '加班';
-    				} else {
-    					$unsuList[$j]['static'] = '正常';
-    					$unsuList[$j]['ps'] = '加班';
-    				}
-    			} else {
-    				//如果是下午
-    				//更改standardtime
-    				$unsuList[$j]['standardtime'] = $vacList[$i]['endtime'];
-    				if(strtotime($unsuList[$j]['clocktime'])<strtotime($vacList[$i]['endtime'])) {
-    					//迟到
-    					$unsuList[$j]['static'] = '早退';
-    					$unsuList[$j]['ps'] = '加班';
-    				} else {
-    					$unsuList[$j]['static'] = '正常';
-    					$unsuList[$j]['ps'] = '加班';
-    				}
-    			}
-                */
-                $cl_startDatetime = $unsuList[$j]['clockdate'].' '.$_vacEndtime;
-                $cl_endDatetime = date('Y-m-d H:i:s',(strtotime($cl_startDatetime)+60*60));
-                //在clocktime表里查询新下班打卡时间段
-                $clockModel = M('clocktime');
-                $rs = $clockModel
-                ->where("uid='$uid' AND CONCAT(clockdate,' ',clocktime) BETWEEN '$cl_startDatetime' AND '$cl_endDatetime'")
-                ->order('clockdate,clocktime')
+            echo "加班开始时间:$_vacBegindate $_vacBegintime<br/>";
+            echo "加班结束时间:$_vacEnddate $_vacEndtime<br/>";
+
+    		$unusualModel = M('unusualtime');
+            if($vacList[$i]['flag']!=1) {
+                //正常加班申请的情况
+                //查询加班时段异常记录
+                $unsualList = $unusualModel
+                ->where("uid='$uid' AND type=1 AND clockdate BETWEEN '$_vacBegindate' AND '$_vacEnddate'")
+                ->order("clockdate,standardtime")
                 ->select();
-                echo "============================打卡记录======================<br/>";
-                echo "SQL:".$clockModel->getLastSql()."<br/>";
-                print_r($rs);
+                echo "============================考勤记录======================<br/>";
+                print_r($unsualList);
                 echo "<br/>===========================================================<br/>";
-                if(!$rs) {
-                    $unsuList[$j]['static'] = '早退';
-                    $unsuList[$j]['ps'] = '加班';
-                } else {
-                    $k = count($rs) - 1;
-                    $unsuList[$j]['clocktime'] = $rs[$k]['clocktime'];
-                    $unsuList[$j]['static'] = '正常';
-                    $unsuList[$j]['ps'] = '加班';
+                for($j=0;$j<count($unsualList);$j++) {
+                    
+                    $cl_startDatetime = $unsualList[$j]['clockdate'].' '.$_vacEndtime;
+                    $cl_endDatetime = date('Y-m-d H:i:s',(strtotime($cl_startDatetime)+60*60*2));
+                    //在clocktime表里查询新下班打卡时间段
+                    $clockModel = M('clocktime');
+                    $rs = $clockModel
+                    ->where("uid='$uid' AND CONCAT(clockdate,' ',clocktime) BETWEEN '$cl_startDatetime' AND '$cl_endDatetime'")
+                    ->order('clockdate,clocktime')
+                    ->select();
+                    echo "============================打卡记录======================<br/>";
+                    //echo "SQL:".$clockModel->getLastSql()."<br/>";
+                    print_r($rs);
+                    echo "<br/>===========================================================<br/>";
+                    if(!$rs) {
+                        $unsualList[$j]['static'] = '早退';
+                        $unsualList[$j]['ps'] = '加班';
+                    } else {
+                        $k = count($rs) - 1;
+                        $unsualList[$j]['clocktime'] = $rs[$k]['clocktime'];
+                        $unsualList[$j]['static'] = '正常';
+                        $unsualList[$j]['ps'] = '加班';
+                    }
+                    $unsualList[$j]['standardtime'] = $vacList[$i]['endtime'];
+                    $unsualList[$j]['vacid'] = $vacList[$i]['id'];
+                    //计算加班小时
+                    $setupDatetime = $_vacBegindate.' '.$_vacBegintime;
+                    $setdownDatetime = $_vacEnddate.' '.$_vacEndtime;
+                    $setdownDatetime_real = $unsualList[$j]['clockdate'].' '.$unsualList[$j]['clocktime'];
+                    //如果实际下班时间比标准下班时间小，则计算为实际下班时间
+                    if(strtotime($setdownDatetime_real) < strtotime($setdownDatetime)) {
+                        $setdownDatetime = $setdownDatetime_real;
+                    }
+                    $timestamp = strtotime($setdownDatetime) - strtotime($setupDatetime);
+                    $days = ceil(($timestamp/3600)*10)/10;
+                    echo "加班开始：$setupDatetime 加班结束：$setdownDatetime 小时：$days<br/>";
+                    //储存days
+                    $staffModel = M('staffinfo');
+                    $row = $staffModel->getByUid($uid);
+                    $row['THoliday'] += $days;
+                    $rs = $staffModel->save($row);
+                    if(!$rs) {
+                        echo 'error';
+                    }
+                    //储存unusual
+                    $rs = $unusualModel->save($unsualList[$j]);
+                    if(!$rs) {
+                        echo 'error';
+                    }
                 }
-                $unsuList[$j]['standardtime'] = $vacList[$i]['endtime'];
-    			$rs = $unusModel->save($unsuList[$j]);
-    			//print_r($unsuList[$j]);
-    			if(!$rs) {
-    				echo 'error';
-	    		}
-    		}
+            } else {
+                //跨天加班申请的情况
+                //查询加班时段异常记录
+                $beginDatetime = $_vacBegindate.' '.$_vacBegintime;
+                $endDatetime = $_vacEnddate.' '.$_vacEndtime;
+                $unsualList = $unusualModel
+                ->where("uid='$uid' AND clockdate BETWEEN '$_vacBegindate' AND '$_vacEnddate'")
+                ->order("clockdate,standardtime")
+                ->select();
+                echo "============================考勤记录======================<br/>";
+                print_r($unsualList);
+                echo "<br/>===========================================================<br/>";
+                $days = 0;
+                for($j=0;$j<count($unsualList);$j+=2) {
+                    $setup = $j;
+                    $setdown = $j+1;
+                    //更新unsual为加班类型
+                    $unsualList[$setup]['ps'] = "加班";
+                    $unsualList[$setup]['vacid'] = $vacList[$i]['id'];
+                    $unsualList[$setdown]['ps'] = "加班";
+                    $unsualList[$setdown]['vacid'] = $vacList[$i]['id'];
+                    //计算加班小时
+                    $setupDatetime = $unsualList[$setup]['clockdate'].' '.$unsualList[$setup]['clocktime'];
+                    $setdownDatetime = $unsualList[$setdown]['clockdate'].' '.$unsualList[$setdown]['standardtime'];
+                    $setdownDatetime_real = $unsualList[$setdown]['clockdate'].' '.$unsualList[$setdown]['clocktime'];
+                    //如果实际下班时间比标准下班时间小，则计算为实际下班时间
+                    if(strtotime($setdownDatetime_real) < strtotime($setdownDatetime)) {
+                        $setdownDatetime = $setdownDatetime_real;
+                    }
+                    $timestamp = strtotime($setdownDatetime) - strtotime($setupDatetime);
+                    $dd = ceil(($timestamp/3600)*10)/10;
+                    $days += $dd;
+                    echo "加班开始：$setupDatetime 加班结束：$setdownDatetime 小时：$dd<br/>";
+                    //储存unusual
+                    $rs = $unusualModel->save($unsualList[$setup]);
+                    if(!$rs) {
+                        echo 'error';
+                    }
+                    $rs = $unusualModel->save($unsualList[$setdown]);
+                    if(!$rs) {
+                        echo 'error';
+                    }
+                }
+                //储存days
+                $vacList[$i]['days'] = $days;
+                $rs = $vacModel->save($vacList[$i]);
+                if(!$rs) {
+                    echo 'error';
+                }
+            }
     		
     	}
-
+        echo '<span style="color:orange">==================================</span><br/>';
     }
 
     public function doCheckOverwork() {

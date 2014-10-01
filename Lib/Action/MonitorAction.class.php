@@ -115,8 +115,8 @@ class MonitorAction extends Action {
 
 		$teamid = $this->_post('teamid');
     	$Model = M('worktime');
-    	$cc = $Model->where("teamid=$teamid")->count();
-    	$rs = $Model->join("op_teaminfo ON op_worktime.teamid = op_teaminfo.tid")->where("teamid=$teamid")->order('workdate1 desc')->limit("$start,$rows")->select();
+    	$cc = $Model->where("teamid=$teamid AND uid is NULL")->count();
+    	$rs = $Model->join("op_teaminfo ON op_worktime.teamid = op_teaminfo.tid")->where("teamid=$teamid AND uid is NULL")->order('workdate1 desc')->limit("$start,$rows")->select();
     	echo dataToJson($rs,$cc);
     }
     //修改窗口
