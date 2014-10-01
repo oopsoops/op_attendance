@@ -2,7 +2,7 @@
    <table class="easyui-datagrid"   
             id="grid_qjApprove"
             style="height:430px"
-            title='加班审批'
+            title='休假审批'
             singleSelect="true"
             striped="true"
             loadMsg='载入中...' 
