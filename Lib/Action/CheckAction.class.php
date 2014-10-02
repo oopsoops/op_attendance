@@ -383,18 +383,26 @@ class CheckAction extends Action {
                     $timestamp = strtotime($setdownDatetime) - strtotime($setupDatetime);
                     $days = ceil(($timestamp/3600)*10)/10;
                     echo "加班开始：$setupDatetime 加班结束：$setdownDatetime 小时：$days<br/>";
-                    //储存days
+                    
+                    
                     $staffModel = M('staffinfo');
                     $row = $staffModel->getByUid($uid);
-                    $row['THoliday'] += $days;
-                    $rs = $staffModel->save($row);
+                    if($row['teamid']=1) {
+                        //如果为办公室则加入调休
+                        $row['THoliday'] += $days;
+                        $rs = $staffModel->save($row);
+                    } else {
+                        //如果为产线则存为days
+                        $vacList[$i]['days'] = $days;
+                        $rs = $vacModel->save($vacList[$i]);
+                    }
                     if(!$rs) {
-                        echo 'error';
+                        echo 'days save error<br/>';
                     }
                     //储存unusual
                     $rs = $unusualModel->save($unsualList[$j]);
                     if(!$rs) {
-                        echo 'error';
+                        echo 'unusual save error<br/>';
                     }
                 }
             } else {
@@ -433,18 +441,20 @@ class CheckAction extends Action {
                     //储存unusual
                     $rs = $unusualModel->save($unsualList[$setup]);
                     if(!$rs) {
-                        echo 'error';
+                        echo 'sestup unusual save error<br/>';
                     }
                     $rs = $unusualModel->save($unsualList[$setdown]);
                     if(!$rs) {
-                        echo 'error';
+                        echo 'setdown unusual save error<br/>';
                     }
                 }
-                //储存days
-                $vacList[$i]['days'] = $days;
-                $rs = $vacModel->save($vacList[$i]);
+                //储存调休
+                $staffModel = M('staffinfo');
+                $row = $staffModel->getByUid($uid);
+                $row['THoliday'] += $days;
+                $rs = $staffModel->save($row);
                 if(!$rs) {
-                    echo 'error';
+                    echo 'days save error<br/>';
                 }
             }
     		
