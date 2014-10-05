@@ -389,7 +389,7 @@ class CheckAction extends Action {
                     $row = $staffModel->getByUid($uid);
                     if($row['teamid']=1) {
                         //如果为办公室则加入调休
-                        $row['THoliday'] += $days;
+                        $row['TRest'] += $days;
                         $rs = $staffModel->save($row);
                     } else {
                         //如果为产线则存为days
@@ -451,7 +451,7 @@ class CheckAction extends Action {
                 //储存调休
                 $staffModel = M('staffinfo');
                 $row = $staffModel->getByUid($uid);
-                $row['THoliday'] += $days;
+                $row['TRest'] += $days;
                 $rs = $staffModel->save($row);
                 if(!$rs) {
                     echo 'days save error<br/>';
