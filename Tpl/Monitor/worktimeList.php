@@ -51,8 +51,10 @@
                             month: $('#worktimelist_month').val()
                         },
                         onLoadSuccess: function() {
-                            initClndr('clndr');
-                            fetchClndr('clndr',$('#grid_worktimelist').datagrid('getData'));
+                            var month = $('#worktimelist_month').val();
+                            var date2 = new Date(date.getFullYear(),month-1,date.getDate());
+                            initClndr('worktimelist_win',date2);
+                            fetchClndr('worktimelist_win',date2,$('#grid_worktimelist').datagrid('getData'));
                         }"
             >
             
@@ -80,7 +82,9 @@
 var date = new Date();
 $("#worktimelist_month").val(date.getMonth()+1);
 
-initClndr("clndr");
+var month = $('#worktimelist_month').val();
+var date2 = new Date(date.getFullYear(),month-1,date.getDate());
+initClndr('worktimelist_win',date2);
 
 function openWorktimeClndr() {
     $("#worktimelist_win").window('open');
@@ -113,10 +117,7 @@ function doDeleteWorktime(id) {
                 url:'__APP__/Monitor/doWorktimeDel/id/'+id,
                 success:function(data) {
                     if (data=="ok") {
-                        $('#grid_worktimelist').datagrid('loadData',{total:0,rows:[]});
-                        $('#grid_worktimelist').datagrid('reload',{
-                            teamid: $('#worktimelist_teamid').val()
-                        });
+                        worktimelist_fetchbyteamid();
                     } else {
                         alert(data);
                     }

@@ -1,14 +1,13 @@
 //初始化日历
-function initClndr(id) {
+function initClndr(id,date) {
     //获取dom
-    var dom = $("#"+id);
+    var dom = $("#"+id+" #clndr");
     //清空table
     dom.empty();
     //获取年月
-    var date = new Date();
     var year = date.getFullYear();
-    //var month = date.getMonth();
-    var month = $("#worktimelist_month").val() - 1;
+    var month = date.getMonth();
+    //var month = $("#worktimelist_month").val() - 1;
     //表头
     dom.append("<tr><th colspan=\"7\" id=\"win_month\">"+(month+1)+"月</th></tr>");
     dom.append("<tr><th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th></tr>");
@@ -46,25 +45,26 @@ function initClndr(id) {
 
 }
 //获取日历信息
-function fetchClndr(id,data) {
+function fetchClndr(id,date,data) {
     //获取当月天数
-    var date = new Date();
     var year = date.getFullYear();
     //当前月
-    var month = $("#worktimelist_month").val() - 1;
+    var month = date.getMonth();
+    //var month = $("#worktimelist_month").val() - 1;
     var date2 = new Date(year,month,0);
     var days = date2.getDate();
 
     //生成数组
     var arr = new Array();
-    //console.log(arr);
-    //清空
+    
+    //清空数组
     for(i=1;i<=days;i++) {
         //$("#"+id+" #day_"+i).html(i);
         arr[i] = 0;
     }
+    
     //显示月份
-    $("#win_month").text((month+1)+"月");
+    $("#"+id+" #clndr #win_month").text((month+1)+"月");
     //遍历排班列表
     for(k = 0; k < data.rows.length; k++) {
         start = timeparser(data.rows[k].workdate1);
@@ -80,20 +80,20 @@ function fetchClndr(id,data) {
     var isError = false;
     for(i=1;i<days;i++) {
         if(arr[i]==0) {
-            $("#"+id+" #day_"+i).html(i);
+            $("#"+id+" #clndr #day_"+i).html(i);
         } else if(arr[i]==1) {
             //有一次排班
-            $("#"+id+" #day_"+i).html("<span style=\"color:blue;font-weight:bold;\">"+i+"</span>");
+            $("#"+id+" #clndr #day_"+i).html("<span style=\"color:blue;font-weight:bold;\">"+i+"</span>");
         } else {
             //重复排班
             isError = true;
-            $("#"+id+" #day_"+i).html("<span style=\"color:red;font-weight:bold;\">"+i+"</span>");
+            $("#"+id+" #clndr #day_"+i).html("<span style=\"color:red;font-weight:bold;\">"+i+"</span>");
         }
     }
     //如果有重复则提示
     if(isError) {
         $.messager.alert('提示','当月有重复排班的情况！');
-        $("#worktimelist_win").window('open');
+        $("#"+id).window('open');
     }
 }
 
