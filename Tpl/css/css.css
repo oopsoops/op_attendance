@@ -50,3 +50,18 @@ img {
 	font-size:.8em;
 	text-align:center;
 }
+
+.toolbar_columns div{
+	float: left;
+	padding-right: 25px;
+	line-height: 25px;
+	height: 25px;
+}
+
+#clndr th{
+	background-color: #B0D0E2;
+	font-weight: bold;
+}
+#clndr td{
+	text-align: center;
+}

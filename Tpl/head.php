@@ -8,6 +8,5 @@
 <script type="text/javascript" src="__TPL__/js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="__TPL__/js/locale/easyui-lang-zh_CN.js"></script>
 <script type="text/javascript" src="__TPL__/js/ajaxfileupload.js"></script>
-<script type="text/javascript" src="__TPL__/js/ueditor/editor_config.js"></script>
-<script type="text/javascript" src="__TPL__/js/ueditor/editor_all.js"></script>
+<script type="text/javascript" src="__TPL__/js/clndr.js"></script>
 <include file="./Tpl/script.php" />

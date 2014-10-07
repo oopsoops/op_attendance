@@ -1368,9 +1368,15 @@ public function loginDetails(){
 		$start = ($page-1)*$rows;
 
 		$teamid = $this->_post('teamid');
+		$month = $this->_post('month');
+		$where = " ";
+		if($month>0) {
+			$where = " AND workdate1 BETWEEN '".date('Y')."-$month-01' AND '".date('Y')."-$month-31' ";
+		}
     	$Model = M('worktime');
-    	$cc = $Model->where("teamid=$teamid AND uid is NULL")->count();
-    	$rs = $Model->join("op_teaminfo ON op_worktime.teamid = op_teaminfo.tid")->where("teamid=$teamid AND uid is NULL")->order('workdate1 desc')->limit("$start,$rows")->select();
+    	$cc = $Model->where("teamid=$teamid AND uid is NULL".$where)->count();
+    	$rs = $Model->join("op_teaminfo ON op_worktime.teamid = op_teaminfo.tid")->where("teamid=$teamid AND uid is NULL".$where)->order('workdate1 desc')->limit("$start,$rows")->select();
+    	//echo $Model->getLastSql();
     	echo dataToJson($rs,$cc);
     }
     //修改窗口

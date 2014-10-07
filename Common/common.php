@@ -76,7 +76,7 @@ function Tips($text)
 function dataToJson($data,$total)
 {
 	if(!$data) {
-		return '{rows:[]}';	
+		return "{total:0,rows:[]}";	
 	}
 	$rs['total']=$total;
 	for($i=0;$i<count($data);$i++)

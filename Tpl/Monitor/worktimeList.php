@@ -1,10 +1,37 @@
 <div class="main_include">
 
 	<div id="ext_worktimelist"  style="padding:5px;height:auto">
-        <select id="worktimelist_teamid">
-            <option value="<?php echo $teamid;?>"><?php echo $teamname;?></option>
-        </select>
-        <a onclick="openWorktimeNew()" class="easyui-linkbutton" plain="true" data-options="iconCls:'icon-add'">新增</a>
+        <div class="toolbar_columns">
+            <div>
+                <select id="worktimelist_teamid">
+                    <option value="<?php echo $teamid;?>"><?php echo $teamname;?></option>
+                </select>
+            </div>
+            <div>
+                <a onclick="openWorktimeNew()" class="easyui-linkbutton" plain="true" data-options="iconCls:'icon-add'">新增</a>
+            </div>
+            <div>
+                <a onclick="openWorktimeClndr()" class="easyui-linkbutton" plain="true" data-options="iconCls:'icon-cal'">日历</a>
+            </div>
+            <div style="padding-left:160px">
+                <label style="padding-right:10px">月份：</label>
+                <select id="worktimelist_month" onchange="worktimelist_fetchbyteamid()">
+                    <option value="1">1月</option>
+                    <option value="2">2月</option>
+                    <option value="3">3月</option>
+                    <option value="4">4月</option>
+                    <option value="5">5月</option>
+                    <option value="6">6月</option>
+                    <option value="7">7月</option>
+                    <option value="8">8月</option>
+                    <option value="9">9月</option>
+                    <option value="10">10月</option>
+                    <option value="11">11月</option>
+                    <option value="12">12月</option>
+                </select>
+            </div>
+        </div>
+        <div style="clear:both"></div>
     </div>
 
     <table class="easyui-datagrid"   
@@ -20,7 +47,12 @@
             pageList="[5,10,15]"
             url="__APP__/Monitor/fetchWorktimeList"
             data-options="queryParams: {
-                            teamid: <?php echo $teamid;?>
+                            teamid: <?php echo $teamid;?>,
+                            month: $('#worktimelist_month').val()
+                        },
+                        onLoadSuccess: function() {
+                            initClndr('clndr');
+                            fetchClndr('clndr',$('#grid_worktimelist').datagrid('getData'));
                         }"
             >
             
@@ -36,9 +68,24 @@
             </tr>  
         </thead>  
     </table>
-
+    
+    <div id="worktimelist_win" class="easyui-window" title='排班日历' data-options="iconCls:'icon-cal',cache:false,modal:false,closed:true,left:800,top:200" style="width:400px;height:350px;">  
+        <table id="clndr" border="0" width="100%" height="90%"></table>
+        <div class="notice" style="color:blue"> 蓝色：已排班</div>
+        <div class="notice" style="color:red"> 红色：重复排班</div>
+    </div>
 
 <script>
+
+var date = new Date();
+$("#worktimelist_month").val(date.getMonth()+1);
+
+initClndr("clndr");
+
+function openWorktimeClndr() {
+    $("#worktimelist_win").window('open');
+}
+
 function editWorktimeFormatter(val,row){  
     return '<a href="javascript:void(0)" onclick="openWorktimeEdit('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
 }
