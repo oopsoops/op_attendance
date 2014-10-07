@@ -130,7 +130,8 @@ function doDeleteWorktime(id) {
 function worktimelist_fetchbyteamid() {
     $('#grid_worktimelist').datagrid('loadData',{total:0,rows:[]});
     $('#grid_worktimelist').datagrid('reload',{
-        teamid: $('#worktimelist_teamid').val()
+        teamid: $('#worktimelist_teamid').val(),
+        month: $('#worktimelist_month').val()
     });
 }
 
