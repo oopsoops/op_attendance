@@ -41,9 +41,8 @@
 	
 	function open_reject(id){
 		rejectId=id;
-		$("#reject").show();
-		$("#reject").dialog({
-		});
+		//$("#reject").show();
+		$("#reject").dialog('open');
 	}
 	
 	function doReject(){
@@ -64,9 +63,10 @@
 						reason:reason	
 					},
 					success:function(data){
+							$("#reject").dialog('close');
 						if(data=="1"){
 							$.messager.alert("提示","驳回成功！");
-							$("#reject").window('close');
+							//$("#reject").window('close');
 							$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
 							$('#grid_qjApprove').datagrid('load', { });
 						}				
@@ -162,7 +162,7 @@
 	
     
 </script>
-<div id="reject" style="display:none;width:350px;height:250px;" title="驳回理由">
+<div id="reject" class="easyui-dialog" style="width:350px;height:250px;" title="驳回理由" data-options="cache:false,modal:true,closed:true">
 	<br/>
 	<textarea id="reject_reason" rows="10" cols="36"/>
     <button type="button" onclick="doReject()">提交</button>
