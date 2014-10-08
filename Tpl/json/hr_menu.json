@@ -55,54 +55,6 @@
         }
 	}]
 },{
-	"text":"员工管理",
-	"iconCls":"icon-archives",
-	"state":"closed",
-	"children":[{
-		"text":"创建员工",
-		"iconCls":"icon-client",
-		 "attributes":{  
-            "url":"Hr/newStaff"
-        }
-	},{
-		"text":"员工信息管理",
-		"iconCls":"icon-pass",
-		 "attributes":{  
-			"url":"Hr/staffManager"
-		 }
-	},{
-		"text":"考勤导入",
-		"iconCls":"icon-project",
-		 "attributes":{  
-            "url":"Hr/record_import"
-        }
-	},{
-		"text":"考勤导出",
-		"iconCls":"icon-project",
-		 "attributes":{  
-            "url":"Hr/record_export"
-        }
-	},{
-		"text":"年假调休导出",
-		"iconCls":"icon-project",
-		 "attributes":{  
-            "url":"Hr/vacation"
-        }
-	},{
-		"text":"年假调休导入",
-		"iconCls":"icon-project",
-		 "attributes":{  
-            "url":"Hr/changevacation"
-        }
-	},{
-		"text":"员工批量导入",
-		"iconCls":"icon-project",
-		 "attributes":{  
-			"url":"Hr/staffImport"
-		 }
-	}]
-},
-{
 	"text":"信息管理",
 	"iconCls":"icon-archives",
 	"state":"closed",
