@@ -62,11 +62,12 @@
     </div>
 <script>
    
+	var rejectId="";   
 	function rejectFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doReject('+row.id+')"><img src="__TPL__/images/del.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="open_reject('+row.id+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
 	function approveFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.nums+','+row.power+')"><img src="__TPL__/images/check.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.nums+','+row.status+','+row.power+','+row.departmentid+')"><img src="__TPL__/images/check.png" width="16"/></a>';
 	}
 	
 	
@@ -77,14 +78,32 @@
 		return '<a href="javascript:void(0)" onclick="doallApprove('+row.teamid+')"><img src="__TPL__/images/check.png" width="16"/></a>';
 	}
 	
+	function open_reject(id){
+		rejectId=id;
+		$("#jb_reject").show();
+		$("#jb_reject").dialog({
+		});
+	}
+	
 	
 	function doReject(id){
+		
+		var id=rejectId;
+		var reason=$("#jb_reject_reason").val();
+		if(reason==""){
+			$.messager.alert("提示","请正确填写驳回理由！");
+			return false;
+		}
 		
 		$.messager.confirm('提示', '确认要驳回该员工申请？', function(r){  
 			if (r){
 				$.ajax({
-					url:"__APP__/Works/rejectTrans/vid/"+id,
-					type:'GET',
+					url:"__APP__/Works/rejectTrans",
+					type:'POST',
+					data:{
+						vid:id,
+						reason:reason	
+					},
 					success:function(data){
 						if(data=="1"){
 							$.messager.alert("提示","驳回成功！");
@@ -151,9 +170,9 @@
 	
 	
 	
-	function doApprove(id,nums){
+	function doApprove(id,nums,status,power,departmentid){
 		if(power==4&&status=="3"){
-			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
+			$.messager.confirm('提示', '确认要批准该员工加班申请？', function(r){  
 				if (r){
 					$.ajax({
 						url:"__APP__/Works/sub2hr/vid/"+id,
@@ -172,8 +191,8 @@
 				}
 			});
 		}
-		else if(nums<=3){
-			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
+		else if((status=="1"&&nums<1)||(status=="2")||(status=="1"&&departmentid==2)){
+			$.messager.confirm('提示', '确认要批准该员工加班申请？', function(r){  
 				if (r){
 					$.ajax({
 						url:"__APP__/Works/approveTrans/vid/"+id,
@@ -191,8 +210,8 @@
 					});
 				}
 			});
-		}else{
-			$.messager.confirm('提示', '加班时间大于3天需要提交人事经理，是否提交？', function(r){  
+		}else if(status=="1"&&nums>=1||departmentid!=2){
+			$.messager.confirm('提示', '加班时间大于1小时需要提交人事经理，是否提交？', function(r){  
 				if (r){
 					$.ajax({
 						url:"__APP__/Works/sub2hr/vid/"+id,
@@ -200,8 +219,8 @@
 						success:function(data){
 							if(data=="1"){
 								$.messager.alert("提示","提交成功！");
-								$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
-								$('#grid_qjApprove').datagrid('load', { });
+								$('#grid_jbApprove').datagrid('loadData', { total:0, rows:[ ]});
+								$('#grid_jbApprove').datagrid('load', { });
 							}				
 						},
 						error:function(XMLHttpRequest,textStatus,errorThrown){
@@ -218,4 +237,10 @@
 </script>
     
     </div>
+    
+    <div id="jb_reject" style="display:none;width:350px;height:250px;" title="驳回理由">
+	<br/>
+	<textarea id="jb_reject_reason" rows="10" cols="36"/>
+    <button type="button" onclick="doReject()">提交</button>
+</div>  
 </div>

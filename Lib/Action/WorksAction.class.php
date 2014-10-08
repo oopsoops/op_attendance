@@ -97,6 +97,8 @@
 			$Model=M('staffinfo');
 			$tidrow=$Model->getByUid($uid);
 			$tid=$tidrow['usertypeid'];
+			$teamid=$tidrow['teamid'];
+			$did=$tidrow['departmentid'];
 			$Model=M('usertype');
 			$powerrow=$Model->getByTid($tid);
 			$power=$powerrow['power'];
@@ -106,12 +108,31 @@
 				$model=M('staffinfo');
 				$row=$model->getByUid($uid);
 				$departmentid=$row['departmentid'];
-				$model=M('staffinfo');
-				$rows=$model->field("op_staffinfo.uid,op_staffinfo.email")
-				->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
-				->where("op_usertype.power=4 and op_staffinfo.departmentid='".$departmentid."'")->select();
-				$managerid=$rows[0]['uid'];
-				$email=$rows[0]['email'];
+				if($departmentid==2){
+					$status=2;
+					$managerid=$this->getHrUid();
+					$model=M('staffinfo');
+					$rows=$model->field("op_staffinfo.uid,op_staffinfo.email")
+					->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
+					->where("op_usertype.power=2")->select();
+					$email=$rows[0]['email'];
+				}else if($departmentid==7){
+					$bossid=$this->getBossUid();
+					$status=3;
+					$model=M('staffinfo');
+					$rows=$model->field("op_staffinfo.uid,op_staffinfo.email")
+					->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
+					->where("op_usertype.power=5")->select();
+					$email=$rows[0]['email'];					
+				}
+				else{
+					$model=M('staffinfo');
+					$rows=$model->field("op_staffinfo.uid,op_staffinfo.email")
+					->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
+					->where("op_usertype.power=4 and op_staffinfo.departmentid='".$departmentid."'")->select();
+					$managerid=$rows[0]['uid'];
+					$email=$rows[0]['email'];
+				}
 			}
 			if($power==2){
 				$model=M('staffinfo');
@@ -144,7 +165,9 @@
 			if($managerid!=""){
 				$astatus['departmanagerid']=$managerid;
 			}
-			
+			if($bossid!=""){
+				$astatus['bossid']=$bossid;
+			}
 			if($reason!=""){
 				$astatus['reason']=$reason;
 			}
@@ -165,6 +188,24 @@
 			if($day!=""){
 				$astatus['days']=$day;
 			//	$astatus['holiday']="333";
+			}
+			if($transdm=="1"&&$begindate==$enddate){
+				$minutes=$this->getMinuteByJb($begindate,$enddate,$begintime,$endtime,$uid);
+				$days=$minutes/60;
+				$days=number_format($days,1);
+				$astatus['days']=$days;
+			}
+			if($transdm=="1"&&$teamid==1&&$begindate!=$enddate){
+				$astatus['days']=16;
+				$astatus[flag]=1;
+				$mm=M('worktime');
+				$wk['teamid']=1;
+				$wk['workdate1']=$begindate;
+				$wk['workdate2']=$enddate;
+				$wk['worktime1']=$begintime;
+				$wk['worktime2']=$endtime;
+				$wk['uid']=$uid;
+				$mm->add($wk);
 			}
 			
 			$this->sendMail($email);
@@ -276,16 +317,19 @@
 		else if($power==5){
 			$status=3;
 			$where="(status=3 or (bossid='".$uid."' and status=2)) and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
-		}else{
+		}else if($uid==$this->getCaiwuUid()){
+			$where="(status=4 or(status=1 and departmanagerid='".$uid."')) and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+		}
+		else{
 			$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
 		}
 		
 		
 		$model=M('vacationstatus');
 		$num=$model->where($where)->count();
-	//	echo $model->where($where)->getLastSql();
+//		echo $model->where($where)->getLastSql();
 		$list=$model->field("op_vacationstatus.uid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,
-op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus.transpot as days,op_vacationstatus.days as nums,op_usertype.power,	op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.fee,op_vacationstatus.status,op_vacationstatus.transpot,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate")
+op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus.transpot as days,op_vacationstatus.days as nums,op_usertype.power,	op_staffinfo.departmentid,op_staffinfo.teamid,op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.fee,op_vacationstatus.status,op_vacationstatus.transpot,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->join("op_teaminfo ON op_staffinfo.teamid=op_teaminfo.tid")
 		->join("op_department ON op_staffinfo.departmentid=op_department.did")
@@ -371,11 +415,12 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 
 /*****************************************驳回申请begin*******************************************/
 	public function rejectTrans(){
-		$vid=$this->_get('vid');
+		$vid=$this->_post('vid');
+		$reason=$this->_post('reason');
 		$model=M('vacationstatus');
 		$rs=$model->getById($vid);
 		$uid=$rs['uid'];
-		
+		$rs['reject_reason']=$reason;
 		$rs['isrejected']=1;
 		$result=$model->save($rs);
 		
@@ -387,7 +432,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			$model=M('staffinfo');
 			$row=$model->getByUid($uid);
 			$email=$row['email'];
-			$content="你的工作申请已被驳回，请登录考勤系统查看。";
+			$content="你的工作申请已被驳回，理由：".$reason." 请登录考勤系统查看。";
 			$this->sendRemindMail($email,$content);
 			$data="1";
 			echo $data;
@@ -424,6 +469,9 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		$model=M('vacationstatus');
 		$rs=$model->getById($id);
 		$uid=$rs['uid'];
+		$transtype=$rs['transtype'];
+		$holiday=$rs['holiday'];
+		$days=$rs['days'];
 		$rs['isapproved']=1;
 		$result=$model->save($rs);
 		if(!$result){
@@ -431,6 +479,9 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			exit;
 		}
 		else{
+			if($transtype=="3"&&($holiday=="调休假"||$holiday=="年假")){
+				$this->decrease($uid,$days,$holiday);
+			}
 			$model=M('staffinfo');
 			$row=$model->getByUid($uid);
 			$email=$row['email'];
@@ -533,6 +584,35 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		
 	}	
 	
+	//提交财务经理
+	public function sub2caiwu(){
+		$id=$this->_get('vid');
+		$model=M('vacationstatus');
+		$rs=$model->getById($id);
+		$uid=$rs['uid'];
+		$rs['status']=4;
+		$result=$model->save($rs);
+		if(!$result){
+			echo "操作失败,请重试！";
+			exit;
+		}
+		else{
+			
+			$model=M('staffinfo');
+			$row=$model->getByUid($uid);
+			$email=$row['email'];
+			$content="你的工作申请已提交财务经理。";
+			$this->sendRemindMail($email,$content);
+			
+			$uid=$this->getCaiwuUid();
+			$email=$this->getEmail($uid);
+			$this->sendMail($email);
+			$data="1";
+			echo $data;
+		}
+		
+	}
+	
 	public function getHrUid(){
 		$model=M('staffinfo');
 		$rs=$model->field("op_staffinfo.uid")
@@ -550,6 +630,71 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			->select();
 			$uid=$rs[0]['uid'];
 			return $uid;
+	}
+	
+	public function getMyDepart($uid){
+		$model->M('staffinfo');
+		$row=$model->getByUid($uid);
+		$departmentid=$row['departmentid'];
+		$rs=$model->field("op_staffinfo.uid")
+				->join("op_usertype on op_staffinfo.usertypeid=op_usertype.tid")
+				->where("power=4 and op_staffinfo.departmentid='".$departmentid."'")
+				->select();
+				$uid=$rs[0]['uid'];
+				return $uid;
+	}
+	
+	public function getCaiwuUid(){
+		$model=M('staffinfo');
+		$rs=$model->field("op_staffinfo.uid")
+			->join("op_usertype on op_staffinfo.usertypeid=op_usertype.tid")
+			->where("op_usertype.power=4 and op_staffinfo.departmentid=3")
+			->select();
+	//		echo $model->getLastSql();
+			$uid=$rs[0]['uid'];
+			return $uid;	
+	}
+	
+	public function getEmail($uid){
+		$model=M('staffinfo');
+		$row=$model->getByUid($uid);
+		$email=$row['email'];
+		return $email;
+	}
+	
+	//扣除假期
+	
+	public function decrease($uid,$days,$holiday){
+		
+		$model=M('staffinfo');
+		$rs=$model->getByUid($uid);
+		
+		if($holiday=="调休假"){
+			$lrest=$rs['LRest'];
+			$trest=$rs['TRest'];
+			if($lrest>=$days){
+				$lrest=$lrest-$days;
+			}else{
+				$trest=$trest-($days-$lrest);
+				$lrest=0;
+			}
+			$rs['LRest']=$lrest;
+			$rs['TRest']=$trest;
+			$model->save($rs);
+		}
+		if($holiday=="年假"){
+			$lrest=$rs['LHoliday'];
+			$trest=$rs['THoliday'];
+			if($lrest>=$days){
+				$lrest=$lrest-$days;
+			}else{
+				$trest=$trest-($days-$lrest);
+				$lrest=0;
+			}
+			$rs['LHoliday']=$lrest;
+			$rs['THoliday']=$trest;
+			$model->save($rs);
+		}
 	}
 
 
@@ -612,7 +757,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			$where="op_vacationstatus.departmanagerid='".$uid."'";
 		}
 		if($power==5){
-			$where="op_vacationstatus=3 or op_vacationstatus.bossid='".$uid."'";
+			$where="op_vacationstatus.status=3 or op_vacationstatus.bossid='".$uid."'";
 		}
 		$num=$model->where($where)->count();
 		$list=$model->field("op_vacationstatus.begindate,op_vacationstatus.uid,op_vacationstatus.enddate,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.isapproved,op_vacationstatus.isrejected,op_vacationstatus.transtype,op_staffinfo.username,op_vacationtype.typemc,op_vacationstatus.applytime,op_vacationstatus.status")
@@ -707,6 +852,23 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		
 		
 	
+	}
+	
+	public function getMinuteByJb($begindate,$enddate,$begintime,$endtime,$uid){
+		
+		$flag=0;
+		$begin=$begindate." ".$begintime;
+		$end=$enddate." ".$endtime;
+		$model=M('vacationstatus');
+		if($begindate!=$enddate){
+			$flag=1;
+		}
+		if($begindate==$enddate){
+			$rows=$model->field("TIMESTAMPDIFF(MINUTE,'".$begin."','".$end."')as minute")->select();
+			$minutes=$rows[0]['minute'];
+		}
+		return $minutes;
+		
 	}
 	
 	//得到日期的下一天

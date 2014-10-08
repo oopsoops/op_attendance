@@ -26,31 +26,45 @@
                 <th field="fee" width="50" align="center">预算</th>
                 <th field="rejiect" width="40" align="center" formatter="rejectFormatter">驳回</th>
                 <th field="approve" width="40" align="center" formatter="approveFormatter">批准</th>
-               
-
-                 
-                             
+                      
             </tr>  
         </thead>  
     </table>
 <script>
    
+	var rejectId="";   
 	function rejectFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doReject('+row.id+')"><img src="__TPL__/images/del.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="open_reject('+row.id+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
 	function approveFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.nums+','+row.status+','+row.power+')"><img src="__TPL__/images/check.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.status+','+row.departmentid+')"><img src="__TPL__/images/check.png" width="16"/></a>';
 	}
 	
+	function open_reject(id){
+		rejectId=id;
+		$("#cc_reject").show();
+		$("#cc_reject").dialog({
+		});
+	}
 	
 	
 	function doReject(id){
 		
+		var id=rejectId;
+		var reason=$("#cc_reject_reason").val();
+		if(reason==""){
+			$.messager.alert("提示","请正确填写驳回理由！");
+			return false;
+		}
 		$.messager.confirm('提示', '确认要驳回该员工申请？', function(r){  
 			if (r){
 				$.ajax({
-					url:"__APP__/Works/rejectTrans/vid/"+id,
-					type:'GET',
+					url:"__APP__/Works/rejectTrans",
+					type:'POST',
+					data:{
+						vid:id,
+						reason:reason	
+					},
 					success:function(data){
 						if(data=="1"){
 							$.messager.alert("提示","驳回成功！");
@@ -65,8 +79,8 @@
 			}
 		});
 	}
-	function doApprove(id,nums,status){
-		if(power==4&&status=="3"){
+	function doApprove(id,status,departmentid){
+		if(status=="1"&&departmentid!=2){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({
@@ -86,9 +100,28 @@
 				}
 			});
 		}
+		if((status=="2"&&departmentid!=3)||(status=="1"&&departmentid==2)){
+			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
+				if (r){
+					$.ajax({
+						url:"__APP__/Works/sub2caiwu/vid/"+id,
+						type:'GET',
+						success:function(data){
+							if(data=="1"){
+								$.messager.alert("提示","批准成功！");
+								$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
+								$('#grid_ccApprove').datagrid('load', { });
+							}				
+						},
+						error:function(XMLHttpRequest,textStatus,errorThrown){
+							alert(''+errorThrown);
+						}	
+					});
+				}
+			});
+		}
 		
-		
-		else if((status=="1"&&nums<3)||(status=="2"&&nums>=3&&nums<5)||(status=="2"&&power==4)||(status=="3"&&nums>=5)){
+		if(status=="3"||(status=="4"&&departmentid==7)){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({
@@ -107,35 +140,16 @@
 					});
 				}
 			});
-		}else if(nums>=3&&status=="1"){
-			$.messager.confirm('提示', '出差时间大于3天需要人事经理审核，是否提交？', function(r){  
-				if (r){
-					$.ajax({
-						url:"__APP__/Works/sub2hr/vid/"+id,
-						type:'GET',
-						success:function(data){
-							if(data=="1"){
-								$.messager.alert("提示","提交成功！");
-								$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
-								$('#grid_ccApprove').datagrid('load', { });
-							}				
-						},
-						error:function(XMLHttpRequest,textStatus,errorThrown){
-							alert(''+errorThrown);
-						}	
-					});
-				}
-			});
 		}
-		else if(nums>=5&&status=="2"){
-			$.messager.confirm('提示', '出差时间大于5天需要老板审核，是否提交？', function(r){  
+		if(status=="4"&&departmentid!=7){
+			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({
 						url:"__APP__/Works/sub2boss/vid/"+id,
 						type:'GET',
 						success:function(data){
 							if(data=="1"){
-								$.messager.alert("提示","提交成功！");
+								$.messager.alert("提示","批准成功！");
 								$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
 								$('#grid_ccApprove').datagrid('load', { });
 							}				
@@ -147,11 +161,16 @@
 				}
 			});
 		}
+		
 	}
 	
    
     
 </script>
-    
+    <div id="cc_reject" style="display:none;width:350px;height:250px;" title="驳回理由">
+	<br/>
+	<textarea id="cc_reject_reason" rows="10" cols="36"/>
+    <button type="button" onclick="doReject()">提交</button>
+</div> 
     
 </div>
