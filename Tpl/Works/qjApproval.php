@@ -66,7 +66,7 @@
 						$("#reject").dialog('close');
 						if(data=="1"){
 					//		$.messager.alert("提示","驳回成功！");
-							$("#reject").dialog('close');
+					//		$("#reject").dialog('close');
 							$.messager.alert("提示","驳回成功！");
 							
 							$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
