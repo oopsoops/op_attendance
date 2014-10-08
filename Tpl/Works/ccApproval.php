@@ -24,6 +24,7 @@
                 <th field="applytime" width="140" align="center">申请时间</th>
                 <th field="transpot" width="50" align="center">交通</th>
                 <th field="fee" width="50" align="center">预算</th>
+                <th field="reason" width="150" align="center">出差理由</th>
                 <th field="rejiect" width="40" align="center" formatter="rejectFormatter">驳回</th>
                 <th field="approve" width="40" align="center" formatter="approveFormatter">批准</th>
                       
@@ -42,9 +43,7 @@
 	
 	function open_reject(id){
 		rejectId=id;
-		$("#cc_reject").show();
-		$("#cc_reject").dialog({
-		});
+		$("#cc_reject").dialog('open');
 	}
 	
 	
@@ -66,6 +65,7 @@
 						reason:reason	
 					},
 					success:function(data){
+						$("#cc_reject").dialog('close');
 						if(data=="1"){
 							$.messager.alert("提示","驳回成功！");
 							$('#grid_ccApprove').datagrid('loadData', { total:0, rows:[ ]});
@@ -167,7 +167,7 @@
    
     
 </script>
-    <div id="cc_reject" style="display:none;width:350px;height:250px;" title="驳回理由">
+    <div id="cc_reject" class="easyui-dialog" style="width:350px;height:250px;" title="驳回理由" data-options="cache:false,modal:true,closed:true">
 	<br/>
 	<textarea id="cc_reject_reason" rows="10" cols="36"/>
     <button type="button" onclick="doReject()">提交</button>

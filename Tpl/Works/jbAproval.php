@@ -80,9 +80,7 @@
 	
 	function open_reject(id){
 		rejectId=id;
-		$("#jb_reject").show();
-		$("#jb_reject").dialog({
-		});
+		$("#jb_reject").dialog('open');
 	}
 	
 	
@@ -105,6 +103,7 @@
 						reason:reason	
 					},
 					success:function(data){
+						$("#jb_reject").dialog('close');
 						if(data=="1"){
 							$.messager.alert("提示","驳回成功！");
 							$('#grid_jbApprove').datagrid('loadData', { total:0, rows:[ ]});
@@ -238,7 +237,7 @@
     
     </div>
     
-    <div id="jb_reject" style="display:none;width:350px;height:250px;" title="驳回理由">
+    <div id="jb_reject" class="easyui-dialog" style="width:350px;height:250px;" title="驳回理由" data-options="cache:false,modal:true,closed:true">
 	<br/>
 	<textarea id="jb_reject_reason" rows="10" cols="36"/>
     <button type="button" onclick="doReject()">提交</button>

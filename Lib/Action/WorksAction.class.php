@@ -179,7 +179,7 @@
 			}
 			if($holiday!=""){
 				$astatus['holiday']=$holiday;
-				$day=$this->getDaysByPb($begindate,$enddate,$begintime,$endtime,$uid);
+				$day=$this->getDaysByPb($begindate,$enddate,$begintime,$endtime,$uid,$holiday);
 		//		$day=$this->getDaysByPb("2014-09-25","2014-09-25","08:00","17:00","1003");
 			}
 			if($holiday=="婚假"||$holiday=="产假"){
@@ -329,7 +329,7 @@
 		$num=$model->where($where)->count();
 //		echo $model->where($where)->getLastSql();
 		$list=$model->field("op_vacationstatus.uid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,
-op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus.transpot as days,op_vacationstatus.days as nums,op_usertype.power,	op_staffinfo.departmentid,op_staffinfo.teamid,op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.fee,op_vacationstatus.status,op_vacationstatus.transpot,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate")
+op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus.transpot as days,op_vacationstatus.days as nums,op_usertype.power,	op_vacationstatus.reason,op_staffinfo.departmentid,op_staffinfo.teamid,op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.fee,op_vacationstatus.status,op_vacationstatus.transpot,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->join("op_teaminfo ON op_staffinfo.teamid=op_teaminfo.tid")
 		->join("op_department ON op_staffinfo.departmentid=op_department.did")
@@ -670,6 +670,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		$rs=$model->getByUid($uid);
 		
 		if($holiday=="调休假"){
+			$days=$days*8;
 			$lrest=$rs['LRest'];
 			$trest=$rs['TRest'];
 			if($lrest>=$days){
