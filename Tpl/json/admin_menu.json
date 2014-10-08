@@ -14,6 +14,36 @@
 		 "attributes":{  
 			"url":"Hr/staffManager"
 		 }
+	},{
+		"text":"考勤导入",
+		"iconCls":"icon-project",
+		 "attributes":{  
+            "url":"Hr/record_import"
+        }
+	},{
+		"text":"考勤导出",
+		"iconCls":"icon-project",
+		 "attributes":{  
+            "url":"Hr/record_export"
+        }
+	},{
+		"text":"年假调休导出",
+		"iconCls":"icon-project",
+		 "attributes":{  
+            "url":"Hr/vacation"
+        }
+	},{
+		"text":"年假调休导入",
+		"iconCls":"icon-project",
+		 "attributes":{  
+            "url":"Hr/changevacation"
+        }
+	},{
+		"text":"员工批量导入",
+		"iconCls":"icon-project",
+		 "attributes":{  
+			"url":"Hr/staffImport"
+		 }
 	}]
 },{
 	"text":"信息管理",
