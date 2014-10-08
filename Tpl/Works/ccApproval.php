@@ -141,7 +141,7 @@
 				}
 			});
 		}
-		if(status=="4"&&departmentid!=7){
+		if((status=="4"&&departmentid!=7)||(status=="2"&&departmentid==3)){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({

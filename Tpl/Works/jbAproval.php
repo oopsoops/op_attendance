@@ -191,7 +191,7 @@
 				}
 			});
 		}
-		else if((status=="1"&&nums<1)||(status=="2")||(status=="1"&&departmentid==2)){
+		else if((status=="1"&&nums<=1)||(status=="2")||(status=="1"&&departmentid==2)){
 			$.messager.confirm('提示', '确认要批准该员工加班申请？', function(r){  
 				if (r){
 					$.ajax({
@@ -210,7 +210,7 @@
 					});
 				}
 			});
-		}else if(status=="1"&&nums>=1||departmentid!=2){
+		}else if(status=="1"&&nums>1||departmentid!=2){
 			$.messager.confirm('提示', '加班时间大于1小时需要提交人事经理，是否提交？', function(r){  
 				if (r){
 					$.ajax({

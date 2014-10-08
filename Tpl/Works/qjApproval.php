@@ -65,8 +65,8 @@
 					},
 					success:function(data){
 						if(data=="1"){
-							$.messager.alert("提示","驳回成功！");
-							$("#reject").window('close');
+					//		$.messager.alert("提示","驳回成功！");
+							$("#reject").dialog('close');
 							$('#grid_qjApprove').datagrid('loadData', { total:0, rows:[ ]});
 							$('#grid_qjApprove').datagrid('load', { });
 						}				

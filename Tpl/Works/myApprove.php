@@ -21,6 +21,7 @@
                 <th field="enddate" width="80" align="center">结束日期</th>
                 <th field="endtime" width="80" align="center">结束时间</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
+                <th field="typemc" width="140" align="center">事务类型</th>
                 <th field="statusinfo" width="160" align="center" formatter="statusFormatter">状态</th>
             </tr>  
         </thead>  
@@ -38,6 +39,8 @@
 			return '老板审批中';
 		}else if(row.status=="1"){
 			return '部门经理审批中';
+		}else if(row.status=="4"){
+			return '财务经理审批中';
 		}
 		
 	}
