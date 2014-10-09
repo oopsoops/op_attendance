@@ -60,14 +60,6 @@ function doWorktimeNew() {
 	var end = $("#worktimenew_endtime").timespinner('getValue');
 	var tid = $("#worktimenew_teamid").val();
 
-	//判断起止日期必须为同一月
-	var start_tp = timeparser(startdate);
-	var end_tp = timeparser(enddate);
-	if(start_tp.getMonth()!=end_tp.getMonth() || start_tp.getFullYear()!=end_tp.getFullYear()) {
-		$.messager.alert('提示','起始和结束日期必须在同一年月内！');
-		return false;
-	}
-
 	$.ajax({
 		url:'__APP__/Hr/doWorktimeNew/tid/'+tid+'/start/'+start+'/end/'+end+'/startdate/'+startdate+'/enddate/'+enddate,
 		success:function(data) {
