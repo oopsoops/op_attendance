@@ -387,7 +387,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		$vid=$this->_get('vid');
 		$model=M('vacationstatus');
 		$detail=$model->
-		field("op_vacationstatus.reason,op_vacationstatus.begintime,op_vacationstatus.begindate,op_vacationstatus.enddate,op_vacationstatus.endtime,op_vacationstatus.applytime,op_staffinfo.username")
+		field("op_vacationstatus.reason,op_vacationstatus.begintime,op_vacationstatus.begindate,op_vacationstatus.enddate,op_vacationstatus.endtime,op_vacationstatus.applytime,op_staffinfo.username,op_vacationstatus.uid")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->where("op_vacationstatus.id='".$vid."'")->select();
 		$this->assign('detail',$detail);
@@ -443,7 +443,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 	//	$begindate=$this->_post('begindate');
 		$tid=$this->_post('teamid');
 		$model=M('vacationstatus');
-		$where=" op_staffinfo.teamid='".$tid."'";
+		$where=" op_staffinfo.teamid='".$tid."' and isrejected!='1' and isapproved!='1' and transtype='1' ";
 		$num=$model->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid ")->where($where)->count();
 		$vidrows=$model->field("op_vacationstatus.id")->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid ")->where($where)->select();
 		for($i=0;$i<$num;$i++){
@@ -497,7 +497,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 	//	$begindate=$this->_post('begindate');
 		$tid=$this->_post('teamid');
 		$model=M('vacationstatus');
-		$where=" op_staffinfo.teamid='".$tid."'";
+		$where=" op_staffinfo.teamid='".$tid."' and isrejected!='1' and isapproved!='1' and transtype='1' ";
 		$num=$model->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid ")->where($where)->count();
 		$vidrows=$model->field("op_vacationstatus.id")->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid ")->where($where)->select();
 		for($i=0;$i<$num;$i++){

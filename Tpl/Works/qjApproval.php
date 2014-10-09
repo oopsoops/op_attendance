@@ -16,13 +16,11 @@
                 <th field="departmentname" width="100" align="center">员工部门</th>
                 <th field="teamname" width="80" align="center">所在组</th> 
                 <th field="username" width="80" align="center">员工姓名</th>  
-                <th field="uid" width="80" align="center">员工工号</th>
-                <th field="begindate" width="80" align="center">开始日期</th>
-                <th field="begintime" width="80" align="center">开始时间</th>
-                <th field="enddate" width="80" align="center">结束日期</th>
-                <th field="endtime" width="80" align="center">结束时间</th>
+                <th field="uid" width="80" align="center">员工工号</th>             
                 <th field="applytime" width="140" align="center">申请时间</th>
                 <th field="holidaytype" width="60" align="center">请假类型</th>
+                <th field="detail" width="80" align="center" formatter="qjDetailFormatter">申请详情</th>
+                <th field="info" width="80" align="center" formatter="daysDetailFormatter">员工详情</th>
                 <th field="rejiect" width="40" align="center" formatter="rejectFormatter">驳回</th>
                 <th field="approve" width="40" align="center" formatter="approveFormatter">批准</th>
                              
@@ -37,6 +35,32 @@
 	}
 	function approveFormatter(val,row){
 		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.nums+','+row.status+','+row.power+','+row.departmentid+')"><img src="__TPL__/images/check.png" width="16"/></a>';
+	}
+	
+	function qjDetailFormatter(val,row){
+		return '<a href="javascript:void(0)" onclick="openqjDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
+	}
+	function openqjDetail(id){
+		$('#main').tabs('close','申请详情');
+		$('#main').tabs('add',{
+						title:'申请详情',
+						href:'__APP__/works/transitionDetail/vid/'+id,
+						cache:false,
+						closable:true
+		});
+	}
+	
+	function daysDetailFormatter(val,row){
+		return '<a href="javascript:void(0)" onclick="openInfoDetail('+row.uid+')"><img src="__TPL__/images/man.png" width="16"/></a>';  
+	}
+	function openInfoDetail(uid){
+		$('#main').tabs('close','申请详情');
+		$('#main').tabs('add',{
+						title:'申请详情',
+						href:'__APP__/search/userinfo_detailshow/uid/'+uid+'/flag/1',
+						cache:false,
+						closable:true
+		});
 	}
 	
 	function open_reject(id){

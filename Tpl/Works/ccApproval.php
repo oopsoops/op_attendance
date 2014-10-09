@@ -17,14 +17,10 @@
                 <th field="teamname" width="80" align="center">所在组</th> 
                 <th field="username" width="80" align="center">员工姓名</th>  
                 <th field="uid" width="80" align="center">员工工号</th>
-                <th field="begindate" width="80" align="center">开始日期</th>
-                <th field="begintime" width="80" align="center">开始时间</th>
-                <th field="enddate" width="80" align="center">结束日期</th>
-                <th field="endtime" width="80" align="center">结束时间</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
                 <th field="transpot" width="50" align="center">交通</th>
                 <th field="fee" width="50" align="center">预算</th>
-                <th field="reason" width="150" align="center">出差理由</th>
+                <th field="detail" width="80" align="center" formatter="ccDetailFormatter">申请详情</th>
                 <th field="rejiect" width="40" align="center" formatter="rejectFormatter">驳回</th>
                 <th field="approve" width="40" align="center" formatter="approveFormatter">批准</th>
                       
@@ -39,6 +35,19 @@
 	}
 	function approveFormatter(val,row){
 		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.status+','+row.departmentid+')"><img src="__TPL__/images/check.png" width="16"/></a>';
+	}
+	
+	function ccDetailFormatter(val,row){
+		return '<a href="javascript:void(0)" onclick="openccDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
+	}
+	function openccDetail(id){
+		$('#main').tabs('close','申请详情');
+		$('#main').tabs('add',{
+						title:'申请详情',
+						href:'__APP__/works/transitionDetail/vid/'+id,
+						cache:false,
+						closable:true
+		});
 	}
 	
 	function open_reject(id){

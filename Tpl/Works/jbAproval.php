@@ -19,11 +19,8 @@
                 <th field="teamname" width="80" align="center">所在组</th> 
                 <th field="username" width="80" align="center">员工姓名</th>  
                 <th field="uid" width="80" align="center">员工工号</th>
-                <th field="begindate" width="80" align="center">开始日期</th>
-                <th field="begintime" width="80" align="center">开始时间</th>
-                <th field="enddate" width="80" align="center">结束日期</th>
-                <th field="endtime" width="80" align="center">结束时间</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
+               <th field="detail" width="80" align="center" formatter="jbDetailFormatter">申请详情</th>
                 <th field="rejiect" width="40" align="center" formatter="rejectFormatter">驳回</th>
                 <th field="approve" width="40" align="center" formatter="approveFormatter">批准</th>
             </tr>  
@@ -33,7 +30,7 @@
     
     <div title="批量审批" style="padding:20px;">
     	  <table class="easyui-datagrid"   
-            id="grid_jbApprove"
+            id="grid_jbAllApprove"
             style="height:430px"
             title='批量审批'
             singleSelect="true"
@@ -46,14 +43,14 @@
             >
         <thead>
             <tr> 
-                <th field="departmentname" width="100" align="center">员工部门</th>
+                
                 <th field="teamname" width="80" align="center">组名</th>
                 <th field="begindate" width="80" align="center">开始日期</th>
                 <th field="begintime" width="80" align="center">开始时间</th>
                 <th field="enddate" width="80" align="center">结束日期</th>
                 <th field="endtime" width="80" align="center">结束时间</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
-                <th field="reason" width="140" align="center">申请理由</th>
+                <th field="reason" width="180" align="center">加班理由</th>
                 <th field="rejiectall" width="40" align="center" formatter="rejectallFormatter">驳回</th>
                 <th field="approveall" width="40" align="center" formatter="approveallFormatter">批准</th>  
             </tr>  
@@ -70,7 +67,18 @@
 		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.nums+','+row.status+','+row.power+','+row.departmentid+')"><img src="__TPL__/images/check.png" width="16"/></a>';
 	}
 	
-	
+	function jbDetailFormatter(val,row){
+		return '<a href="javascript:void(0)" onclick="openjbDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
+	}
+	function openjbDetail(id){
+		$('#main').tabs('close','申请详情');
+		$('#main').tabs('add',{
+						title:'申请详情',
+						href:'__APP__/works/transitionDetail/vid/'+id,
+						cache:false,
+						closable:true
+		});
+	}
 	function rejectallFormatter(val,row){
 		return '<a href="javascript:void(0)" onclick="doallReject('+row.teamid+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
@@ -131,8 +139,8 @@
 					success:function(data){
 						if(data=="1"){
 							$.messager.alert("提示","驳回成功！");
-							$('#grid_jbApprove').datagrid('loadData', { total:0, rows:[ ]});
-							$('#grid_jbApprove').datagrid('load', { });
+							$('#grid_jbAllApprove').datagrid('loadData', { total:0, rows:[ ]});
+							$('#grid_jbAllApprove').datagrid('load', { });
 						}				
 					},
 					error:function(XMLHttpRequest,textStatus,errorThrown){
@@ -155,8 +163,8 @@
 					success:function(data){
 						if(data=="1"){
 							$.messager.alert("提示","批准成功！");
-							$('#grid_jbApprove').datagrid('loadData', { total:0, rows:[ ]});
-							$('#grid_jbApprove').datagrid('load', { });
+							$('#grid_jbAllApprove').datagrid('loadData', { total:0, rows:[ ]});
+							$('#grid_jbAllApprove').datagrid('load', { });
 						}				
 					},
 					error:function(XMLHttpRequest,textStatus,errorThrown){
