@@ -510,6 +510,8 @@ class CheckAction extends Action {
                         }
                     }
                 }
+                //修正加班小时数
+                $days -= 0.5;
                 //储存调休
                 $staffModel = M('staffinfo');
                 $row = $staffModel->getByUid($uid);
