@@ -148,6 +148,7 @@
 		}
 		var begin=begindate+" "+begintime;
 		var end=enddate+" "+endtime;
+		$(".easyui-linkbutton").linkbutton("disable");
 		$.ajax({
 			url: "__APP__/Works/dealApply",
 			data:{
@@ -163,6 +164,8 @@
 			//	alert(data);
 				if(data=="1"){
 					$.messager.alert("提示","提交成功！");
+					$(".easyui-linkbutton").linkbutton("enable");
+					
 				}				
 			},
 			error:function(XMLHttpRequest,textStatus,errorThrown){
@@ -196,6 +199,8 @@
 		}
 		var begin=begindate+" "+begintime;
 		var end=enddate+" "+endtime;
+		
+		$(".easyui-linkbutton").linkbutton("disable");
 		$.ajax({
 			url: "__APP__/Works/allJbApply",
 			data:{
@@ -209,7 +214,9 @@
 			type:'POST',
 			success:function(data){
 				if(data=="1"){
+					
 					$.messager.alert("提示","提交成功！");
+					$(".easyui-linkbutton").linkbutton("enable");
 				}				
 			},
 			error:function(XMLHttpRequest,textStatus,errorThrown){
@@ -257,6 +264,7 @@
 		}
 		var begin=begindate+" "+begintime;
 		var end=enddate+" "+endtime;
+		$(".easyui-linkbutton").linkbutton("disable");
 		$.ajax({
 			url: "__APP__/Works/dealApply",
 			data:{
@@ -272,6 +280,7 @@
 			success:function(data){
 				if(data=="1"){
 					$.messager.alert("提示","提交成功！");
+					$(".easyui-linkbutton").linkbutton("enable");
 				}				
 			},
 			error:function(XMLHttpRequest,textStatus,errorThrown){
@@ -326,8 +335,10 @@
 			$.messager.alert("提示","请填写申请理由！");
 			return false;
 		}
+		
 		var begin=begindate+" "+begintime;
 		var end=enddate+" "+endtime;
+		$(".easyui-linkbutton").linkbutton("disable");
 		$.ajax({
 			url: "__APP__/Works/dealApply",
 			data:{
@@ -345,6 +356,7 @@
 			success:function(data){
 				if(data=="1"){
 					$.messager.alert("提示","提交成功！");
+					$(".easyui-linkbutton").linkbutton("enable");
 				}				
 			},
 			error:function(XMLHttpRequest,textStatus,errorThrown){
