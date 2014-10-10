@@ -55,7 +55,6 @@ function fetchClndr(id,date,data) {
     //获取本月月底
     var date2 = new Date(year,month+1,0);
     var days = date2.getDate();
-    
 
     //生成数组
     var arr = new Array();
@@ -64,7 +63,7 @@ function fetchClndr(id,date,data) {
         //$("#"+id+" #day_"+i).html(i);
         arr[i] = 0;
     }
-    
+
     //显示月份
     $("#"+id+" #clndr #win_month").text((month+1)+"月");
     //遍历排班列表
@@ -81,7 +80,7 @@ function fetchClndr(id,date,data) {
     
     //显示
     var isError = false;
-    for(i=1;i<days;i++) {
+    for(i=1;i<=days;i++) {
         if(arr[i]==0) {
             $("#"+id+" #clndr #day_"+i).html(i);
         } else if(arr[i]==1) {
