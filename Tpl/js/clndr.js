@@ -7,6 +7,7 @@ function initClndr(id,date) {
     //获取年月
     var year = date.getFullYear();
     var month = date.getMonth();
+    //console.log("initClndr:"+month);
     //var month = $("#worktimelist_month").val() - 1;
     //表头
     dom.append("<tr><th colspan=\"7\" id=\"win_month\">"+(month+1)+"月</th></tr>");
@@ -51,12 +52,13 @@ function fetchClndr(id,date,data) {
     //当前月
     var month = date.getMonth();
     //var month = $("#worktimelist_month").val() - 1;
-    var date2 = new Date(year,month,0);
+    //获取本月月底
+    var date2 = new Date(year,month+1,0);
     var days = date2.getDate();
+    
 
     //生成数组
     var arr = new Array();
-    
     //清空数组
     for(i=1;i<=days;i++) {
         //$("#"+id+" #day_"+i).html(i);
@@ -76,6 +78,7 @@ function fetchClndr(id,date,data) {
             }
         }
     }
+    
     //显示
     var isError = false;
     for(i=1;i<days;i++) {
