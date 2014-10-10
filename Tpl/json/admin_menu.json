@@ -27,6 +27,12 @@
             "url":"Hr/record_export"
         }
 	},{
+		"text":"排班设置",
+		"iconCls":"icon-doccheck",
+		 "attributes":{  
+            "url":"Hr/worktimeList"
+        }
+	},{
 		"text":"年假调休导出",
 		"iconCls":"icon-project",
 		 "attributes":{  
