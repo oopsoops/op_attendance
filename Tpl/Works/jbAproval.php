@@ -59,7 +59,8 @@
     </div>
 <script>
    
-	var rejectId="";   
+	var rejectId=""; 
+	var rejectTid="";  
 	function rejectFormatter(val,row){
 		return '<a href="javascript:void(0)" onclick="open_reject('+row.id+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
@@ -79,16 +80,22 @@
 						closable:true
 		});
 	}
+	
+	
 	function rejectallFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doallReject('+row.teamid+')"><img src="__TPL__/images/del.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="open_all_reject('+row.teamid+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
 	function approveallFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doallApprove('+row.teamid+')"><img src="__TPL__/images/check.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="doallApprove('+row.teamid+','+row.days+','+row.status+')"><img src="__TPL__/images/check.png" width="16"/></a>';
 	}
 	
 	function open_reject(id){
 		rejectId=id;
 		$("#jb_reject").dialog('open');
+	}
+	function open_all_reject(tid){
+		rejectTid=tid;
+		$("#jb_all_reject").dialog('open');
 	}
 	
 	
@@ -126,17 +133,20 @@
 		});
 	}
 	
-	function doallReject(teamid){
-		
+	function doallReject(){
+		var teamid=rejectTid;
+		var reason=$("jball_reject_reason").val();
 		$.messager.confirm('提示', '确认要驳回该条产线加班申请？', function(r){  
 			if (r){
 				$.ajax({
 					url:"__APP__/Works/rejectallTrans",
 					type:'POST',
 					data:{
-						teamid:teamid
+						teamid:teamid,
+						reason:reason
 					},
 					success:function(data){
+						$("#jb_all_reject").dialog('close');
 						if(data=="1"){
 							$.messager.alert("提示","驳回成功！");
 							$('#grid_jbAllApprove').datagrid('loadData', { total:0, rows:[ ]});
@@ -151,34 +161,59 @@
 		});
 	}
 	
-	function doallApprove(teamid){
-		$.messager.confirm('提示', '确认要批准该条生产线加班申请？', function(r){  
-			if (r){
-				$.ajax({
-					url:"__APP__/Works/approveallTrans",
-					type:'POST',
-					data:{
-						teamid:teamid
-					},
-					success:function(data){
-						if(data=="1"){
-							$.messager.alert("提示","批准成功！");
-							$('#grid_jbAllApprove').datagrid('loadData', { total:0, rows:[ ]});
-							$('#grid_jbAllApprove').datagrid('load', { });
-						}				
-					},
-					error:function(XMLHttpRequest,textStatus,errorThrown){
-						alert(''+errorThrown);
-					}	
-				});
-			}
-		});
+	function doallApprove(teamid,days,status){
+		
+		if(days<=1||status=="2"){
+			$.messager.confirm('提示', '确认要批准该条生产线加班申请？', function(r){  
+				if (r){
+					$.ajax({
+						url:"__APP__/Works/approveallTrans",
+						type:'POST',
+						data:{
+							teamid:teamid
+						},
+						success:function(data){
+							if(data=="1"){
+								$.messager.alert("提示","批准成功！");
+								$('#grid_jbAllApprove').datagrid('loadData', { total:0, rows:[ ]});
+								$('#grid_jbAllApprove').datagrid('load', { });
+							}				
+						},
+						error:function(XMLHttpRequest,textStatus,errorThrown){
+							alert(''+errorThrown);
+						}	
+					});
+				}
+			});
+		}else if(days>1&&status=="1"){
+			$.messager.confirm('提示', '加班时间大于一小时需要提交人事经理审批，是否提交？', function(r){  
+				if (r){
+					$.ajax({
+						url:"__APP__/Works/all2hr",
+						type:'POST',
+						data:{
+							tid:teamid
+						},
+						success:function(data){
+							if(data=="1"){
+								$.messager.alert("提示","批准成功！");
+								$('#grid_jbAllApprove').datagrid('loadData', { total:0, rows:[ ]});
+								$('#grid_jbAllApprove').datagrid('load', { });
+							}				
+						},
+						error:function(XMLHttpRequest,textStatus,errorThrown){
+							alert(''+errorThrown);
+						}	
+					});
+				}
+			});
+		}
 	}
 	
 	
 	
 	function doApprove(id,nums,status,power,departmentid){
-		if(power==4&&status=="3"){
+		if((power==4&&status=="3"&&departmentid!=2)||(status=="3"&&nums>1&&departmentid==7)){
 			$.messager.confirm('提示', '确认要批准该员工加班申请？', function(r){  
 				if (r){
 					$.ajax({
@@ -198,7 +233,7 @@
 				}
 			});
 		}
-		else if((status=="1"&&nums<=1)||(status=="2")||(status=="1"&&departmentid==2)){
+		else if(((status=="1"&&nums<=1)||(departmentid==2))||(status=="2")||(status=="1"&&departmentid==2)||(status=="3"&&departmentid==7&&nums<=1)){
 			$.messager.confirm('提示', '确认要批准该员工加班申请？', function(r){  
 				if (r){
 					$.ajax({
@@ -217,7 +252,7 @@
 					});
 				}
 			});
-		}else if(status=="1"&&nums>1||departmentid!=2){
+		}else if(status=="1"&&nums>1&&departmentid!=2){
 			$.messager.confirm('提示', '加班时间大于1小时需要提交人事经理，是否提交？', function(r){  
 				if (r){
 					$.ajax({
@@ -249,5 +284,11 @@
 	<br/>
 	<textarea id="jb_reject_reason" rows="10" cols="36"/>
     <button type="button" onclick="doReject()">提交</button>
+</div>  
+
+<div id="jb_all_reject" class="easyui-dialog" style="width:350px;height:250px;" title="驳回理由" data-options="cache:false,modal:true,closed:true">
+	<br/>
+	<textarea id="jball_reject_reason" rows="10" cols="36"/>
+    <button type="button" onclick="doallReject()">提交</button>
 </div>  
 </div>

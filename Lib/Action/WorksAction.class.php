@@ -24,7 +24,7 @@
 			$this->display();
 		}
 		//邮件发送
-		public function sendMail($email){
+		public function sendMail($email,$typemc,$username){
 			try { 
 				$mail=new PHPMailer();
 				$mail->Mailer="stmp";
@@ -41,7 +41,7 @@
 				$mail->AddAddress($email);
 			//	$mail->AddAddress("732121339@qq.com");
 				$mail->Subject = "工作申请审批提醒";
-				$mail->Body = "你有一个工作审批，请登录考勤管理系统查看。";
+				$mail->Body = "你有一个来自".$username."的".$typemc."工作审批，请登录考勤管理系统查看。";
 				$mail->IsHTML(true);
 				$mail->Send();
 			} catch (phpmailerException $e) { 
@@ -110,7 +110,7 @@
 				$departmentid=$row['departmentid'];
 				if($departmentid==2){
 					$status=2;
-					$managerid=$this->getHrUid();
+					$hrmanagerid=$this->getHrUid();
 					$model=M('staffinfo');
 					$rows=$model->field("op_staffinfo.uid,op_staffinfo.email")
 					->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
@@ -124,6 +124,14 @@
 					->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
 					->where("op_usertype.power=5")->select();
 					$email=$rows[0]['email'];					
+				}else if($departmentid==3){
+					$cwid=$this->getCaiwuUid();
+					$status=4;
+					$model=M('staffinfo');
+					$rows=$model->field("op_staffinfo.uid,op_staffinfo.email")
+					->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
+					->where("op_usertype.power=4 and op_staffinfo.departmentid=3 ")->select();
+					$email=$rows[0]['email'];
 				}
 				else{
 					$model=M('staffinfo');
@@ -136,12 +144,13 @@
 			}
 			if($power==2){
 				$model=M('staffinfo');
-				$rs=$model->field("op_staffinfo.email")
+				$rs=$model->field("op_staffinfo.uid,op_staffinfo.email")
 				->join("op_usertype on op_staffinfo.usertypeid=op_usertype.tid")
 				->where("op_usertype.power=5")
 				->select();
 				$status=3;
 				$email=$rs[0]['email'];
+				$bossid=$rs[0]['uid'];
 			}
 			if($power==4){
 				$model=M('staffinfo');
@@ -151,6 +160,7 @@
 				->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
 				->where("op_usertype.power=5")->select();
 				$status=3;
+				$bossid=$rows[0]['uid'];
 				$email=$rows[0]['email'];
 				
 			}
@@ -207,8 +217,9 @@
 				$wk['uid']=$uid;
 				$mm->add($wk);
 			}
-			
-			$this->sendMail($email);
+			$typemc=$this->getApplyTypeName($transdm);
+			$username=$this->getUserName($uid);
+			$this->sendMail($email,$typemc,$username);
 			$model=M('vacationstatus');
 			$rs=$model->add($astatus);
 			echo "1";
@@ -231,13 +242,18 @@
 			$row=$model->getByUid($uid);
 			$tid=$row['teamid'];
 			$did=$row['departmentid'];
-			$rows=$model->field("op_staffinfo.uid")
+			$rows=$model->field("op_staffinfo.uid,op_staffinfo.email")
 				->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
 				->where("op_usertype.power=4 and op_staffinfo.departmentid='".$did."'")->select();
 			$manager=$rows[0]['uid'];
-			
+			$email=$rows[0]['email'];
 			$num=$model->where("teamid='".$tid."'")->count();
 			$rows=$model->where("teamid='".$tid."'")->select();
+			if($transdm=="1"&&$begindate==$enddate){
+				$minutes=$this->getMinuteByJb($begindate,$enddate,$begintime,$endtime,$uid);
+				$days=$minutes/60;
+				$days=number_format($days,1);
+			}
 			for($i=0;$i<$num;$i++){
 				$uid=$rows[$i]['uid'];
 				$astatus['uid']=$uid;
@@ -247,12 +263,18 @@
 				$astatus['status']="1";
 				$astatus['enddate']=$enddate;
 				$astatus['endtime']=$endtime;
+				if($days!=""){
+					$astatus['days']=$days;
+				}
 				$astatus['applytime']=date('Y-m-d H:i:s');
 				$astatus['departmanagerid']=$manager;
 				$astatus['reason']=$reason;
 				$model=M('vacationstatus');
 				$rs=$model->add($astatus);
 			}
+			$typemc=$this->getApplyTypeName($transdm);
+			$username="产线";
+			$this->sendMail($email,$typemc,$username);			
 			echo "1";
 			
 		
@@ -312,13 +334,13 @@
 		$power=$rx[0]['power'];
 		if($power==2){
 			$status=2;
-			$where="(status=2 or (status=1 and departmanagerid='".$uid."')) and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+			$where="status=2  and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
 		}
 		else if($power==5){
 			$status=3;
-			$where="(status=3 or (bossid='".$uid."' and status=2)) and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+			$where="status=3  and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
 		}else if($uid==$this->getCaiwuUid()){
-			$where="(status=4 or(status=1 and departmanagerid='".$uid."')) and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+			$where="status=4  and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
 		}
 		else{
 			$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
@@ -354,17 +376,24 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		if($rows<1) $rows=10;
 		$start = ($page-1)*$rows;
 		
-		
-		
-		$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+		$model=M('staffinfo');		
+		$rx=$model->field("op_usertype.power")
+		->join('op_usertype ON op_staffinfo.usertypeid=op_usertype.tid ')
+		->where("op_staffinfo.uid=".$uid)->select();
+		$power=$rx[0]['power'];
+		if($power==2){
+			$where="status=2 and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' and op_staffinfo.departmentid=1 ";
+		}else{
+			$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' and op_staffinfo.departmentid=1  ";
+		}
 		$model=M('vacationstatus');
-		$num=$model->field("distinct teamname,op_staffinfo.teamid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,	op_vacationstatus.begindate,op_vacationstatus.enddate,reason")
+		$num=$model->field("distinct teamname,op_staffinfo.teamid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,	op_vacationstatus.begindate,op_vacationstatus.enddate,reason,op_vacationstatus.days,op_vacationstatus.status")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->join("op_teaminfo ON op_staffinfo.teamid=op_teaminfo.tid")
 		->join("op_department ON op_staffinfo.departmentid=op_department.did")
 		->where($where)->count();
 		
-		$list=$model->field("distinct teamname,op_staffinfo.teamid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,	op_vacationstatus.begindate,op_vacationstatus.enddate,reason")
+		$list=$model->field("distinct teamname,op_staffinfo.teamid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,	op_vacationstatus.begindate,op_vacationstatus.enddate,reason,op_vacationstatus.days,op_vacationstatus.status")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->join("op_teaminfo ON op_staffinfo.teamid=op_teaminfo.tid")
 		->join("op_department ON op_staffinfo.departmentid=op_department.did")
@@ -402,9 +431,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		field("op_vacationstatus.reason,op_vacationstatus.begintime,op_vacationstatus.begindate,op_vacationstatus.enddate,op_vacationstatus.endtime,op_vacationstatus.applytime,op_staffinfo.username,op_staffinfo.holiday as days,op_vacationstatus.holiday as holiday")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->where("op_vacationstatus.id='".$vid."'")->select();
-		$this->assign('detail',$detail);
-		
-		
+		$this->assign('detail',$detail);		
 		$this->display();
 	}
 	
@@ -442,10 +469,11 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 	public function rejectallTrans(){
 	//	$begindate=$this->_post('begindate');
 		$tid=$this->_post('teamid');
+		$reason=$this->_post('reason');
 		$model=M('vacationstatus');
 		$where=" op_staffinfo.teamid='".$tid."' and isrejected!='1' and isapproved!='1' and transtype='1' ";
 		$num=$model->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid ")->where($where)->count();
-		$vidrows=$model->field("op_vacationstatus.id")->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid ")->where($where)->select();
+		$vidrows=$model->field("op_vacationstatus.id,op_vacationstatus.uid")->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid ")->where($where)->select();
 		for($i=0;$i<$num;$i++){
 			if($vidrows[$i]['id']==""){
 				break;
@@ -453,8 +481,13 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			$id=$vidrows[$i]['id'];
 			$rs=$model->getById($id);
 			$rs['isrejected']=1;
+			$rs['reject_reason']=$reason;
 			$result=$model->save($rs);
-		}		
+		}
+		$uid=$rs['uid'];
+		$email=$this->getEmail($uid);
+		$content=$reason;
+		$this->sendRemindMail($email,$content);	
 		$data="1";
 		echo $data;
 		
@@ -508,7 +541,11 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			$rs=$model->getById($id);
 			$rs['isapproved']=1;
 			$result=$model->save($rs);
-		}		
+		}
+		$uid=$rs['uid'];
+		$email=$this->getEmail($uid);
+		$content="你的工作申请已批准，请登录考勤系统查看详情。";
+		$this->sendRemindMail($email,$content);	
 		$data="1";
 		echo $data;
 	}
@@ -517,6 +554,29 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 /*****************************************批准申请end*******************************************/		
 	
 /*****************************************提交hr begin*******************************************/	
+	public function all2hr(){
+		$tid=$this->_post('tid');
+		$model=M('vacationstatus');
+		$where=" op_staffinfo.teamid='".$tid."' and isrejected!='1' and isapproved!='1' and transtype='1' ";
+		$num=$model->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid ")->where($where)->count();
+		$vidrows=$model->field("op_vacationstatus.id,op_vacationstatus.uid")->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid ")->where($where)->select();
+		for($i=0;$i<$num;$i++){
+			$id=$vidrows[$i]['id'];
+			$rs=$model->getById($id);
+			$rs['status']=2;
+			$result=$model->save($rs);
+		}
+		$uid=$rs['uid'];
+		$email=$this->getEmail($uid);
+		$content="你的工作申请已提交人事经理审批。";
+		$this->sendRemindMail($email,$content);
+		$uid=$this->getHrUid();
+		$email=$this->getEmail($uid);
+		$typemc="加班";
+		$username="产线";
+		$this->sendMail($email,$typemc,$username);
+		echo "1";
+	}
 	
 	public function sub2hr(){
 		$id=$this->_get('vid');
@@ -524,6 +584,8 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		$hruid=$this->getHrUid();
 		$rs=$model->getById($id);
 		$uid=$rs['uid'];
+		$username=$this->getUserName($uid);
+		$transdm=$rs['transtype'];
 		$rs['status']=2;
 		$rs['hrmanagerid']=$hruid;
 		$result=$model->save($rs);
@@ -538,7 +600,8 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			->where("op_usertype.power=2")
 			->select();
 			$email=$rs[0]['email'];
-			$this->sendMail($email);
+			$typemc=$this->getApplyTypeName($transdm);
+			$this->sendMail($email,$typemc,$username);
 			$model=M('staffinfo');
 			$row=$model->getByUid($uid);
 			$email=$row['email'];
@@ -557,6 +620,8 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		$model=M('vacationstatus');
 		$rs=$model->getById($id);
 		$uid=$rs['uid'];
+		$transdm=$rs['transtype'];
+		$username=$this->getUserName($uid);
 		$bossid=$this->getBossUid();
 		$rs['status']=3;
 		$rs['bossid']=$bossid;
@@ -572,11 +637,12 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			->where("op_usertype.power=5")
 			->select();
 			$email=$rs[0]['email'];
-			$this->sendMail($email);
+			$typemc=$this->getApplyTypeName($transdm);
+			$this->sendMail($email,$typemc,$username);
 			$model=M('staffinfo');
 			$row=$model->getByUid($uid);
 			$email=$row['email'];
-			$content="你的工作申请已提交老板审批。";
+			$content="你的工作申请已提交工厂经理审批。";
 			$this->sendRemindMail($email,$content);
 			$data="1";
 			echo $data;
@@ -590,7 +656,11 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		$model=M('vacationstatus');
 		$rs=$model->getById($id);
 		$uid=$rs['uid'];
+		$username=$this->getUserName($uid);
+		$transdm=$rs['transtype'];
+		$cwid=$this->getCaiwuUid();
 		$rs['status']=4;
+		$rs['cwid']=$cwid;
 		$result=$model->save($rs);
 		if(!$result){
 			echo "操作失败,请重试！";
@@ -606,7 +676,8 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			
 			$uid=$this->getCaiwuUid();
 			$email=$this->getEmail($uid);
-			$this->sendMail($email);
+			$typemc=$this->getApplyTypeName($transdm);
+			$this->sendMail($email,$typemc,$username);
 			$data="1";
 			echo $data;
 		}
@@ -660,6 +731,19 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		$row=$model->getByUid($uid);
 		$email=$row['email'];
 		return $email;
+	}
+	
+	public function getUserName($uid){
+		$model=M('staffinfo');
+		$row=$model->getByUid($uid);
+		$username=$row['username'];
+		return $username;
+	}
+	public function getApplyTypeName($transdm){
+		$model=M('vacationtype');
+		$row=$model->where("typedm='".$transdm."'")->select();
+		$typemc=$row[0]['typemc'];
+		return $typemc;
 	}
 	
 	//扣除假期
@@ -746,20 +830,25 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		$model=M('staffinfo');
 		$row=$model->getByUid($uid);
 		$usertypeid=$row['usertypeid'];
+		$did=$row['departmentid'];
 		$model=M('usertype');
 		$row=$model->getByTid($usertypeid);
 		$power=$row['power'];
 		$model=M('vacationstatus');
 		$where="";
 		if($power==2){
-			$where="op_vacationstatus.hrmanagerid='".$uid."' or op_vacationstatus.departmanagerid='".$uid."'";
+			$where="op_vacationstatus.hrmanagerid='".$uid."'";
 		}
 		if($power==4){
 			$where="op_vacationstatus.departmanagerid='".$uid."'";
+			if($did==3){
+				$where=" op_vacationstatus.cwid='".$uid."'";
+			}
 		}
 		if($power==5){
 			$where="op_vacationstatus.status=3 or op_vacationstatus.bossid='".$uid."'";
 		}
+		
 		$num=$model->where($where)->count();
 		$list=$model->field("op_vacationstatus.begindate,op_vacationstatus.uid,op_vacationstatus.enddate,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.isapproved,op_vacationstatus.isrejected,op_vacationstatus.transtype,op_staffinfo.username,op_vacationtype.typemc,op_vacationstatus.applytime,op_vacationstatus.status")
 		->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid")

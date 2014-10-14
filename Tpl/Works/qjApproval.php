@@ -125,7 +125,7 @@
 				}
 			});		
 		}
-		else if((status=="1"&&nums<=3)||(status=="2"&&nums>3&&nums<=5)||(status=="2"&&power==4)||(status=="3"&&nums>5&&departmentid!=7)||(status=="1"&&departmentid==2&&nums<=5)||(status=="2"&&departmentid==7) ){
+		else if((status=="1"&&nums<=3)||(status=="2"&&nums>3&&nums<=5)||(status=="2"&&power==4)||(status=="3"&&departmentid!=7)||(status=="1"&&departmentid==2&&nums<=5)||(status=="2"&&departmentid==7) ){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({
@@ -164,7 +164,7 @@
 			}
 		});
 		}else if((nums>5&&status=="2")||(departmentid==2&&status=="1")){
-			$.messager.confirm('提示', '请假时间大于5天需要老板审核，是否提交？', function(r){  
+			$.messager.confirm('提示', '请假时间大于5天需要工厂经理审核，是否提交？', function(r){  
 				if (r){
 					$.ajax({
 						url:"__APP__/Works/sub2boss/vid/"+id,

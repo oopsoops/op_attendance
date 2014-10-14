@@ -61,10 +61,16 @@
                         <option value="">请选择</option>
                         <option value="年假">年假</option>
                         <option value="调休假">调休假</option>
-                        <option value="病假">病假</option>
+                        <option value="病假<=6个月">病假<=6个月</option>
+                        <option value="病假>=6个月">病假>=6个月</option>
                         <option value="婚假">婚假</option>
                         <option value="产假">产假</option>
-                        <option value="其他">其他</option>
+                        <option value="陪产假">陪产假</option>
+                        <option value="事假">事假</option>
+                        <option value="工伤假">工伤假</option>
+                        <option value="女工假">女工假</option>
+                        <option value="哺乳假">哺乳假</option>
+                        <option value="丧假">丧假</option>
                         
                     </select>
                         <a class="easyui-linkbutton" iconCls="icon-search" onclick="apply2()">提交</a>

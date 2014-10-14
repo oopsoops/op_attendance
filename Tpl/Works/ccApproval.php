@@ -34,7 +34,7 @@
 		return '<a href="javascript:void(0)" onclick="open_reject('+row.id+')"><img src="__TPL__/images/del.png" width="16"/></a>';
 	}
 	function approveFormatter(val,row){
-		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.status+','+row.departmentid+')"><img src="__TPL__/images/check.png" width="16"/></a>';
+		return '<a href="javascript:void(0)" onclick="doApprove('+row.id+','+row.status+','+row.departmentid+','+row.power+')"><img src="__TPL__/images/check.png" width="16"/></a>';
 	}
 	
 	function ccDetailFormatter(val,row){
@@ -88,8 +88,8 @@
 			}
 		});
 	}
-	function doApprove(id,status,departmentid){
-		if(status=="1"&&departmentid!=2){
+	function doApprove(id,status,departmentid,power){
+		if((status=="1"&&departmentid!=2)||(status=="3"&&(power==4||departmentid==7))){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({
@@ -109,7 +109,7 @@
 				}
 			});
 		}
-		if((status=="2"&&departmentid!=3)||(status=="1"&&departmentid==2)){
+		else if((status=="2"&&(departmentid!=3||power!=4))||(status=="2"&&departmentid==2)||(status=="3"&&power==2)){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({
@@ -130,7 +130,7 @@
 			});
 		}
 		
-		if(status=="3"||(status=="4"&&departmentid==7)){
+		else if((status=="3"&&power!=4&&power!=2&&departmentid!=7)||(status=="4"&&(departmentid==7||power==2))||(status=="3"&&power==4&&departmentid==3)||(status=="2"&&power==4&&departmentid==3)){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({
@@ -150,7 +150,7 @@
 				}
 			});
 		}
-		if((status=="4"&&departmentid!=7)||(status=="2"&&departmentid==3)){
+		else if((status=="4"&&departmentid!=7)||(status=="2"&&departmentid==3)){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({

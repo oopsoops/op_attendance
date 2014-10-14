@@ -36,7 +36,7 @@
 		}else if(row.status=="2"){
 			return '人事经理审批中';
 		}else if(row.status=="3"){
-			return '老板审批中';
+			return '工厂经理审批中';
 		}else if(row.status=="1"){
 			return '部门经理审批中';
 		}else if(row.status=="4"){
