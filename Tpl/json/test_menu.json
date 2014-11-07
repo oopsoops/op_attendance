@@ -1,0 +1,25 @@
+[{
+	"text":"test",
+	"iconCls":"icon-work",
+	"children":[{
+		"text":"testChange",
+		"iconCls":"icon-project",
+		 "attributes":{  
+            "url":"test/testChange"
+        }
+	
+	}]
+
+},
+{
+	"text":"password",
+	"iconCls":"icon-archives",
+	"state":"closed",
+	"children":[{
+		"text":"PWChange",
+		"iconCls":"icon-pass",
+		 "attributes":{  
+			"url":"Password/passwordChange"
+		 }
+	}]
+}]

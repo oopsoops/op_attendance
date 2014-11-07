@@ -1,0 +1,44 @@
+[{
+	"text":"考勤管理",
+	"iconCls":"icon-work",
+	"children":[{
+		"text":"考勤记录",
+		"iconCls":"icon-project",
+		 "attributes":{  
+            "url":"Search/searchInfo"
+        }
+	}]
+},{
+	"text":"事务管理",
+	"iconCls":"icon-docbag",
+	"children":[{
+		"text":"事务申请",
+		"iconCls":"icon-pass",
+		 "attributes":{  
+			"url":"Works/transitionApply"
+		 }
+	},{
+		"text":"申请查询",
+		"iconCls":"icon-pass",
+		 "attributes":{  
+			"url":"Works/applyQuery"
+		 }
+	}]
+},{
+	"text":"信息管理",
+	"iconCls":"icon-archives",
+	"state":"closed",
+	"children":[{
+		"text":"我的信息",
+		"iconCls":"icon-client",
+		 "attributes":{  
+            "url":"Search/userinfo_detailshow"
+        }
+	},{
+		"text":"密码管理",
+		"iconCls":"icon-pass",
+		 "attributes":{  
+			"url":"Password/passwordChange"
+		 }
+	}]
+}]
