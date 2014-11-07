@@ -127,8 +127,8 @@ class HrAction extends Action {
 		  else
 		  {
 			  $kucun->commit();
-		  //	R('Check/checkClock',array($import_begin_time,$import_end_time));
-			 // $kucun->where("id is not null")->delete();
+		  	R('Check/checkClock',array($import_begin_time,$import_end_time));
+			  $kucun->where("id is not null")->delete();
 			  $this->success ( '导入成功！' );	
 			  
 		  }
