@@ -50,7 +50,7 @@ class MonitorAction extends Action {
 	
 		 if($username!='')
 		{
-			$where= " $where and username='"."$username"."' ";
+			$where= " $where and username like '%$username%' ";
 			}
 		
 		
@@ -86,7 +86,7 @@ class MonitorAction extends Action {
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->join('op_teaminfo ON op_staffinfo.teamid = op_teaminfo.tid')
 		->where($where)
-		 ->order('op_unusualtime.uid asc,op_unusualtime.clockdate asc,op_unusualtime.clocktime asc')
+		 ->order('op_unusualtime.uid asc,op_unusualtime.clockdate desc,op_unusualtime.clocktime desc')
 		->limit("$start,$rows")
 		->select();
 		

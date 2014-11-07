@@ -36,7 +36,7 @@ class HrAction extends Action {
 		
 		$import_end_time=$this->_post('import_end_time');
 		$kucun=M('clocktime');
-		$kucun->where("uid is not null")->delete();
+		//$kucun->where("uid is not null")->delete();
 		$kucun->startTrans();
 			if($import_begin_time==''||$import_end_time=='')
 				{
@@ -127,9 +127,10 @@ class HrAction extends Action {
 		  else
 		  {
 			  $kucun->commit();
-		  	R('Check/checkClock',array($import_begin_time,$import_end_time));
-			  $kucun->where("id is not null")->delete();
+		  //	R('Check/checkClock',array($import_begin_time,$import_end_time));
+			 // $kucun->where("id is not null")->delete();
 			  $this->success ( '导入成功！' );	
+			  
 		  }
 
 	
@@ -195,7 +196,7 @@ class HrAction extends Action {
 			
 			
 		if($username!='') {
-			$where= "$where and username='"."$username"."' ";
+			$where= "$where and op_staffinfo.username like '%$username%' ";
 		}
 		
 		
@@ -233,13 +234,13 @@ class HrAction extends Action {
 		->join('op_department ON op_staffinfo.departmentid=op_department.did')
 		->join('op_teaminfo ON op_teaminfo.tid = op_staffinfo.teamid')
 		->join('op_usertype ON op_usertype.tid=op_staffinfo.usertypeid')
+		->order('op_unusualtime.uid desc,clockdate desc,clocktime desc')
 		->where($where)
-		->order('op_unusualtime.uid asc,op_unusualtime.clockdate asc,op_unusualtime.clocktime asc')
 		->limit("$start,$rows")
 		->select();
 		
-	//echo $unusualtime->getLastSql();
-	echo dataToJson($allattendance,$cc);
+	echo $unusualtime->getLastSql();
+	//echo dataToJson($allattendance,$cc);
     }
 	
 	
@@ -458,13 +459,13 @@ public function hrfetch_all_users(){
 											
 											if($username!='' && $where !='')
 											{
-												$where = "$where and op_staffinfo.username = '"."$username"."' ";
+												$where = "$where and op_staffinfo.username like '%$username%' ";
 												
 												}
 												
 												else if($username != '')
 												{
-													$where = "op_staffinfo.username = '"."$username"."' ";
+													$where = "op_staffinfo.username like '%$username%' ";
 													
 													
 													}
@@ -1517,7 +1518,7 @@ public function loginDetails(){
 		}
 		
 		if($username!='') {
-			$where= "$where and username='"."$username"."' ";
+			$where= "$where and username like '%$username%' ";
 		}
 		
 		if($department!='')
@@ -1579,7 +1580,7 @@ public function exportVacation()
 		}
 		
 		if($username!='') {
-			$where= "$where and username='"."$username"."' ";
+			$where= "$where and username like '%$username%' ";
 		}
 		
 		if($department!='')
@@ -1977,7 +1978,7 @@ public function exportVacation()
  
     $dir='..\excel\attendance/';
  	//$ip=gethostbyname($_ENV['COMPUTERNAME']);
-	$ip='222.209.200.172:3824';
+	$ip='10.166.18.50:8082';
      if(is_dir($dir))        //判断参数是否为目录
      { 
          if($handle = opendir($dir))         //打开目录，返回文件句柄
@@ -2011,7 +2012,7 @@ public function exportVacation()
  
     $dir='..\excel\vacation/';
  	//$ip=gethostbyname($_ENV['COMPUTERNAME']);
-	$ip='222.209.200.172:3824';
+	$ip='10.166.18.50:8082';
      if(is_dir($dir))        //判断参数是否为目录
      { 
          if($handle = opendir($dir))         //打开目录，返回文件句柄
