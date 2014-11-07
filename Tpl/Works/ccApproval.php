@@ -13,13 +13,24 @@
             >
         <thead>
             <tr> 
-                <th field="departmentname" width="100" align="center">员工部门</th>
-                <th field="teamname" width="80" align="center">所在组</th> 
+                <th field="departmentname" width="80" align="center">员工部门</th>
+                <th field="teamname" width="60" align="center">所在组</th> 
                 <th field="username" width="80" align="center">员工姓名</th>  
-                <th field="uid" width="80" align="center">员工工号</th>
+                <th field="uid" width="70" align="center">员工工号</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
-                <th field="transpot" width="50" align="center">交通</th>
-                <th field="fee" width="50" align="center">预算</th>
+                <th field="place" width="50" align="center">目的地</th>
+                <th field="begindate" width="100" align="center">开始日期</th>
+                <th field="begintime" width="100" align="center">开始时间</th>
+                <th field="enddate" width="100" align="center">结束日期</th>
+                <th field="endtime" width="100" align="center">结束时间</th>
+                
+                <th field="transpot" width="50" align="center">交通费</th>
+                <th field="stayfee" width="50" align="center">住宿费</th>
+                <th field="foodfee" width="50" align="center">餐饮费</th>
+                <th field="totalfee" width="50" align="center">总计</th>
+                <th field="otherfee" width="50" align="center">其他费用</th>
+                <th field="ccbz" width="50" align="center">出差备注</th>
+                
                 <th field="detail" width="80" align="center" formatter="ccDetailFormatter">申请详情</th>
                 <th field="rejiect" width="40" align="center" formatter="rejectFormatter">驳回</th>
                 <th field="approve" width="40" align="center" formatter="approveFormatter">批准</th>
@@ -89,7 +100,7 @@
 		});
 	}
 	function doApprove(id,status,departmentid,power){
-		if((status=="1"&&departmentid!=2)||(status=="3"&&(power==4||departmentid==7))){
+		if((status=="1"&&departmentid!=2)||(status=="3"&&(power==4||departmentid==7))||(status=="4"&&departmentid==3)){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({
@@ -109,7 +120,7 @@
 				}
 			});
 		}
-		else if((status=="2"&&(departmentid!=3||power!=4))||(status=="2"&&departmentid==2)||(status=="3"&&power==2)){
+		else if((status=="2"&&departmentid!=3)||(status=="2"&&departmentid==2)||(status=="3"&&power==2)||(status=="2"&&power!=4&&departmentid!=3)){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({
@@ -130,7 +141,7 @@
 			});
 		}
 		
-		else if((status=="3"&&power!=4&&power!=2&&departmentid!=7)||(status=="4"&&(departmentid==7||power==2))||(status=="3"&&power==4&&departmentid==3)||(status=="2"&&power==4&&departmentid==3)){
+		else if((status=="3"&&power!=4&&power!=2&&departmentid!=7)||(status=="4"&&(departmentid==7||power==2||power==4))||(status=="3"&&power==4&&departmentid==3)||(status=="2"&&power==4&&departmentid==3)||(status=="3"&&departmentid==3&&power!=4)){
 			$.messager.confirm('提示', '确认要批准该员工申请？', function(r){  
 				if (r){
 					$.ajax({

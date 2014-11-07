@@ -2,7 +2,7 @@
    <table class="easyui-datagrid"   
             id="grid_myApprove"
             style="height:430px"
-            title='我的申请'
+            title='我的审批'
             singleSelect="true"
             striped="true"
             loadMsg='载入中...' 

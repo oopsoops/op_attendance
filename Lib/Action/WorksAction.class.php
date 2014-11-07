@@ -85,8 +85,13 @@
 			$endtime=$this->_post('endtime');
 			$reason=$this->_post('reason');
 			$transdm=$this->_post('transdm');
+			$place=$this->_post('place');
 			$transpot=$this->_post('transpot');
-			$fee=$this->_post('fee');
+			$foodfee=$this->_post('foodfee');
+			$stayfee=$this->_post('stayfee');
+			$otherfee=$this->_post('otherfee');
+			$totalfee=$this->_post('totalfee');
+			$ccbz=$this->_post('ccbz');
 			$holiday=$this->_post('holiday');
 			$id=$this->_post('uid');
 			if($id==""){
@@ -178,11 +183,32 @@
 			if($bossid!=""){
 				$astatus['bossid']=$bossid;
 			}
+			if($hrmanagerid!=""){
+				$astatus['hrmanagerid']=$hrmanagerid;
+			}
+			if($cwid!=""){
+				$astatus['cwid']=$cwid;
+			}
 			if($reason!=""){
 				$astatus['reason']=$reason;
 			}
-			if($fee!=""){
-				$astatus['fee']=$fee;
+			if($place!=""){
+				$astatus['place']=$place;
+			}
+			if($ccbz!=""){
+				$astatus['ccbz']=$ccbz;
+			}
+			if($stayfee!=""){
+				$astatus['stayfee']=$stayfee;
+			}
+			if($foodfee!=""){
+				$astatus['foodfee']=$foodfee;
+			}
+			if($otherfee!=""){
+				$astatus['otherfee']=$otherfee;
+			}
+			if($totalfee!=""){
+				$astatus['totalfee']=$totalfee;
 			}
 			if($transpot!=""){
 				$astatus['transpot']=$transpot;
@@ -269,6 +295,7 @@
 				$astatus['applytime']=date('Y-m-d H:i:s');
 				$astatus['departmanagerid']=$manager;
 				$astatus['reason']=$reason;
+				$astatus['ispl']=1;
 				$model=M('vacationstatus');
 				$rs=$model->add($astatus);
 			}
@@ -334,16 +361,16 @@
 		$power=$rx[0]['power'];
 		if($power==2){
 			$status=2;
-			$where="status=2  and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+			$where="status=2  and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' and ispl is null ";
 		}
 		else if($power==5){
 			$status=3;
-			$where="status=3  and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+			$where="status=3  and isrejected!='1' and isapproved!='1' and transtype='".$typeid."'  and ispl is null ";
 		}else if($uid==$this->getCaiwuUid()){
-			$where="status=4  and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+			$where="status=4  and isrejected!='1' and isapproved!='1' and transtype='".$typeid."'  and ispl is null ";
 		}
 		else{
-			$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' ";
+			$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."'  and ispl is null ";
 		}
 		
 		
@@ -351,7 +378,7 @@
 		$num=$model->where($where)->count();
 //		echo $model->where($where)->getLastSql();
 		$list=$model->field("op_vacationstatus.uid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,
-op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus.transpot as days,op_vacationstatus.days as nums,op_usertype.power,	op_vacationstatus.reason,op_staffinfo.departmentid,op_staffinfo.teamid,op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.fee,op_vacationstatus.status,op_vacationstatus.transpot,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate")
+op_vacationstatus.holiday as holidaytype,op_vacationstatus.transpot as days,op_vacationstatus.days as nums,op_usertype.power,	op_vacationstatus.reason,op_staffinfo.departmentid,op_staffinfo.teamid,op_teaminfo.teamname,op_staffinfo.username,op_vacationstatus.id,op_vacationstatus.status,op_vacationstatus.transpot,op_vacationstatus.foodfee,op_vacationstatus.stayfee,op_vacationstatus.totalfee,op_vacationstatus.otherfee,op_vacationstatus.place,op_vacationstatus.ccbz,op_vacationstatus.holiday,op_vacationstatus.begindate,op_vacationstatus.enddate,op_staffinfo.LHoliday,op_staffinfo.THoliday,op_staffinfo.TRest,op_staffinfo.LRest")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->join("op_teaminfo ON op_staffinfo.teamid=op_teaminfo.tid")
 		->join("op_department ON op_staffinfo.departmentid=op_department.did")
@@ -382,9 +409,9 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		->where("op_staffinfo.uid=".$uid)->select();
 		$power=$rx[0]['power'];
 		if($power==2){
-			$where="status=2 and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' and op_staffinfo.departmentid=1 ";
+			$where="status=2 and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' and op_staffinfo.teamid!=1 and ispl=1";
 		}else{
-			$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' and op_staffinfo.departmentid=1  ";
+			$where="status=1 and departmanagerid='".$uid."' and isrejected!='1' and isapproved!='1' and transtype='".$typeid."' and op_staffinfo.teamid!=1 and ispl=1 ";
 		}
 		$model=M('vacationstatus');
 		$num=$model->field("distinct teamname,op_staffinfo.teamid,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.applytime,op_department.departmentname,	op_vacationstatus.begindate,op_vacationstatus.enddate,reason,op_vacationstatus.days,op_vacationstatus.status")
@@ -447,6 +474,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		$model=M('vacationstatus');
 		$rs=$model->getById($vid);
 		$uid=$rs['uid'];
+		$transdm=$rs['transtype'];
 		$rs['reject_reason']=$reason;
 		$rs['isrejected']=1;
 		$result=$model->save($rs);
@@ -458,8 +486,9 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		else{
 			$model=M('staffinfo');
 			$row=$model->getByUid($uid);
+			$typemc=$this->getApplyTypeName($transdm);
 			$email=$row['email'];
-			$content="你的工作申请已被驳回，理由：".$reason." 请登录考勤系统查看。";
+			$content="你的".$typemc."工作申请已被驳回，理由：".$reason." 请登录考勤系统查看。";
 			$this->sendRemindMail($email,$content);
 			$data="1";
 			echo $data;
@@ -515,10 +544,12 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			if($transtype=="3"&&($holiday=="调休假"||$holiday=="年假")){
 				$this->decrease($uid,$days,$holiday);
 			}
+			$transdm=$transtype;
+			$typemc=$this->getApplyTypeName($transdm);
 			$model=M('staffinfo');
 			$row=$model->getByUid($uid);
 			$email=$row['email'];
-			$content="你的工作申请已批准，请登录考勤系统查看详情。";
+			$content="你的".$typemc."工作申请已批准，请登录考勤系统查看详情。";
 			$this->sendRemindMail($email,$content);
 			$data="1";
 			echo $data;
@@ -544,7 +575,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		}
 		$uid=$rs['uid'];
 		$email=$this->getEmail($uid);
-		$content="你的工作申请已批准，请登录考勤系统查看详情。";
+		$content="你的加班工作申请已批准，请登录考勤系统查看详情。";
 		$this->sendRemindMail($email,$content);	
 		$data="1";
 		echo $data;
@@ -568,7 +599,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 		}
 		$uid=$rs['uid'];
 		$email=$this->getEmail($uid);
-		$content="你的工作申请已提交人事经理审批。";
+		$content="你的加班工作申请已提交人事经理审批。";
 		$this->sendRemindMail($email,$content);
 		$uid=$this->getHrUid();
 		$email=$this->getEmail($uid);
@@ -605,7 +636,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			$model=M('staffinfo');
 			$row=$model->getByUid($uid);
 			$email=$row['email'];
-			$content="你的工作申请已提交人事经理审批。";
+			$content="你的".$typemc."工作申请已提交人事经理审批。";
 			$this->sendRemindMail($email,$content);
 			$data="1";
 			echo $data;
@@ -642,7 +673,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			$model=M('staffinfo');
 			$row=$model->getByUid($uid);
 			$email=$row['email'];
-			$content="你的工作申请已提交工厂经理审批。";
+			$content="你的".$typemc."工作申请已提交工厂经理审批。";
 			$this->sendRemindMail($email,$content);
 			$data="1";
 			echo $data;
@@ -671,12 +702,13 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.fee,op_vacationstatus
 			$model=M('staffinfo');
 			$row=$model->getByUid($uid);
 			$email=$row['email'];
-			$content="你的工作申请已提交财务经理。";
+			$typemc=$this->getApplyTypeName($transdm);
+			$content="你的".$typemc."工作申请已提交财务经理。";
 			$this->sendRemindMail($email,$content);
 			
 			$uid=$this->getCaiwuUid();
 			$email=$this->getEmail($uid);
-			$typemc=$this->getApplyTypeName($transdm);
+			
 			$this->sendMail($email,$typemc,$username);
 			$data="1";
 			echo $data;
