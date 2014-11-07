@@ -38,11 +38,11 @@ class HrAction extends Action {
 		$kucun=M('clocktime');
 		//$kucun->where("uid is not null")->delete();
 		$kucun->startTrans();
-			if($import_begin_time==''||$import_end_time=='')
+			/*if($import_begin_time==''||$import_end_time=='')
 				{
 						$this->error('开始日期和结束日期不能同时为空！');
 			  			 exit();
-					}
+					}*/
 				
 	
 		

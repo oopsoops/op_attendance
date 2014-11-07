@@ -3,7 +3,7 @@
 class CheckAction extends Action {
     //调试输出
     //private $wingsDebug = 1;
-
+    
 	//打卡检测
     public function checkClock($start,$end) {
 		//$start_time = $this->_get('start_time').' 00:00:00';
