@@ -32,9 +32,7 @@ class HrAction extends Action {
 		
 		$file_type = $file_types [count ( $file_types ) - 1];
 		
-		$import_begin_time=$this->_post('import_begin_time');
 		
-		$import_end_time=$this->_post('import_end_time');
 		$kucun=M('clocktime');
 		//$kucun->where("uid is not null")->delete();
 		$kucun->startTrans();
@@ -129,7 +127,8 @@ class HrAction extends Action {
 			  $kucun->commit();
 		  //	R('Check/checkClock',array($import_begin_time,$import_end_time));
 			 // $kucun->where("id is not null")->delete();
-			  $this->success ( '导入成功！' );	
+			 $this->success ( '导入成功！' );
+			 //echo 'ok';	
 			  
 		  }
 
@@ -1610,10 +1609,10 @@ public function exportVacation()
 				$pdata[$flag]['department']=$temp['department'];
 				$pdata[$flag]['uid']=$temp['uid'];
 				$pdata[$flag]['username']=$temp['username'];
-				$pdata[$flag]['tholiday']=$temp['tholiday'];
-				$pdata[$flag]['trest']=$temp['trest'];
 				$pdata[$flag]['lholiday']=$temp['lholiday'];
+				$pdata[$flag]['tholiday']=$temp['tholiday'];
 				$pdata[$flag]['lrest']=$temp['lrest'];
+				$pdata[$flag]['trest']=$temp['trest'];
 				$flag=$flag+1;
 				
 				
@@ -1639,10 +1638,10 @@ public function exportVacation()
                            ->setCellValue('A'.$num, '员工部门')    
                            ->setCellValue('B'.$num,'员工工号' )
 						    ->setCellValue('C'.$num,'员工姓名' )
-                           ->setCellValue('D'.$num, '今年可用年假（天）')
-                            ->setCellValue('E'.$num, '今年可用调休（小时）')
-                             ->setCellValue('F'.$num, '去年剩余年假（天）')
-                               ->setCellValue('G'.$num, '去年剩余调休（小时）');
+                           ->setCellValue('D'.$num, '去年剩余年假（天）')
+                            ->setCellValue('E'.$num, '今年可用年假（天）')
+                             ->setCellValue('F'.$num, '去年剩余调休（小时）')
+                               ->setCellValue('G'.$num, '今年可用调休（小时）');
 		  
 		  
 		  
@@ -1657,10 +1656,10 @@ public function exportVacation()
                            ->setCellValue('A'.$num, $v['department'])    
                            ->setCellValue('B'.$num, $v['uid'])
 						    ->setCellValue('C'.$num, $v['username'])
-                           ->setCellValue('D'.$num, $v['tholiday'])
-                            ->setCellValue('E'.$num, $v['trest'])
-                             ->setCellValue('F'.$num, $v['lholiday'])
-                               ->setCellValue('G'.$num, $v['lrest']);
+                           ->setCellValue('D'.$num, $v['lholiday'])
+                            ->setCellValue('E'.$num, $v['tholiday'])
+                             ->setCellValue('F'.$num, $v['lrest'])
+                               ->setCellValue('G'.$num, $v['trest']);
 							   
 							   
              }

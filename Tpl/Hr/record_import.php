@@ -6,7 +6,7 @@
 		<tr>
 	    	<td colspan="3"><input name="import_xls" type="file" /></td>
 	        <td><input type="submit"  value="导入" style="width:80px" /></td>
-	        <td><a class="easyui-linkbutton" onclick="import_clear()">清空</a></td>
+	        
 	        <!-- <td><a class="easyui-linkbutton" iconCls="icon-search" onclick="checkClock()">分析</a></td> -->
 	    </tr>
 	    </form>
