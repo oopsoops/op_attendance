@@ -43,10 +43,12 @@
                 <th field="department" width="100" align="center">员工部门</th>
                 <th field="username" width="100" align="center">员工姓名</th>  
                 <th field="uid" width="100" align="center">员工工号</th>
+                 <th field="lholiday" width="120" align="center" >去年剩余年假</th>
                 <th field="tholiday" width="120" align="center">今年可用年假</th>
-                <th field="trest" width="120" align="center">今年可用调休</th>
-                <th field="lholiday" width="120" align="center" >去年剩余年假</th>
                 <th field="lrest" width="120" align="center" >去年剩余调休</th>
+                <th field="trest" width="120" align="center">今年可用调休</th>
+               
+                
                                         
             </tr>  
         </thead>  

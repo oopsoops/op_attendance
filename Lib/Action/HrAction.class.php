@@ -167,7 +167,7 @@ class HrAction extends Action {
 		
 		$search_end_time = $this->_post('hrsearch_end_time');
 		
-		$where= "(op_usertype.power<5 or op_usertype.power=7)";
+		$where= "(op_usertype.power<=5 or op_usertype.power=7)";
 
 				
 		if($uid!='') {
@@ -1510,7 +1510,7 @@ public function loginDetails(){
 		$staff=M('staffinfo');
 		
 		
-		$where= "(op_usertype.power<5 or op_usertype.power=7)";
+		$where= "(op_usertype.power<=5 or op_usertype.power=7)";
 			
 		if($uid!='') {
 			$where = " $where and op_staffinfo.uid = '"."$uid"."' " ;
@@ -1572,7 +1572,7 @@ public function exportVacation()
 		$department=$this->_post('departmen');
 					
 		
-		$where= "(op_usertype.power<5 or op_usertype.power=7)";
+		$where= "(op_usertype.power<=5 or op_usertype.power=7)";
 			//$where= "(op_usertype.power<17)";
 		if($uid!='') {
 			$where = " $where and op_staffinfo.uid = '"."$uid"."' " ;
@@ -1745,20 +1745,20 @@ public function exportVacation()
  						$cellD =  $currentSheet->getCell('D'.$currentRow)->getValue();
 						
 						
-							  $data[$k]['THoliday'] = $cellD;
+							  $data[$k]['LHoliday'] = $cellD;
 
    						   $cellE =  $currentSheet->getCell('E'.$currentRow)->getValue();
 	    	 										
-						      $data[$k]['TRest'] = $cellE;//date("H:i:s",strtotime($n));
+						      $data[$k]['THoliday'] = $cellE;//date("H:i:s",strtotime($n));
 							  
 							$cellF =  $currentSheet->getCell('F'.$currentRow)->getValue();
 	    	 										
-						      $data[$k]['LHoliday'] = $cellF;//date("H:i:s",strtotime($n));
+						      $data[$k]['LRest'] = $cellF;//date("H:i:s",strtotime($n));
 							  
 							  
 							    $cellG =  $currentSheet->getCell('G'.$currentRow)->getValue();
 	    	 										
-						      $data[$k]['LRest'] = $cellE;//date("H:i:s",strtotime($n));
+						      $data[$k]['TRest'] = $cellG;//date("H:i:s",strtotime($n));
 		
   			
   					 $k++;  //for
