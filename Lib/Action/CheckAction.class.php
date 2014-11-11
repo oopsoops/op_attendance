@@ -289,13 +289,14 @@ class CheckAction extends Action {
                 }
 			}
             $this->checkOverwork($start,$end,$uid);
+            $this->checkVacation($start,$end,$uid);
 		}
 		$Model = M('clocktime');
 		$Model->where("id is not null ")->delete();
     }
 
     public function doCheck() {
-		 $Model = M('clocktime');
+		$Model = M('clocktime');
     	$start = $this->_get('start');
     	$end = $this->_get('end');
     	R('Check/checkClock',array($start,$end));
