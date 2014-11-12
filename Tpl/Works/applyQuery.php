@@ -1,5 +1,36 @@
 ﻿<div class="main_include">
+<?php if($power==3){ ?>
    <table class="easyui-datagrid"   
+            id="grid_myApprove"
+            style="height:430px"
+            title='我的申请'
+            singleSelect="true"
+            striped="true"
+            loadMsg='载入中...' 
+            pagination="true"
+            rownumbers="true"
+            pageList="[5,10,15]"
+            url="__APP__/Works/getMycxApply"
+            >
+            
+        <thead>
+            <tr>  
+                <th field="username" width="80" align="center">员工姓名</th>  
+                <th field="uid" width="80" align="center">员工工号</th>
+                <th field="begindate" width="80" align="center">开始日期</th>
+                <th field="begintime" width="80" align="center">开始时间</th>
+                <th field="enddate" width="80" align="center">结束日期</th>
+                <th field="endtime" width="80" align="center">结束时间</th>
+                <th field="typemc" width="80" align="center">事务类型</th>
+                <th field="applytime" width="140" align="center">申请时间</th>
+                <th field="statusinfo" width="80" align="center" formatter="statusFormatter">状态</th>
+            </tr>  
+        </thead>  
+    </table>
+<?php } 
+		else{
+?>
+	<table class="easyui-datagrid"   
             id="grid_myApprove"
             style="height:430px"
             title='我的申请'
@@ -26,6 +57,8 @@
             </tr>  
         </thead>  
     </table>
+
+<?php } ?>
 <script>
    function statusFormatter(val,row){
 	   if(row.isapproved==1){

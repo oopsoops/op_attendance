@@ -515,7 +515,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.transpot as days,op_v
 		}
 		$uid=$rs['uid'];
 		$email=$this->getEmail($uid);
-		$content=$reason;
+		$content="你的加班申请已驳回，理由：".$reason;
 		$this->sendRemindMail($email,$content);	
 		$data="1";
 		echo $data;
@@ -600,7 +600,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.transpot as days,op_v
 		$uid=$rs['uid'];
 		$email=$this->getEmail($uid);
 		$content="你的加班申请已提交人事经理审批。";
-		$this->sendRemindMail($email,$content);
+	//	$this->sendRemindMail($email,$content);
 		$uid=$this->getHrUid();
 		$email=$this->getEmail($uid);
 		$typemc="加班";
@@ -821,12 +821,47 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.transpot as days,op_v
 /*****************************************申请查询 begin*******************************************/	
 
 	public function applyQuery(){
+		$uid = $_SESSION['uid'];
+		$model=M('staffinfo');
+		$rs=$model->field("op_usertype.power")
+		->join("op_usertype on op_staffinfo.usertypeid=op_usertype.tid")
+		->where("uid='".$uid."'")
+		->select();
+		
+		$power=$rs[0]['power'];
+		$this->assign('power',$power);
+		
 		$this->display();
 	}
 	public function myApprove(){
 		$this->display();
 	}
 	
+	
+	//产线申请
+	public function getMycxApply(){
+		$uid = $_SESSION['uid'];
+		$model = M('staffinfo');
+		$rs = $model->getByUid($uid);
+		$tid=$rs['teamid'];
+		$page = $this->_post('page');
+		if($page<1) $page=1;
+		$rows = $this->_post('rows');
+		if($rows<1) $rows=10;
+		$start = ($page-1)*$rows;
+		$model=M('vacationstatus');
+		$where="op_staffinfo.teamid='".$tid."' ";
+		$num=$model->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid")->where($where)->count();
+		$list=$model->field("op_vacationstatus.begindate,op_vacationstatus.uid,op_vacationstatus.enddate,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.isapproved,op_vacationstatus.isrejected,op_vacationstatus.transtype,op_staffinfo.username,op_vacationtype.typemc,op_vacationstatus.applytime,op_vacationstatus.status")
+		->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid")
+		->join("op_vacationtype on op_vacationstatus.transtype=op_vacationtype.typedm")
+		->where($where)
+		->order("op_vacationstatus.applytime desc")
+		->limit("$start,$rows")
+		->select();
+//		echo $model->where($where)->getLastSql();
+		echo dataToJson($list,$num);
+	}
 	
 	
 	public function getMyApply(){

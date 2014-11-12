@@ -135,7 +135,7 @@
 	
 	function doallReject(){
 		var teamid=rejectTid;
-		var reason=$("jball_reject_reason").val();
+		var reason=$("#jball_reject_reason").val();
 		$.messager.confirm('提示', '确认要驳回该条产线加班申请？', function(r){  
 			if (r){
 				$.ajax({
