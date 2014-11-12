@@ -443,7 +443,7 @@ class CheckAction extends Action {
                     
                     $staffModel = M('staffinfo');
                     $row = $staffModel->getByUid($uid);
-                    if($row['teamid']=1) {
+                    if($row['teamid']==1) {
                         //如果为办公室则加入调休
                         $row['TRest'] += $days;
                         $rs = $staffModel->save($row);
