@@ -343,8 +343,8 @@ class CheckAction extends Action {
                 //判断是上班还是下班
                 if(0==$unsualList[$j]['type']) {
                     //上班
-                    $worktime1_last2hour = date('H:i:s',(strtotime($endDatetime) - 60*60*2));
-                    $cl_endDatetime = date('H:i:s',(strtotime($endDatetime) + 60*5));
+                    $worktime1_last2hour = date('Y-m-d H:i:s',(strtotime($endDatetime) - 60*60*2));
+                    $cl_endDatetime = date('Y-m-d H:i:s',(strtotime($endDatetime) + 60*5));
                     //在clocktime表里查询新下班打卡时间段
                     $clockModel = M('clocktime');
                     $rs = $clockModel
@@ -358,7 +358,7 @@ class CheckAction extends Action {
 
                 } else {
                     //下班
-                    $worktime2_next2hour = date('H:i:s',(strtotime($beginDatetime) + 60*60*2));
+                    $worktime2_next2hour = date('Y-m-d H:i:s',(strtotime($beginDatetime) + 60*60*2));
                     //在clocktime表里查询新下班打卡时间段
                     $clockModel = M('clocktime');
                     $rs = $clockModel
