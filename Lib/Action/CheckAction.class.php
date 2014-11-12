@@ -19,7 +19,7 @@ class CheckAction extends Action {
 		$day = ($time2-$time1)/86400;
 		//删除该时段记录
 		$unusualModel = M('unusualtime');
-		$unusualModel->where("clockdate BETWEEN '$start' AND '$end'")->delete();
+		$unusualModel->where("standarddate BETWEEN '$start' AND '$end'")->delete();
 		//echo $unusualModel->getLastSql();
 
 		//获取所有员工UID
@@ -108,7 +108,7 @@ class CheckAction extends Action {
                         //$row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
                         $unusualModel->add($row);
-                    } elseif (strtotime($rs[0]['clocktime'])>strtotime($worktime1)+10*60) {
+                    } elseif (strtotime($rs[0]['clocktime'])>strtotime($worktime1)+5*60) {
                         //迟到
                         if(isset($this->wingsDebug)) {
                             echo $uid.':'.$rs[0]['clocktime'].">".$worktime1;
@@ -197,7 +197,7 @@ class CheckAction extends Action {
                     $row['standardtime'] = $worktime1;
 
                     if($rs) {
-                        if(strtotime($rs[0]['clocktime'])<=strtotime($worktime1)+60*10) {
+                        if(strtotime($rs[0]['clocktime'])<=strtotime($worktime1)+60*5) {
                             //正常
                             if(isset($this->wingsDebug)) {
                                 echo $uid.':'.$rs[0]['clocktime']."<".$worktime1."正常<br/>";
@@ -326,19 +326,53 @@ class CheckAction extends Action {
     		//查询请假时段异常记录
     		$beginDatetime = $vacList[$i]['begindate'].' '.$vacList[$i]['begintime'];
     		$endDatetime = $vacList[$i]['enddate'].' '.$vacList[$i]['endtime'];
-    		$unsuList = $unusualModel->where("uid='$uid' AND static<>'正常' AND CONCAT(clockdate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
+            //请了假但是打了卡，不会判定为请假
+    		$unsualList = $unusualModel->where("uid='$uid' AND static<>'正常' AND CONCAT(clockdate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
     		//echo $unusualModel->getLastSql();
-    		//print_r($unsuList);
-    		for($j=0;$j<count($unsuList);$j++) {
-    			$unsuList[$j]['static'] = '正常';
+    		//print_r($unsualList);
+    		for($j=0;$j<count($unsualList);$j++) {
+    			//$unsualList[$j]['static'] = '正常';
     			if($vacList[$i]['transtype']==3) {
-    				$unsuList[$j]['ps'] = '休假';
+    				$unsualList[$j]['ps'] = '休假';
     			} else {
-    				$unsuList[$j]['ps'] = '出差';
+    				$unsualList[$j]['ps'] = '出差';
     			}
-    			$unsuList[$j]['vacid'] = $vacList[$i]['id'];
-    			$rs = $unusualModel->save($unsuList[$j]);
-    			//print_r($unsuList[$j]);
+    			$unsualList[$j]['vacid'] = $vacList[$i]['id'];
+                //判断是否为半日假
+
+                //判断是上班还是下班
+                if(0==$unsualList[$j]['type']) {
+                    //上班
+                    $worktime1_last2hour = date('H:i:s',(strtotime($endDatetime) - 60*60*2));
+                    $cl_endDatetime = date('H:i:s',(strtotime($endDatetime) + 60*5));
+                    //在clocktime表里查询新下班打卡时间段
+                    $clockModel = M('clocktime');
+                    $rs = $clockModel
+                    ->where("uid='$uid' AND CONCAT(clockdate,' ',clocktime) BETWEEN '$worktime1_last2hour' AND '$cl_endDatetime'")
+                    ->order('clockdate desc,clocktime desc')
+                    ->select();
+                    //如果有打卡记录
+                    if($rs) {
+                        $unsualList[$j]['clocktime'] = $rs[0]['clocktime'];
+                    }
+
+                } else {
+                    //下班
+                    $worktime2_next2hour = date('H:i:s',(strtotime($beginDatetime) + 60*60*2));
+                    //在clocktime表里查询新下班打卡时间段
+                    $clockModel = M('clocktime');
+                    $rs = $clockModel
+                    ->where("uid='$uid' AND CONCAT(clockdate,' ',clocktime) BETWEEN '$beginDatetime' AND '$worktime2_next2hour'")
+                    ->order('clockdate,clocktime')
+                    ->select();
+                    //如果有打卡记录
+                    if($rs) {
+                        $unsualList[$j]['clocktime'] = $rs[0]['clocktime'];
+                    }
+
+                }
+    			$rs = $unusualModel->save($unsualList[$j]);
+    			//print_r($unsualList[$j]);
     			if(!$rs) {
                     if(isset($this->wingsDebug)) {
     				    echo 'error';
