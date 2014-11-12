@@ -88,7 +88,7 @@ class CheckAction extends Action {
                         echo '<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>';
                     }
                     $row['type'] = 0;
-                    $row['vacid'] = $rs[0]['id'];
+                    //$row['vacid'] = $rs[0]['id'];
                     $row['uid'] = $uid;
                     $row['clockdate'] = $tt;
                     $row['clocktime'] = $rs[0]['clocktime'];
@@ -105,7 +105,7 @@ class CheckAction extends Action {
                             echo $uid.':'."未打卡(上班)"."<br/>";
                         }
                         $row['static'] = '未打卡(上班)';
-                        $row['vacid'] = 0;
+                        //$row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
                         $unusualModel->add($row);
                     } elseif (strtotime($rs[0]['clocktime'])>strtotime($worktime1)+10*60) {
@@ -128,7 +128,7 @@ class CheckAction extends Action {
                     //最后打卡时间
                     $k = count($rs)-1;
                     $row['type'] = 1;
-                    $row['vacid'] = $rs[$k]['id'];
+                    //$row['vacid'] = $rs[$k]['id'];
                     $row['clocktime'] = $rs[$k]['clocktime'];
                     $row['standardtime'] = $worktime2;
                     //下班考勤
@@ -138,7 +138,7 @@ class CheckAction extends Action {
                             echo $uid.':'."未打卡(下班)"."<br/>";
                         }
                         $row['static'] = '未打卡(下班)';
-                        $row['vacid'] = 0;
+                        //$row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
                         $unusualModel->add($row);
                     } elseif (strtotime($rs[$k]['clocktime'])<strtotime($worktime2)) {
@@ -189,7 +189,7 @@ class CheckAction extends Action {
                         echo '<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>';
                     }
                     $row['type'] = 0;
-                    $row['vacid'] = $rs[0]['id'];
+                    //$row['vacid'] = $rs[0]['id'];
                     $row['uid'] = $uid;
                     $row['clockdate'] = $tt;
                     $row['clocktime'] = $rs[0]['clocktime'];
@@ -219,7 +219,7 @@ class CheckAction extends Action {
                             echo $uid.':'."未打卡(上班)"."<br/>";
                         }
                         $row['static'] = '未打卡(上班)';
-                        $row['vacid'] = 0;
+                        //$row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
                         $unusualModel->add($row);
                     }
@@ -250,7 +250,7 @@ class CheckAction extends Action {
                     }
                     $k = count($rs) - 1;
                     $row['type'] = 1;
-                    $row['vacid'] = $rs[$k]['id'];
+                    //$row['vacid'] = $rs[$k]['id'];
                     $row['clocktime'] = $rs[$k]['clocktime'];
                     $row['standardtime'] = $worktime2;
 
@@ -281,7 +281,7 @@ class CheckAction extends Action {
                             echo $uid.':'."未打卡(下班)"."<br/>";
                         }
                         $row['static'] = '未打卡(下班)';
-                        $row['vacid'] = 0;
+                        //$row['vacid'] = 0;
                         $row['clockdate'] = $tt_nextday;
                         $row['clocktime'] = "00:00:00";
                         $unusualModel->add($row);
