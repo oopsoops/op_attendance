@@ -94,6 +94,7 @@
 			$ccbz=$this->_post('ccbz');
 			$holiday=$this->_post('holiday');
 			$id=$this->_post('uid');
+			$iszm=$this->_post('iszm');
 			if($id==""){
 				$uid = $_SESSION['uid'];
 			}else
@@ -225,13 +226,13 @@
 				$astatus['days']=$day;
 			//	$astatus['holiday']="333";
 			}
-			if($transdm=="1"&&$begindate==$enddate){
+			if($transdm=="1"&&$iszm=="1"){
 				$minutes=$this->getMinuteByJb($begindate,$enddate,$begintime,$endtime,$uid);
 				$days=$minutes/60;
 				$days=number_format($days,1);
 				$astatus['days']=$days;
 			}
-			if($transdm=="1"&&$teamid==1&&$begindate!=$enddate){
+			if($transdm=="1"&&$iszm=="2"){
 				$astatus['days']=16;
 				$astatus[flag]=1;
 				$mm=M('worktime');

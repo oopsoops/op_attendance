@@ -27,6 +27,12 @@
                     结束时间：
                         <input type="text" id="trans_endtime" class="easyui-timespinner"  value="17:30" />
                     <br/><br />
+                    是否周末加班
+                    <select id="iszm">
+                    	<option value='1'>否</option>
+                        <option value='2'>是</option>
+                    </select>
+                    <br /><br />
                     申请理由：<br />
                         &nbsp;&nbsp;&nbsp;&nbsp; 
                         &nbsp;&nbsp;&nbsp;&nbsp;
@@ -148,6 +154,7 @@
 		var begintime=$('#trans_starttime').val();
 		var endtime=$("#trans_endtime").val();
 		var uid=$("#uid").val();
+		var iszm=$("#iszm").val();
 		if(begindate==""||enddate==""){
 			$.messager.alert("提示","请同时填写开始日期和结束日期！");
 			return false;
@@ -179,7 +186,8 @@
 					endtime:endtime,
 					reason:reason,
 					transdm:transdm,
-					uid:uid
+					uid:uid,
+					iszm:iszm
 				},
 				type:'POST',
 				success:function(data){
