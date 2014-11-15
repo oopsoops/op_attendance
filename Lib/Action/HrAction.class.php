@@ -2077,7 +2077,7 @@ public function exportVacation()
 						    $pdata[$flag]['vacationtypeb']=$temp['vacationtype'];
 	/*****************************如果请假、加班不为空则更新之前上班得到的请假、加班数据，覆盖掉之前上班所记录的数据**************************/
 							//加班时间
-						if($temp['transtype']==''||$temp['transtype']==2)
+						if($temp['transtype']==2)
 						    {
 							$pdata[$flag]['jbbegindate']='';
 							$pdata[$flag]['jbbegintime']='';
