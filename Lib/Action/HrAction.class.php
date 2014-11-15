@@ -1829,20 +1829,26 @@ public function exportVacation()
  			$clocktime=M('unusualtime');
             $name=date('YmdHis');
 			
-            $data=$clocktime->field("op_unusualtime.uid as uid,op_staffinfo.username as name,clockdate,standardtime,static,type,
-			op_vacationstatus.reason as reason,op_vacationstatus.begindate as bd,op_vacationstatus.enddate as ed,op_vacationstatus.begintime as bt,op_vacationstatus.endtime as et,
+            $data=$clocktime->field("op_unusualtime.uid as uid,op_staffinfo.username as name,static,op_unusualtime.type as type,op_vacationtype.typemc as vacationtype,op_vacationstatus.holiday as holiday,op_vacationstatus.begindate as vbegindate,op_vacationstatus.begintime as vbegintime,op_vacationstatus.enddate as venddate,op_vacationstatus.endtime as vendtime,op_vacationstatus.transtype as transtype,op_vacationstatus.isapproved as isapproved,
 			
 			CASE 
 			 WHEN  op_unusualtime.static = '正常' THEN  op_unusualtime.standardtime
 			 
-			 ELSE op_unusualtime.clocktime END AS clocktime
+			 ELSE op_unusualtime.clocktime END AS clocktime,
+			 
+			 CASE 
+			 WHEN  op_unusualtime.static = '正常' THEN  op_unusualtime.standarddate
+			 
+			 ELSE op_unusualtime.clockdate END AS clockdate
 			
 			")->join('op_staffinfo ON op_unusualtime.uid=op_staffinfo.uid')
 			->join('op_vacationstatus ON op_unusualtime.vacid = op_vacationstatus.id')
+			->join('op_vacationtype ON op_vacationstatus.transtype = op_vacationtype.typedm')
 			->where($where)->order('op_unusualtime.uid asc, op_unusualtime.standarddate  asc,op_unusualtime.type asc')->select();
 			//echo $clocktime->getLastSql();
 			$flag=0;
 			$haveend=1; //表示已经下班
+			
 			/*
 			从第一条考勤记录开始遍历：
 			如果是上班记录，并且上一条记录只有上班没有下班，那么该条记录将作为下一条存储记录（$flag++）；
@@ -1861,45 +1867,199 @@ public function exportVacation()
 						$pdata[$flag]['uid']=$temp['uid'];
 						$pdata[$flag]['name']=$temp['name'];
 						$pdata[$flag]['begindate']=$temp['clockdate'];
-						
 						$pdata[$flag]['begintime']=$temp['clocktime'];
+						$pdata[$flag]['statica']=$temp['static'];
+						$pdata[$flag]['holidaya']=$temp['holiday'];
+						$pdata[$flag]['vacationtypea']=$temp['vacationtype'];
+/********************************************begin***********************************************/						
+						//加班时间
+						
+						if($temp['transtype']==''||$temp['transtype']==2)
+						    {
+							$pdata[$flag]['jbbegindate']='';
+							$pdata[$flag]['jbbegintime']='';
+							$pdata[$flag]['jbenddate']='';
+							$pdata[$flag]['jbendtime']='';
+							$pdata[$flag]['xjbegindate']='';
+							$pdata[$flag]['xjbegintime']='';
+							$pdata[$flag]['xjenddate']='';
+							$pdata[$flag]['xjendtime']='';	
+			                }
+						else if($temp['transtype']==1&&$temp['isapproved']==1)
+						{
+							$pdata[$flag]['jbbegindate']=$temp['vbegindate'];
+							$pdata[$flag]['jbbegintime']=$temp['vbegintime'];
+							$pdata[$flag]['jbenddate']=$temp['venddate'];
+							$pdata[$flag]['jbendtime']=$temp['vendtime'];
+							
+							$pdata[$flag]['xjbegindate']='';
+							$pdata[$flag]['xjbegintime']='';
+							$pdata[$flag]['xjenddate']='';
+							$pdata[$flag]['xjendtime']='';
+							
+							
+					    }
+							//休假时间
+					  else if($temp['transtype']==3&&$temp['isapproved']==1)
+							{
+							$pdata[$flag]['jbbegindate']='';
+							$pdata[$flag]['jbbegintime']='';
+							$pdata[$flag]['jbenddate']='';
+							$pdata[$flag]['jbendtime']='';
+							
+							$pdata[$flag]['xjbegindate']=$temp['vbegindate'];
+							$pdata[$flag]['xjbegintime']=$temp['vbegintime'];
+							$pdata[$flag]['xjenddate']=$temp['venddate'];
+							$pdata[$flag]['xjendtime']=$temp['vendtime'];
+								
+								
+								}
+								//出差时间
+								
+
+						else if($temp['transtype']==1&&$temp['isapproved']==0)
+						    
+							{
+								
+							$pdata[$flag]['jbbegindate']='未通过审批';
+							$pdata[$flag]['jbbegintime']='未通过审批';
+							$pdata[$flag]['jbenddate']='未通过审批';
+							$pdata[$flag]['jbendtime']='未通过审批';
+							
+							$pdata[$flag]['xjbegindate']='';
+							$pdata[$flag]['xjbegintime']='';
+							$pdata[$flag]['xjenddate']='';
+							$pdata[$flag]['xjendtime']='';
+								
+								}
+								
+						else if($temp['transtype']==3&&$temp['isapproved']==0)
+						{
+							$pdata[$flag]['jbbegindate']='';
+							$pdata[$flag]['jbbegintime']='';
+							$pdata[$flag]['jbenddate']='';
+							$pdata[$flag]['jbendtime']='';
+							
+							$pdata[$flag]['xjbegindate']='未通过审批';
+							$pdata[$flag]['xjbegintime']='未通过审批';
+							$pdata[$flag]['xjenddate']='未通过审批';
+							$pdata[$flag]['xjendtime']='未通过审批';
+									
+									}
+									
+			
+						    
+							
+/****************************************end***************************************************/								
 						$pdata[$flag]['enddate']='0000-00-00';
 						$pdata[$flag]['endtime']='00:00:00';
-						$pdata[$flag]['statica']=$temp['static'];
+
 						$pdata[$flag]['staticb']='请到考勤系统具体查询';
-						$pdata[$flag]['bda']=$temp['bd'];
-						$pdata[$flag]['eda']=$temp['ed'];
-						$pdata[$flag]['bta']=$temp['bt'];
-						$pdata[$flag]['eta']=$temp['et'];
-						$pdata[$flag]['reasona']=$temp['reason'];
+						$pdata[$flag]['holidayb']=$temp['holiday'];
+						$pdata[$flag]['vacationtypeb']=$temp['vacationtype'];
+
+
 						
 						
 						
 						}
+	/****************************************else if  haven=1 ***************************************************/	
 						else             //之前考勤记录已经下班，之前下班时已经跳转到了下一个周期
 						{
 						$pdata[$flag]['uid']=$temp['uid'];
 						$pdata[$flag]['name']=$temp['name'];
 						$pdata[$flag]['begindate']=$temp['clockdate'];
-						
 						$pdata[$flag]['begintime']=$temp['clocktime'];
 						$pdata[$flag]['statica']=$temp['static'];
-						$pdata[$flag]['bda']=$temp['bd'];
-						$pdata[$flag]['eda']=$temp['ed'];
-						$pdata[$flag]['bta']=$temp['bt'];
-						$pdata[$flag]['eta']=$temp['et'];
-						$pdata[$flag]['reasona']=$temp['reason'];
-						$pdata[$flag]['bdb']='';
-						$pdata[$flag]['edb']='';
-						$pdata[$flag]['btb']='';
-						$pdata[$flag]['etb']='';
-						$pdata[$flag]['reasonb']='';
+						$pdata[$flag]['holidaya']=$temp['holiday'];
+						$pdata[$flag]['vacationtypea']=$temp['vacationtype'];
+
+
+/****************************************如果是加班或者请假 添加相应数据  ***************************************************/	
+						if($temp['transtype']==''||$temp['transtype']==2)
+						    {
+							$pdata[$flag]['jbbegindate']='';
+							$pdata[$flag]['jbbegintime']='';
+							$pdata[$flag]['jbenddate']='';
+							$pdata[$flag]['jbendtime']='';
+							$pdata[$flag]['xjbegindate']='';
+							$pdata[$flag]['xjbegintime']='';
+							$pdata[$flag]['xjenddate']='';
+							$pdata[$flag]['xjendtime']='';	
+			                }
+						else if($temp['transtype']==1&&$temp['isapproved']==1)
+						{
+							$pdata[$flag]['jbbegindate']=$temp['vbegindate'];
+							$pdata[$flag]['jbbegintime']=$temp['vbegintime'];
+							$pdata[$flag]['jbenddate']=$temp['venddate'];
+							$pdata[$flag]['jbendtime']=$temp['vendtime'];
+							
+							$pdata[$flag]['xjbegindate']='';
+							$pdata[$flag]['xjbegintime']='';
+							$pdata[$flag]['xjenddate']='';
+							$pdata[$flag]['xjendtime']='';
+							
+							
+					    }
+							//休假时间
+					  else if($temp['transtype']==3&&$temp['isapproved']==1)
+							{
+							$pdata[$flag]['jbbegindate']='';
+							$pdata[$flag]['jbbegintime']='';
+							$pdata[$flag]['jbenddate']='';
+							$pdata[$flag]['jbendtime']='';
+							
+							$pdata[$flag]['xjbegindate']=$temp['vbegindate'];
+							$pdata[$flag]['xjbegintime']=$temp['vbegintime'];
+							$pdata[$flag]['xjenddate']=$temp['venddate'];
+							$pdata[$flag]['xjendtime']=$temp['vendtime'];
+								
+								
+								}
+								//出差时间
+								
+
+						else if($temp['transtype']==1&&$temp['isapproved']==0)
+						    
+							{
+								
+							$pdata[$flag]['jbbegindate']='未通过审批';
+							$pdata[$flag]['jbbegintime']='未通过审批';
+							$pdata[$flag]['jbenddate']='未通过审批';
+							$pdata[$flag]['jbendtime']='未通过审批';
+							
+							$pdata[$flag]['xjbegindate']='';
+							$pdata[$flag]['xjbegintime']='';
+							$pdata[$flag]['xjenddate']='';
+							$pdata[$flag]['xjendtime']='';
+								
+								}
+								
+						else if($temp['transtype']==3&&$temp['isapproved']==0)
+						{
+							$pdata[$flag]['jbbegindate']='';
+							$pdata[$flag]['jbbegintime']='';
+							$pdata[$flag]['jbenddate']='';
+							$pdata[$flag]['jbendtime']='';
+							
+							$pdata[$flag]['xjbegindate']='未通过审批';
+							$pdata[$flag]['xjbegintime']='未通过审批';
+							$pdata[$flag]['xjenddate']='未通过审批';
+							$pdata[$flag]['xjendtime']='未通过审批';
+									
+									}
+							
+	/****************************************如果是加班或者请假 添加相应数据  ***************************************************/						
+						
+						
 						$haveend=0;
-							}
-				
+			}
+		/****************************************else if  haven=1  end ***************************************************/				
 				
 				
 				}
+				
+				
 				else if($temp['type']==1)  //如果是下班就保存下班时间作为下班时间日期，下一条数据就是下一个考勤周期的数据。
 				{
 							
@@ -1913,57 +2073,178 @@ public function exportVacation()
 							$pdata[$flag]['enddate']=$temp['clockdate'];
 							$pdata[$flag]['endtime']=$temp['clocktime'];
 							$pdata[$flag]['staticb']=$temp['static'];
-							$pdata[$flag]['bdb']=$temp['bd'];
-							$pdata[$flag]['edb']=$temp['ed'];
-							$pdata[$flag]['btb']=$temp['bt'];
-							$pdata[$flag]['etb']=$temp['et'];
-							$pdata[$flag]['reasonb']=$temp['reason'];
-							$haveend=1;
+							$pdata[$flag]['holidayb']=$temp['holiday'];
+						    $pdata[$flag]['vacationtypeb']=$temp['vacationtype'];
+	/*****************************如果请假、加班不为空则更新之前上班得到的请假、加班数据，覆盖掉之前上班所记录的数据**************************/
+							//加班时间
+						if($temp['transtype']==''||$temp['transtype']==2)
+						    {
+							$pdata[$flag]['jbbegindate']='';
+							$pdata[$flag]['jbbegintime']='';
+							$pdata[$flag]['jbenddate']='';
+							$pdata[$flag]['jbendtime']='';
+							$pdata[$flag]['xjbegindate']='';
+							$pdata[$flag]['xjbegintime']='';
+							$pdata[$flag]['xjenddate']='';
+							$pdata[$flag]['xjendtime']='';	
+			                }
+						else if($temp['transtype']==1&&$temp['isapproved']==1)
+						{
+							$pdata[$flag]['jbbegindate']=$temp['vbegindate'];
+							$pdata[$flag]['jbbegintime']=$temp['vbegintime'];
+							$pdata[$flag]['jbenddate']=$temp['venddate'];
+							$pdata[$flag]['jbendtime']=$temp['vendtime'];
+
+							
+							
+					    }
+							//休假时间
+					  else if($temp['transtype']==3&&$temp['isapproved']==1)
+							{
+							
+							$pdata[$flag]['xjbegindate']=$temp['vbegindate'];
+							$pdata[$flag]['xjbegintime']=$temp['vbegintime'];
+							$pdata[$flag]['xjenddate']=$temp['venddate'];
+							$pdata[$flag]['xjendtime']=$temp['vendtime'];
+								
+								
+								}
+								//出差时间
+								
+
+						else if($temp['transtype']==1&&$temp['isapproved']==0)
+						    
+							{
+								
+							$pdata[$flag]['jbbegindate']='未通过审批';
+							$pdata[$flag]['jbbegintime']='未通过审批';
+							$pdata[$flag]['jbenddate']='未通过审批';
+							$pdata[$flag]['jbendtime']='未通过审批';
+							
+					
+								}
+								
+						else if($temp['transtype']==3&&$temp['isapproved']==0)
+						{
+							$pdata[$flag]['jbbegindate']='';
+							$pdata[$flag]['jbbegintime']='';
+							$pdata[$flag]['jbenddate']='';
+							$pdata[$flag]['jbendtime']='';
+							
+								
+									}
+								//出差时间
+								
+													
+	/*****************************如果请假、加班不为空则更新之前上班得到的请假、加班数据，覆盖掉之前上班所记录的数据**************************/							                             $haveend=1;
 							$flag=$flag+1;
 							}
-							//是另外一个员工的下班时间
-							else
+							//是另外一个员工的下班时间，则之前员工的下班时间置为空
+				    else
 							{
 							$pdata[$flag-1]['enddate']='0000-00-00';
 							$pdata[$flag-1]['endtime']='00:00:00';
 							$pdata[$flag-1]['staticb']='请到考勤系统具体查询';
-							$pdata[$flag-1]['bdb']='';
-							$pdata[$flag-1]['edb']='';
-							$pdata[$flag-1]['btb']='';
-							$pdata[$flag-1]['etb']='';
-							$pdata[$flag-1]['reasonb']='';
+							$pdata[$flag-1]['holidayb']='';
+						    $pdata[$flag-1]['vacationtypeb']='';
 
 							$pdata[$flag]['uid']=$temp['uid'];
 							$pdata[$flag]['name']=$temp['name'];
 							$pdata[$flag]['begindate']='0000-00-00';
 							$pdata[$flag]['begintime']='00:00:00';
+							$pdata[$flag]['statica']='请到考勤系统具体查询';
+							$pdata[$flag]['holidaya']='';
+						    $pdata[$flag]['vacationtypea']='';
+							
 							$pdata[$flag]['enddate']=$temp['clockdate'];
 							$pdata[$flag]['endtime']=$temp['clocktime'];
-							$pdata[$flag]['statica']='请到考勤系统具体查询';
 							$pdata[$flag]['staticb']=$temp['static'];
+							$pdata[$flag]['holidayb']=$temp['holiday'];
+						    $pdata[$flag]['vacationtypeb']=$temp['vacationtype'];
 							
-							$pdata[$flag]['bda']='';
-							$pdata[$flag]['eda']='';
-							$pdata[$flag]['bta']='';
-							$pdata[$flag]['eta']='';
-							$pdata[$flag]['reasona']='';
-							$pdata[$flag]['bdb']=$temp['bd'];
-							$pdata[$flag]['edb']=$temp['ed'];
-							$pdata[$flag]['btb']=$temp['bt'];
-							$pdata[$flag]['etb']=$temp['et'];
-							$pdata[$flag]['reasonb']=$temp['reason'];
+/*********************************************************************************/					
+							//加班时间
+						if($temp['transtype']==''||$temp['transtype']==2)
+						    {
+							$pdata[$flag]['jbbegindate']='';
+							$pdata[$flag]['jbbegintime']='';
+							$pdata[$flag]['jbenddate']='';
+							$pdata[$flag]['jbendtime']='';
+							$pdata[$flag]['xjbegindate']='';
+							$pdata[$flag]['xjbegintime']='';
+							$pdata[$flag]['xjenddate']='';
+							$pdata[$flag]['xjendtime']='';	
+			                }
+						else if($temp['transtype']==1&&$temp['isapproved']==1)
+						{
+							$pdata[$flag]['jbbegindate']=$temp['vbegindate'];
+							$pdata[$flag]['jbbegintime']=$temp['vbegintime'];
+							$pdata[$flag]['jbenddate']=$temp['venddate'];
+							$pdata[$flag]['jbendtime']=$temp['vendtime'];
+							
+							$pdata[$flag]['xjbegindate']='';
+							$pdata[$flag]['xjbegintime']='';
+							$pdata[$flag]['xjenddate']='';
+							$pdata[$flag]['xjendtime']='';
+							
+							
+					    }
+							//休假时间
+					  else if($temp['transtype']==3&&$temp['isapproved']==1)
+							{
+							$pdata[$flag]['jbbegindate']='';
+							$pdata[$flag]['jbbegintime']='';
+							$pdata[$flag]['jbenddate']='';
+							$pdata[$flag]['jbendtime']='';
+							
+							$pdata[$flag]['xjbegindate']=$temp['vbegindate'];
+							$pdata[$flag]['xjbegintime']=$temp['vbegintime'];
+							$pdata[$flag]['xjenddate']=$temp['venddate'];
+							$pdata[$flag]['xjendtime']=$temp['vendtime'];
 								
+								
+								}
+								//出差时间
+								
+
+						else if($temp['transtype']==1&&$temp['isapproved']==0)
+						    
+							{
+								
+							$pdata[$flag]['jbbegindate']='未通过审批';
+							$pdata[$flag]['jbbegintime']='未通过审批';
+							$pdata[$flag]['jbenddate']='未通过审批';
+							$pdata[$flag]['jbendtime']='未通过审批';
+							
+							$pdata[$flag]['xjbegindate']='';
+							$pdata[$flag]['xjbegintime']='';
+							$pdata[$flag]['xjenddate']='';
+							$pdata[$flag]['xjendtime']='';
+								
+								}
+								
+						else if($temp['transtype']==3&&$temp['isapproved']==0)
+						{
+							$pdata[$flag]['jbbegindate']='';
+							$pdata[$flag]['jbbegintime']='';
+							$pdata[$flag]['jbenddate']='';
+							$pdata[$flag]['jbendtime']='';
+							
+							$pdata[$flag]['xjbegindate']='未通过审批';
+							$pdata[$flag]['xjbegintime']='未通过审批';
+							$pdata[$flag]['xjenddate']='未通过审批';
+							$pdata[$flag]['xjendtime']='未通过审批';
+									
+									}
+							
+	/*********************************************************************************/									
 								
 								}
 					
 					}
 					
 						
-						
-							
-							
-				
-				
+			
 				
 				
 				
@@ -1989,19 +2270,19 @@ public function exportVacation()
                            ->setCellValue('C'.$a,  '上班打卡日期')
                             ->setCellValue('D'.$a, '下班打卡日期')
                              ->setCellValue('E'.$a, '上班打卡时间')
-                               ->setCellValue('F'.$a, '下班打卡时间')
-							    ->setCellValue('G'.$a, '上班打卡状态')
-								 ->setCellValue('H'.$a, '上班打卡异常原因')
-								 ->setCellValue('I'.$a, '上班请假开始日期')
-								  ->setCellValue('J'.$a, '上班请假开始时间')
-								   ->setCellValue('K'.$a, '上班请假结束日期')
-								    ->setCellValue('L'.$a, '上班请假结束时间')
-									 ->setCellValue('M'.$a, '下班打卡状态')
-									 ->setCellValue('N'.$a, '下班打卡异常原因')
-										->setCellValue('O'.$a, '下班请假开始日期')
-								 		 ->setCellValue('P'.$a, '下班请假开始时间')
-								  			 ->setCellValue('Q'.$a, '下班请假结束日期')
-								  			  ->setCellValue('R'.$a, '下班请假结束时间');
+                               ->setCellValue('F'.$a, '上班打卡状态')
+							    ->setCellValue('G'.$a, '上班打卡备注')
+								 ->setCellValue('H'.$a, '下班打卡时间')
+								 ->setCellValue('I'.$a, '下班打卡状态')
+								  ->setCellValue('J'.$a, '下班打卡备注')
+								   ->setCellValue('K'.$a, '休假申请开始日期')
+								    ->setCellValue('L'.$a, '休假申请开始时间')
+									 ->setCellValue('M'.$a, '休假申请结束日期')
+									 ->setCellValue('N'.$a, '休假申请结束时间')
+										->setCellValue('O'.$a, '加班申请开始日期')
+								 		 ->setCellValue('P'.$a, '加班申请开始时间')
+								  			 ->setCellValue('Q'.$a, '加班申请结束日期')
+								  			  ->setCellValue('R'.$a, '加班申请结束时间');
              
 		  
          foreach($pdata as $k => $v){
@@ -2015,19 +2296,19 @@ public function exportVacation()
                            ->setCellValue('C'.$num, $v['begindate'])
                             ->setCellValue('D'.$num, $v['enddate'])
                              ->setCellValue('E'.$num, $v['begintime'])
-                               ->setCellValue('F'.$num, $v['endtime'])
-							    ->setCellValue('G'.$num, $v['statica'])
-								 ->setCellValue('H'.$num, $v['reasona'])
-								 ->setCellValue('I'.$num, $v['bda'])
-								 ->setCellValue('J'.$num, $v['bta'])
-								 ->setCellValue('K'.$num, $v['eda'])
-								 ->setCellValue('L'.$num, $v['eta'])
-								 ->setCellValue('M'.$num, $v['staticb'])
-								 ->setCellValue('N'.$num, $v['reasonb'])
-								 ->setCellValue('O'.$num, $v['bdb'])
-								 ->setCellValue('P'.$num, $v['btb'])
-								 ->setCellValue('Q'.$num, $v['edb'])
-								 ->setCellValue('R'.$num, $v['etb']);
+                               ->setCellValue('F'.$num, $v['statica'])
+							    ->setCellValue('G'.$num, $v['holidaya'])
+								 ->setCellValue('H'.$num, $v['endtime'])
+								 ->setCellValue('I'.$num, $v['staticb'])
+								 ->setCellValue('J'.$num, $v['holidayb'])
+								 ->setCellValue('K'.$num, $v['xjbegindate'])
+								 ->setCellValue('L'.$num, $v['xjbegintime'])
+								 ->setCellValue('M'.$num, $v['xjenddate'])
+								 ->setCellValue('N'.$num, $v['xjendtime'])
+								 ->setCellValue('O'.$num, $v['jbbegindate'])
+								 ->setCellValue('P'.$num, $v['jbbegintime'])
+								 ->setCellValue('Q'.$num, $v['jbenddate'])
+								 ->setCellValue('R'.$num, $v['jbendtime']);
              }
  
             $objPHPExcel->getActiveSheet()->setTitle('报表');
