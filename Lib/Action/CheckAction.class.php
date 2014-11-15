@@ -1,41 +1,44 @@
 <?php
 
+define('ATIME',60*60*4);        //打卡有效时间
+define('STIME',60*5);           //缓冲时间
+
 class CheckAction extends Action {
     //调试输出
     //private $wingsDebug = 1;
-    
-	//打卡检测
-    public function checkClock($start,$end) {
-		//$start_time = $this->_get('start_time').' 00:00:00';
-		//$end_time = $this->_get('end_time').' 00:00:00';
-		if(count($start)<1 || count($end)<1) {
-			return;
-		}
-		$start_time = $start.' 00:00:00';
-		$end_time = $end.' 00:00:00';
-		
-		$time1 = strtotime($start_time);
-		$time2 = strtotime($end_time);
-		$day = ($time2-$time1)/86400;
-		//删除该时段记录
-		$unusualModel = M('unusualtime');
-		$unusualModel->where("standarddate BETWEEN '$start' AND '$end'")->delete();
-		//echo $unusualModel->getLastSql();
 
-		//获取所有员工UID
-		$Model = M('staffinfo');
-		$uids = $Model->field('uid,teamid')->select();
-		//每一个UID
-		for ($i=0; $i < count($uids); $i++) { 
-			$uid = $uids[$i]['uid'];
-			$teamid = $uids[$i]['teamid'];
+    //打卡检测
+    public function checkClock($start,$end) {
+        //$start_time = $this->_get('start_time').' 00:00:00';
+        //$end_time = $this->_get('end_time').' 00:00:00';
+        if(count($start)<1 || count($end)<1) {
+            return;
+        }
+        $start_time = $start.' 00:00:00';
+        $end_time = $end.' 00:00:00';
+        
+        $time1 = strtotime($start_time);
+        $time2 = strtotime($end_time);
+        $day = ($time2-$time1)/86400;
+        //删除该时段记录
+        $unusualModel = M('unusualtime');
+        $unusualModel->where("standarddate BETWEEN '$start' AND '$end'")->delete();
+        //echo $unusualModel->getLastSql();
+
+        //获取所有员工UID
+        $Model = M('staffinfo');
+        $uids = $Model->field('uid,teamid')->select();
+        //每一个UID
+        for ($i=0; $i < count($uids); $i++) { 
+            $uid = $uids[$i]['uid'];
+            $teamid = $uids[$i]['teamid'];
             if(isset($this->wingsDebug)) {
                 echo '<a style="color:red">==============================================</a><br/>uid='.$uid.'<br/>';
             }
             $worktimeModel = M('worktime');
-			//每一天
-			for ($j=0; $j <= $day; $j++) { 
-				$tt = date("Y-m-d",$time1 + 86400 * $j);
+            //每一天
+            for ($j=0; $j <= $day; $j++) { 
+                $tt = date("Y-m-d",$time1 + 86400 * $j);
                 //排除周末
                 /*
                 //echo $tt."星期：".date('w',strtotime($tt.' 12:00:00'))."<br/>";
@@ -72,8 +75,8 @@ class CheckAction extends Action {
                     //计算时间中间点
                     $worktime_mid = date('H:i:s',(strtotime($worktime2)-strtotime($worktime1))/2);
 
-                    $worktime1_last2hour = date('H:i:s',(strtotime($worktime1) - 60*60*2));
-                    $worktime2_next2hour = date('H:i:s',(strtotime($worktime2) + 60*60*2));
+                    $worktime1_last2hour = date('H:i:s',(strtotime($worktime1) - ATIME));
+                    $worktime2_next2hour = date('H:i:s',(strtotime($worktime2) + ATIME));
                     if(isset($this->wingsDebug)) {
                         echo "worktime_mid=$worktime_mid <br/> worktime1_last2hour=$worktime1_last2hour <br/> worktime2_next2hour=$worktime2_next2hour <br/>";
                     }
@@ -108,7 +111,7 @@ class CheckAction extends Action {
                         //$row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
                         $unusualModel->add($row);
-                    } elseif (strtotime($rs[0]['clocktime'])>strtotime($worktime1)+5*60) {
+                    } elseif (strtotime($rs[0]['clocktime'])>strtotime($worktime1)+STIME) {
                         //迟到
                         if(isset($this->wingsDebug)) {
                             echo $uid.':'.$rs[0]['clocktime'].">".$worktime1;
@@ -165,8 +168,8 @@ class CheckAction extends Action {
                     //计算时间中间点
                     $worktime_mid = date('H:i:s',(strtotime($worktime2)+60*60*24+strtotime($worktime1))/2);
 
-                    $worktime1_last2hour = date('H:i:s',(strtotime($worktime1) - 60*60*2));
-                    $worktime2_next2hour = date('H:i:s',(strtotime($worktime2) + 60*60*2));
+                    $worktime1_last2hour = date('H:i:s',(strtotime($worktime1) - ATIME));
+                    $worktime2_next2hour = date('H:i:s',(strtotime($worktime2) + ATIME));
                     if(isset($this->wingsDebug)) {
                         echo "worktime_mid=$worktime_mid <br/> worktime1_last2hour=$worktime1_last2hour  <br/> worktime2_next2hour=$worktime2_next2hour <br/>";
                     }
@@ -197,7 +200,7 @@ class CheckAction extends Action {
                     $row['standardtime'] = $worktime1;
 
                     if($rs) {
-                        if(strtotime($rs[0]['clocktime'])<=strtotime($worktime1)+60*5) {
+                        if(strtotime($rs[0]['clocktime'])<=strtotime($worktime1)+STIME) {
                             //正常
                             if(isset($this->wingsDebug)) {
                                 echo $uid.':'.$rs[0]['clocktime']."<".$worktime1."正常<br/>";
@@ -287,31 +290,31 @@ class CheckAction extends Action {
                         $unusualModel->add($row);
                     }
                 }
-			}
+            }
             $this->checkOverwork($start,$end,$uid);
             $this->checkVacation($start,$end,$uid);
-		}
-		$Model = M('clocktime');
-		$Model->where("id is not null ")->delete();
+        }
+        $Model = M('clocktime');
+        $Model->where("id is not null ")->delete();
     }
 
     public function doCheck() {
-		$Model = M('clocktime');
-    	$start = $this->_get('start');
-    	$end = $this->_get('end');
-    	R('Check/checkClock',array($start,$end));
-		$Model->where("id is not null ")->delete();
+        $Model = M('clocktime');
+        $start = $this->_get('start');
+        $end = $this->_get('end');
+        R('Check/checkClock',array($start,$end));
+        $Model->where("id is not null ")->delete();
         if(isset($this->wingsDebug)) {
-			
-    	   echo 'ok';
+            
+           echo 'ok';
         }
     }
 
     //休假、出差条检测
     public function checkVacation($start,$end,$uid) {
-    	$vacModel = M('vacationstatus');
-    	//查询所有请假条
-    	$vacList = $vacModel
+        $vacModel = M('vacationstatus');
+        //查询所有请假条
+        $vacList = $vacModel
         ->where("uid='$uid' AND isapproved=1 AND transtype IN (2,3) AND (
             (begindate >= '$start' AND begindate <= '$end' AND enddate >= '$end') OR 
             (enddate <= '$end' AND begindate <= '$start' AND enddate >= '$start') OR
@@ -320,31 +323,31 @@ class CheckAction extends Action {
             )")
         ->order('applytime')
         ->select();
-    	//print_r($vacList);
-    	for($i=0;$i<count($vacList);$i++) {
-    		$unusualModel = M('unusualtime');
-    		//查询请假时段异常记录
-    		$beginDatetime = $vacList[$i]['begindate'].' '.$vacList[$i]['begintime'];
-    		$endDatetime = $vacList[$i]['enddate'].' '.$vacList[$i]['endtime'];
+        //print_r($vacList);
+        for($i=0;$i<count($vacList);$i++) {
+            $unusualModel = M('unusualtime');
+            //查询请假时段异常记录
+            $beginDatetime = $vacList[$i]['begindate'].' '.$vacList[$i]['begintime'];
+            $endDatetime = $vacList[$i]['enddate'].' '.$vacList[$i]['endtime'];
             //请了假但是打了卡，不会判定为请假
-    		$unsualList = $unusualModel->where("uid='$uid' AND static<>'正常' AND CONCAT(clockdate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
-    		//echo $unusualModel->getLastSql();
-    		//print_r($unsualList);
-    		for($j=0;$j<count($unsualList);$j++) {
-    			//$unsualList[$j]['static'] = '正常';
-    			if($vacList[$i]['transtype']==3) {
-    				$unsualList[$j]['ps'] = '休假';
-    			} else {
-    				$unsualList[$j]['ps'] = '出差';
-    			}
-    			$unsualList[$j]['vacid'] = $vacList[$i]['id'];
+            $unsualList = $unusualModel->where("uid='$uid' AND CONCAT(clockdate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
+            //echo $unusualModel->getLastSql();
+            //print_r($unsualList);
+            for($j=0;$j<count($unsualList);$j++) {
+                //$unsualList[$j]['static'] = '正常';
+                if($vacList[$i]['transtype']==3) {
+                    $unsualList[$j]['ps'] = '休假';
+                } else {
+                    $unsualList[$j]['ps'] = '出差';
+                }
+                $unsualList[$j]['vacid'] = $vacList[$i]['id'];
                 //判断是否为半日假
 
                 //判断是上班还是下班
                 if(0==$unsualList[$j]['type']) {
                     //上班
-                    $worktime1_last2hour = date('Y-m-d H:i:s',(strtotime($endDatetime) - 60*60*2));
-                    $cl_endDatetime = date('Y-m-d H:i:s',(strtotime($endDatetime) + 60*5));
+                    $worktime1_last2hour = date('Y-m-d H:i:s',(strtotime($endDatetime) - ATIME));
+                    $cl_endDatetime = date('Y-m-d H:i:s',(strtotime($endDatetime) + STIME));
                     //在clocktime表里查询新下班打卡时间段
                     $clockModel = M('clocktime');
                     $rs = $clockModel
@@ -358,7 +361,7 @@ class CheckAction extends Action {
 
                 } else {
                     //下班
-                    $worktime2_next2hour = date('Y-m-d H:i:s',(strtotime($beginDatetime) + 60*60*2));
+                    $worktime2_next2hour = date('Y-m-d H:i:s',(strtotime($beginDatetime) + ATIME));
                     //在clocktime表里查询新下班打卡时间段
                     $clockModel = M('clocktime');
                     $rs = $clockModel
@@ -371,25 +374,25 @@ class CheckAction extends Action {
                     }
 
                 }
-    			$rs = $unusualModel->save($unsualList[$j]);
-    			//print_r($unsualList[$j]);
-    			if(!$rs) {
+                $rs = $unusualModel->save($unsualList[$j]);
+                //print_r($unsualList[$j]);
+                if(!$rs) {
                     if(isset($this->wingsDebug)) {
-    				    echo 'error';
+                        echo 'error';
                     }
-	    		}
-    		}
-    		
-    	}
+                }
+            }
+            
+        }
 
     }
 
     public function doCheckVacation() {
-    	$start = $this->_get('start');
-    	$end = $this->_get('end');
-    	$uid = $this->_get('uid');
-    	R('Check/checkVacation',array($start,$end,$uid));
-    	//echo 'ok';
+        $start = $this->_get('start');
+        $end = $this->_get('end');
+        $uid = $this->_get('uid');
+        R('Check/checkVacation',array($start,$end,$uid));
+        //echo 'ok';
     }
    
    //加班条检测
@@ -397,9 +400,9 @@ class CheckAction extends Action {
         if(isset($this->wingsDebug)) {
             echo '<span style="color:orange">加班条检测开始</span><br/>';
         }
-    	$vacModel = M('vacationstatus');
-    	//查询所有加班条
-    	$vacList = $vacModel
+        $vacModel = M('vacationstatus');
+        //查询所有加班条
+        $vacList = $vacModel
         //->where("uid='$uid' AND isapproved=1 AND transtype=1 AND begindate BETWEEN '$start' AND '$end' ")
         ->where("uid='$uid' AND isapproved=1 AND transtype=1 AND (
             (begindate >= '$start' AND begindate <= '$end' AND enddate >= '$end') OR 
@@ -410,8 +413,8 @@ class CheckAction extends Action {
         ->order('applytime')
         ->select();
         //echo $vacModel->getLastSql()."<br/>";
-    	//print_r($vacList);
-    	for($i=0;$i<count($vacList);$i++) {
+        //print_r($vacList);
+        for($i=0;$i<count($vacList);$i++) {
 
             $_vacBegindate = $vacList[$i]['begindate'];
             $_vacBegintime = $vacList[$i]['begintime'];
@@ -421,13 +424,13 @@ class CheckAction extends Action {
                 echo "加班开始时间:$_vacBegindate $_vacBegintime<br/>";
                 echo "加班结束时间:$_vacEnddate $_vacEndtime<br/>";
             }
-    		$unusualModel = M('unusualtime');
+            $unusualModel = M('unusualtime');
             if($vacList[$i]['flag']!=1) {
                 //正常加班申请的情况
                 //查询加班时段异常记录
                 $unsualList = $unusualModel
-                ->where("uid='$uid' AND type=1 AND clockdate BETWEEN '$_vacBegindate' AND '$_vacEnddate'")
-                ->order("clockdate,standardtime")
+                ->where("uid='$uid' AND type=1 AND standarddate BETWEEN '$_vacBegindate' AND '$_vacEnddate'")
+                ->order("standarddate,standardtime")
                 ->select();
                 if(isset($this->wingsDebug)) {
                     echo "============================考勤记录======================<br/>";
@@ -437,7 +440,7 @@ class CheckAction extends Action {
                 for($j=0;$j<count($unsualList);$j++) {
                     
                     $cl_startDatetime = $unsualList[$j]['clockdate'].' '.$_vacEndtime;
-                    $cl_endDatetime = date('Y-m-d H:i:s',(strtotime($cl_startDatetime)+60*60*2));
+                    $cl_endDatetime = date('Y-m-d H:i:s',(strtotime($cl_startDatetime)+ATIME));
                     //在clocktime表里查询新下班打卡时间段
                     $clockModel = M('clocktime');
                     $rs = $clockModel
@@ -505,8 +508,8 @@ class CheckAction extends Action {
                 $beginDatetime = $_vacBegindate.' '.$_vacBegintime;
                 $endDatetime = $_vacEnddate.' '.$_vacEndtime;
                 $unsualList = $unusualModel
-                ->where("uid='$uid' AND clockdate BETWEEN '$_vacBegindate' AND '$_vacEnddate'")
-                ->order("clockdate,standardtime")
+                ->where("uid='$uid' AND standarddate BETWEEN '$_vacBegindate' AND '$_vacEnddate'")
+                ->order("standarddate,standardtime")
                 ->select();
                 if(isset($this->wingsDebug)) {
                     echo "============================考勤记录======================<br/>";
@@ -563,19 +566,19 @@ class CheckAction extends Action {
                     }
                 }
             }
-    		
-    	}
+            
+        }
         if(isset($this->wingsDebug)) {
             echo '<span style="color:orange">==================================</span><br/>';
         }
     }
 
     public function doCheckOverwork() {
-    	$start = $this->_get('start');
-    	$end = $this->_get('end');
-    	$uid = $this->_get('uid');
-    	R('Check/checkOverwork',array($start,$end,$uid));
-    	//echo 'ok';
+        $start = $this->_get('start');
+        $end = $this->_get('end');
+        $uid = $this->_get('uid');
+        R('Check/checkOverwork',array($start,$end,$uid));
+        //echo 'ok';
     }
 
     public function doCheckAll() {
