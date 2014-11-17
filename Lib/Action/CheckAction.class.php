@@ -429,8 +429,8 @@ class CheckAction extends Action {
                 //正常加班申请的情况
                 //查询加班时段异常记录
                 $unsualList = $unusualModel
-                ->where("uid='$uid' AND type=1 AND standarddate BETWEEN '$_vacBegindate' AND '$_vacEnddate'")
-                ->order("standarddate,standardtime")
+                ->where("uid='$uid' AND type=1 AND clockdate BETWEEN '$_vacBegindate' AND '$_vacEnddate'")
+                ->order("clockdate,standardtime")
                 ->select();
                 if(isset($this->wingsDebug)) {
                     echo "============================考勤记录======================<br/>";
@@ -508,8 +508,8 @@ class CheckAction extends Action {
                 $beginDatetime = $_vacBegindate.' '.$_vacBegintime;
                 $endDatetime = $_vacEnddate.' '.$_vacEndtime;
                 $unsualList = $unusualModel
-                ->where("uid='$uid' AND standarddate BETWEEN '$_vacBegindate' AND '$_vacEnddate'")
-                ->order("standarddate,standardtime")
+                ->where("uid='$uid' AND clockdate BETWEEN '$_vacBegindate' AND '$_vacEnddate'")
+                ->order("clockdate,standardtime")
                 ->select();
                 if(isset($this->wingsDebug)) {
                     echo "============================考勤记录======================<br/>";
