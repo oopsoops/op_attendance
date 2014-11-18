@@ -242,7 +242,7 @@ class CheckAction extends Action {
                         //中间时间在第二天
                         $Model = M('clocktime');
                         $rs = $Model
-                        ->where("clockdate BETWEEN '$tt_nextday' AND '$tt_nextday' AND clocktime BETWEEN '$worktime_mid' AND '$worktime2_next2hour'")
+                        ->where("clockdate BETWEEN '$tt_nextday' AND '$tt_nextday' AND clocktime BETWEEN '$worktime_mid' AND '$worktime2_next2hour' AND uid='$uid'")
                         ->order('clockdate,clocktime')
                         ->select();
                     }
