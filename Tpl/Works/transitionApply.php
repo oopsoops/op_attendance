@@ -440,7 +440,6 @@
 						type:'POST',
 						success:function(data){
 							if(data=="1"){
-								printCc();
 								$.messager.alert("提示","提交成功！");
 								
 								$(".easyui-linkbutton").linkbutton("enable");
@@ -452,10 +451,6 @@
 					});	
 			}
 		});
-	}
-	
-	function printCc(){
-		window.print();
 	}
 	
 	

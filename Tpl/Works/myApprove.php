@@ -22,11 +22,21 @@
                 <th field="endtime" width="80" align="center">结束时间</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
                 <th field="typemc" width="140" align="center">事务类型</th>
+                <th field="detai" width="80" align="center" formatter="detailFormatter">详情</th>
                 <th field="statusinfo" width="160" align="center" formatter="statusFormatter">状态</th>
             </tr>  
         </thead>  
     </table>
 <script>
+
+	function detailFormatter(val,row){
+		if(row.transtype=="2"){
+			return '<a href="javascript:void(0)" onclick="ccDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
+		}else{
+			return '<a href="javascript:void(0)" onclick="openDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
+		}
+	}
+
    function statusFormatter(val,row){
 	   if(row.isapproved==1){
 			return '已批准';
@@ -43,6 +53,24 @@
 			return '财务经理审批中';
 		}
 		
+	}
+	function openDetail(id){
+		$('#main').tabs('close','申请详情');
+		$('#main').tabs('add',{
+						title:'申请详情',
+						href:'__APP__/works/transitionDetail/vid/'+id,
+						cache:false,
+						closable:true
+		});
+	}
+	function ccDetail(id){
+		$('#main').tabs('close','申请详情');
+		$('#main').tabs('add',{
+						title:'申请详情',
+						href:'__APP__/works/ccDetail/vid/'+id,
+						cache:false,
+						closable:true
+		});
 	}
     
 </script>

@@ -24,6 +24,8 @@
                 <th field="typemc" width="80" align="center">事务类型</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
                 <th field="statusinfo" width="80" align="center" formatter="statusFormatter">状态</th>
+                <th field="print" width="80" align="center" formatter="printFormatter">打印</th>
+                
             </tr>  
         </thead>  
     </table>
@@ -53,6 +55,7 @@
                 <th field="endtime" width="80" align="center">结束时间</th>
                 <th field="typemc" width="80" align="center">事务类型</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
+                <th field="print" width="80" align="center" formatter="printFormatter">打印</th>
                 <th field="statusinfo" width="80" align="center" formatter="statusFormatter">状态</th>
             </tr>  
         </thead>  
@@ -74,6 +77,25 @@
 			return '部门经理审批中';
 		}
 		
+	}
+	
+	
+	function printFormatter(val,row){
+		if(row.isapproved==1 && row.transtype=="2"){
+			return '<a href="javascript:void(0)" onclick="printDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
+		}else{
+			return "";
+		}
+		
+	}
+	function printDetail(id){
+		$('#main').tabs('close','申请详情');
+		$('#main').tabs('add',{
+						title:'申请详情',
+						href:'__APP__/works/ccDetail/vid/'+id,
+						cache:false,
+						closable:true
+		});
 	}
     
 </script>

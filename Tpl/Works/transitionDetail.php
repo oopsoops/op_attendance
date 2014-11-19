@@ -35,11 +35,7 @@
               <td colspan="4"><input width="800" type="area" name="typename" readonly="readonly" value="<?php echo $detail[0]['reason'];?>" /></td>
               </tr>
                             
-             
-              
-
-
-                            
+                     
             </tr>  
      
     </table>
