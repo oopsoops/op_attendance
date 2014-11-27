@@ -20,11 +20,13 @@ class CheckAction extends Action {
         $time1 = strtotime($start_time);
         $time2 = strtotime($end_time);
         $day = ($time2-$time1)/86400;
-        //删除该时段记录
         $unusualModel = M('unusualtime');
+        /*
+        //删除该时段记录
+        
         $unusualModel->where("standarddate BETWEEN '$start' AND '$end'")->delete();
         //echo $unusualModel->getLastSql();
-
+        */
         //获取所有员工UID
         $Model = M('staffinfo');
         $uids = $Model->field('uid,teamid')->select();
@@ -75,8 +77,21 @@ class CheckAction extends Action {
                     //计算时间中间点
                     $worktime_mid = date('H:i:s',(strtotime($worktime2)-strtotime($worktime1))/2);
 
-                    $worktime1_last2hour = date('H:i:s',(strtotime($worktime1) - ATIME));
-                    $worktime2_next2hour = date('H:i:s',(strtotime($worktime2) + ATIME));
+                    $_worktime1_last2hour = date('H:i:s',(strtotime($worktime1) - ATIME));
+                    $_worktime2_next2hour = date('H:i:s',(strtotime($worktime2) + ATIME));
+                    //如果$_worktime1_last2hour小于0点则改到00:00:00
+                    if(strtotime($_worktime1_last2hour)>strtotime($worktime1)) {
+                        $worktime1_last2hour = '00:00:00';
+                    } else {
+                        $worktime1_last2hour = $_worktime1_last2hour;
+                    }
+                    //如果结束时间加上ATIME超过24点则改到23：59：59
+                    if($_worktime2_next2hour<strtotime($worktime2)) {
+                        $worktime2_next2hour = '24:00:00';
+                    } else {
+                        $worktime2_next2hour = $_worktime2_next2hour;
+                    }
+
                     if(isset($this->wingsDebug)) {
                         echo "worktime_mid=$worktime_mid <br/> worktime1_last2hour=$worktime1_last2hour <br/> worktime2_next2hour=$worktime2_next2hour <br/>";
                     }
@@ -110,6 +125,12 @@ class CheckAction extends Action {
                         $row['static'] = '未打卡(上班)';
                         //$row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
+                        //新增之前删除之前记录
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        if($oldRecord) {
+                            $row['isadd'] = $oldRecord[0]['isadd'];
+                            $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
+                        }
                         $unusualModel->add($row);
                     } elseif (strtotime($rs[0]['clocktime'])>strtotime($worktime1)+STIME) {
                         //迟到
@@ -118,6 +139,12 @@ class CheckAction extends Action {
                             echo "迟到"."<br/>";
                         }
                         $row['static'] = '迟到';
+                        //新增之前删除之前记录
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        if($oldRecord) {
+                            $row['isadd'] = $oldRecord[0]['isadd'];
+                            $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
+                        }
                         $unusualModel->add($row);
                     } else {
                         //正常
@@ -125,6 +152,12 @@ class CheckAction extends Action {
                             echo $uid.':'.$rs[0]['clocktime']."<".$worktime1."正常<br/>";
                         }
                         $row['static'] = '正常';
+                        //新增之前删除之前记录
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        if($oldRecord) {
+                            $row['isadd'] = $oldRecord[0]['isadd'];
+                            $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
+                        }
                         $unusualModel->add($row);
                     }
 
@@ -143,6 +176,12 @@ class CheckAction extends Action {
                         $row['static'] = '未打卡(下班)';
                         //$row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
+                        //新增之前删除之前记录
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        if($oldRecord) {
+                            $row['isadd'] = $oldRecord[0]['isadd'];
+                            $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
+                        }
                         $unusualModel->add($row);
                     } elseif (strtotime($rs[$k]['clocktime'])<strtotime($worktime2)) {
                         //早退
@@ -151,6 +190,12 @@ class CheckAction extends Action {
                             echo "早退"."<br/>";
                         }
                         $row['static'] = '早退';
+                        //新增之前删除之前记录
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        if($oldRecord) {
+                            $row['isadd'] = $oldRecord[0]['isadd'];
+                            $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
+                        }
                         $unusualModel->add($row);
                     } else {
                         //正常
@@ -158,6 +203,12 @@ class CheckAction extends Action {
                             echo $uid.':'.$rs[$k]['clocktime'].">".$worktime2."正常<br/>";
                         }
                         $row['static'] = '正常';
+                        //新增之前删除之前记录
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        if($oldRecord) {
+                            $row['isadd'] = $oldRecord[0]['isadd'];
+                            $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
+                        }
                         $unusualModel->add($row);
                     }
                 } else {
@@ -206,6 +257,12 @@ class CheckAction extends Action {
                                 echo $uid.':'.$rs[0]['clocktime']."<".$worktime1."正常<br/>";
                             }
                             $row['static'] = '正常';
+                            //新增之前删除之前记录
+                            $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                            if($oldRecord) {
+                                $row['isadd'] = $oldRecord[0]['isadd'];
+                                $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
+                            }
                             $unusualModel->add($row);
                         } else {
                             //迟到
@@ -214,6 +271,12 @@ class CheckAction extends Action {
                                 echo "迟到"."<br/>";
                             }
                             $row['static'] = '迟到';
+                            //新增之前删除之前记录
+                            $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                            if($oldRecord) {
+                                $row['isadd'] = $oldRecord[0]['isadd'];
+                                $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
+                            }
                             $unusualModel->add($row);
                         }
                     } else {
@@ -224,6 +287,12 @@ class CheckAction extends Action {
                         $row['static'] = '未打卡(上班)';
                         //$row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
+                        //新增之前删除之前记录
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        if($oldRecord) {
+                            $row['isadd'] = $oldRecord[0]['isadd'];
+                            $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
+                        }
                         $unusualModel->add($row);
                     }
 
@@ -267,6 +336,12 @@ class CheckAction extends Action {
                             }
                             $row['static'] = '正常';
                             $row['clockdate'] = $rs[$k]['clockdate'];
+                            //新增之前删除之前记录
+                            $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                            if($oldRecord) {
+                                $row['isadd'] = $oldRecord[0]['isadd'];
+                                $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
+                            }
                             $unusualModel->add($row);
                         } else {
                             //迟到
@@ -276,6 +351,12 @@ class CheckAction extends Action {
                             }
                             $row['static'] = '早退';
                             $row['clockdate'] = $rs[$k]['clockdate'];
+                            //新增之前删除之前记录
+                            $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                            if($oldRecord) {
+                                $row['isadd'] = $oldRecord[0]['isadd'];
+                                $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
+                            }
                             $unusualModel->add($row);
                         }
                     } else {
@@ -287,6 +368,12 @@ class CheckAction extends Action {
                         //$row['vacid'] = 0;
                         $row['clockdate'] = $tt_nextday;
                         $row['clocktime'] = "00:00:00";
+                        //新增之前删除之前记录
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        if($oldRecord) {
+                            $row['isadd'] = $oldRecord[0]['isadd'];
+                            $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
+                        }
                         $unusualModel->add($row);
                     }
                 }
@@ -395,7 +482,7 @@ class CheckAction extends Action {
         //echo 'ok';
     }
    
-   //加班条检测
+    //加班条检测
     public function checkOverwork($start,$end,$uid) {
         if(isset($this->wingsDebug)) {
             echo '<span style="color:orange">加班条检测开始</span><br/>';
@@ -464,43 +551,49 @@ class CheckAction extends Action {
                     }
                     $unsualList[$j]['standardtime'] = $vacList[$i]['endtime'];
                     $unsualList[$j]['vacid'] = $vacList[$i]['id'];
-                    //计算加班小时
-                    $setupDatetime = $_vacBegindate.' '.$_vacBegintime;
-                    $setdownDatetime = $_vacEnddate.' '.$_vacEndtime;
-                    $setdownDatetime_real = $unsualList[$j]['clockdate'].' '.$unsualList[$j]['clocktime'];
-                    //如果实际下班时间比标准下班时间小，则计算为实际下班时间
-                    if(strtotime($setdownDatetime_real) < strtotime($setdownDatetime)) {
-                        $setdownDatetime = $setdownDatetime_real;
-                    }
-                    $timestamp = strtotime($setdownDatetime) - strtotime($setupDatetime);
-                    $days = ceil(($timestamp/3600)*10)/10;
-                    if(isset($this->wingsDebug)) {
-                        echo "加班开始：$setupDatetime 加班结束：$setdownDatetime 小时：$days<br/>";
-                    }
-                    
-                    $staffModel = M('staffinfo');
-                    $row = $staffModel->getByUid($uid);
-                    if($row['teamid']==1) {
-                        //如果为办公室则加入调休
-                        $row['TRest'] += $days;
-                        $rs = $staffModel->save($row);
-                    } else {
-                        //如果为产线则存为days
-                        $vacList[$i]['days'] = $days;
-                        $rs = $vacModel->save($vacList[$i]);
-                    }
-                    if(!$rs) {
+
+                    //如果之前没有计算调休
+                    if($unsualList[$j]['isadd']!=1) {
+                        //计算加班小时
+                        $setupDatetime = $_vacBegindate.' '.$_vacBegintime;
+                        $setdownDatetime = $_vacEnddate.' '.$_vacEndtime;
+                        $setdownDatetime_real = $unsualList[$j]['clockdate'].' '.$unsualList[$j]['clocktime'];
+                        //如果实际下班时间比标准下班时间小，则计算为实际下班时间
+                        if(strtotime($setdownDatetime_real) < strtotime($setdownDatetime)) {
+                            $setdownDatetime = $setdownDatetime_real;
+                        }
+                        $timestamp = strtotime($setdownDatetime) - strtotime($setupDatetime);
+                        $days = ceil(($timestamp/3600)*10)/10;
                         if(isset($this->wingsDebug)) {
-                            echo 'days save error<br/>';
+                            echo "加班开始：$setupDatetime 加班结束：$setdownDatetime 小时：$days<br/>";
+                        }
+                        $staffModel = M('staffinfo');
+                        $row = $staffModel->getByUid($uid);
+                        if($row['teamid']==1) {
+                            //如果为办公室则加入调休
+                            $row['TRest'] += $days;
+                            $rs = $staffModel->save($row);
+                        } else {
+                            //如果为产线则存为days
+                            $vacList[$i]['days'] = $days;
+                            $rs = $vacModel->save($vacList[$i]);
+                        }
+                        if(!$rs) {
+                            if(isset($this->wingsDebug)) {
+                                echo 'days save error<br/>';
+                            }
+                        }
+                        //把isadd（是否以计算调休）置为1
+                        $unsualList[$j]['isadd']=1;
+                        //储存unusual
+                        $rs = $unusualModel->save($unsualList[$j]);
+                        if(!$rs) {
+                            if(isset($this->wingsDebug)) {
+                                echo 'unusual save error<br/>';
+                            }
                         }
                     }
-                    //储存unusual
-                    $rs = $unusualModel->save($unsualList[$j]);
-                    if(!$rs) {
-                        if(isset($this->wingsDebug)) {
-                            echo 'unusual save error<br/>';
-                        }
-                    }
+
                 }
             } else {
                 //跨天加班申请的情况
@@ -525,44 +618,53 @@ class CheckAction extends Action {
                     $unsualList[$setup]['vacid'] = $vacList[$i]['id'];
                     $unsualList[$setdown]['ps'] = "加班";
                     $unsualList[$setdown]['vacid'] = $vacList[$i]['id'];
-                    //计算加班小时
-                    $setupDatetime = $unsualList[$setup]['clockdate'].' '.$unsualList[$setup]['clocktime'];
-                    $setdownDatetime = $unsualList[$setdown]['clockdate'].' '.$unsualList[$setdown]['standardtime'];
-                    $setdownDatetime_real = $unsualList[$setdown]['clockdate'].' '.$unsualList[$setdown]['clocktime'];
-                    //如果实际下班时间比标准下班时间小，则计算为实际下班时间
-                    if(strtotime($setdownDatetime_real) < strtotime($setdownDatetime)) {
-                        $setdownDatetime = $setdownDatetime_real;
-                    }
-                    $timestamp = strtotime($setdownDatetime) - strtotime($setupDatetime);
-                    $dd = ceil(($timestamp/3600)*10)/10;
-                    $days += $dd;
-                    if(isset($this->wingsDebug)) {
-                        echo "加班开始：$setupDatetime 加班结束：$setdownDatetime 小时：$dd<br/>";
-                    }
-                    //储存unusual
-                    $rs = $unusualModel->save($unsualList[$setup]);
-                    if(!$rs) {
+                    //如果之前没有计算调休
+                    if($unsualList[$setdown]['isadd']!=1) {
+                        //计算加班小时
+                        $setupDatetime = $unsualList[$setup]['clockdate'].' '.$unsualList[$setup]['clocktime'];
+                        $setdownDatetime = $unsualList[$setdown]['clockdate'].' '.$unsualList[$setdown]['standardtime'];
+                        $setdownDatetime_real = $unsualList[$setdown]['clockdate'].' '.$unsualList[$setdown]['clocktime'];
+                        //如果实际下班时间比标准下班时间小，则计算为实际下班时间
+                        if(strtotime($setdownDatetime_real) < strtotime($setdownDatetime)) {
+                            $setdownDatetime = $setdownDatetime_real;
+                        }
+                        $timestamp = strtotime($setdownDatetime) - strtotime($setupDatetime);
+                        $dd = ceil(($timestamp/3600)*10)/10;
+                        $days += $dd;
                         if(isset($this->wingsDebug)) {
-                            echo 'sestup unusual save error<br/>';
+                            echo "加班开始：$setupDatetime 加班结束：$setdownDatetime 小时：$dd<br/>";
+                        }
+                        //把isadd（是否以计算调休）置为1
+                        $unsualList[$setdown]['isadd']=1;
+                        //储存unusual
+                        $rs = $unusualModel->save($unsualList[$setup]);
+                        if(!$rs) {
+                            if(isset($this->wingsDebug)) {
+                                echo 'sestup unusual save error<br/>';
+                            }
+                        }
+                        $rs = $unusualModel->save($unsualList[$setdown]);
+                        if(!$rs) {
+                            if(isset($this->wingsDebug)) {
+                                echo 'setdown unusual save error<br/>';
+                            }
                         }
                     }
-                    $rs = $unusualModel->save($unsualList[$setdown]);
-                    if(!$rs) {
-                        if(isset($this->wingsDebug)) {
-                            echo 'setdown unusual save error<br/>';
-                        }
-                    }
+                    
                 }
-                //修正加班小时数
-                $days -= 0.5;
-                //储存调休
-                $staffModel = M('staffinfo');
-                $row = $staffModel->getByUid($uid);
-                $row['TRest'] += $days;
-                $rs = $staffModel->save($row);
-                if(!$rs) {
-                    if(isset($this->wingsDebug)) {
-                        echo 'days save error<br/>';
+                //如果没有计算调休，则不储存
+                if($days!=0) {
+                    //修正加班小时数
+                    $days -= 0.5;
+                    //储存调休
+                    $staffModel = M('staffinfo');
+                    $row = $staffModel->getByUid($uid);
+                    $row['TRest'] += $days;
+                    $rs = $staffModel->save($row);
+                    if(!$rs) {
+                        if(isset($this->wingsDebug)) {
+                            echo 'days save error<br/>';
+                        }
                     }
                 }
             }
