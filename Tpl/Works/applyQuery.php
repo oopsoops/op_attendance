@@ -21,7 +21,7 @@
                 <th field="begintime" width="80" align="center">开始时间</th>
                 <th field="enddate" width="80" align="center">结束日期</th>
                 <th field="endtime" width="80" align="center">结束时间</th>
-                <th field="typemc" width="80" align="center">事务类型</th>
+                <th field="typemc" width="140" align="center" formatter="typeFormatter">事务类型</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
                 <th field="statusinfo" width="80" align="center" formatter="statusFormatter">状态</th>
                 <th field="print" width="80" align="center" formatter="printFormatter">详情</th>
@@ -53,7 +53,7 @@
                 <th field="begintime" width="80" align="center">开始时间</th>
                 <th field="enddate" width="80" align="center">结束日期</th>
                 <th field="endtime" width="80" align="center">结束时间</th>
-                <th field="typemc" width="80" align="center">事务类型</th>
+                <th field="typemc" width="140" align="center" formatter="typeFormatter">事务类型</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
                 <th field="print" width="80" align="center" formatter="printFormatter">详情</th>
                 <th field="statusinfo" width="80" align="center" formatter="statusFormatter">状态</th>
@@ -79,6 +79,13 @@
 			return '财务经理审批中';
 		}
 		
+	}
+	function typeFormatter(val,row){
+		if(row.transtype=="3"){
+			return row.holiday;
+		}else{
+			return row.typemc;
+		}
 	}
 	
 	
