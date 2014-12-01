@@ -356,7 +356,7 @@
 			width: 100		
 	});
 	function apply3(){
-		$.messager.confirm('提示', '确认要提交并打印？', function(r){  
+		$.messager.confirm('提示', '确认要提交？', function(r){  
 			if (r){
 		
 					var transdm="2";

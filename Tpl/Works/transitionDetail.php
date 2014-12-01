@@ -34,6 +34,12 @@
               <td>申请理由：</td>
               <td colspan="4"><input width="800" type="area" name="typename" readonly="readonly" value="<?php echo $detail[0]['reason'];?>" /></td>
               </tr>
+              <?php if($detail[0]['holiday']!=""){?>
+               <tr>
+              <td>休假类型：</td>
+              <td colspan="4"><input width="800" type="area" name="typename" readonly="readonly" value="<?php echo $detail[0]['holiday'];?>" /></td>
+              </tr>
+              <?php }?>
                             
                      
             </tr>  

@@ -234,15 +234,7 @@
 			}
 			if($transdm=="1"&&$iszm=="2"){
 				$astatus['days']=16;
-				$astatus[flag]=1;
-				$mm=M('worktime');
-				$wk['teamid']=1;
-				$wk['workdate1']=$begindate;
-				$wk['workdate2']=$enddate;
-				$wk['worktime1']=$begintime;
-				$wk['worktime2']=$endtime;
-				$wk['uid']=$uid;
-				$mm->add($wk);
+				$astatus['flag']=1;
 			}
 			$typemc=$this->getApplyTypeName($transdm);
 			$username=$this->getUserName($uid);
@@ -444,7 +436,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.transpot as days,op_v
 		$vid=$this->_get('vid');
 		$model=M('vacationstatus');
 		$detail=$model->
-		field("op_vacationstatus.reason,op_vacationstatus.begintime,op_vacationstatus.begindate,op_vacationstatus.enddate,op_vacationstatus.endtime,op_vacationstatus.applytime,op_staffinfo.username,op_vacationstatus.uid")
+		field("op_vacationstatus.reason,op_vacationstatus.begintime,op_vacationstatus.begindate,op_vacationstatus.enddate,op_vacationstatus.endtime,op_vacationstatus.applytime,op_staffinfo.username,op_vacationstatus.uid,op_vacationstatus.holiday")
 		->join("op_staffinfo ON op_vacationstatus.uid=op_staffinfo.uid")
 		->where("op_vacationstatus.id='".$vid."'")->select();
 		$this->assign('detail',$detail);
@@ -544,6 +536,17 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.transpot as days,op_v
 		$model=M('vacationstatus');
 		$rs=$model->getById($id);
 		$uid=$rs['uid'];
+		$flag=$rs['flag'];
+		if($flag==1){
+			$mm=M('worktime');
+			$wk['teamid']=1;
+			$wk['workdate1']=$begindate;
+			$wk['workdate2']=$enddate;
+			$wk['worktime1']=$begintime;
+			$wk['worktime2']=$endtime;
+			$wk['uid']=$uid;
+			$mm->add($wk);
+		}
 		$transtype=$rs['transtype'];
 		$holiday=$rs['holiday'];
 		$days=$rs['days'];
@@ -1013,7 +1016,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.transpot as days,op_v
 		}
 		
 		$num=$model->where($where)->count();
-		$list=$model->field("op_vacationstatus.begindate,op_vacationstatus.uid,op_vacationstatus.enddate,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.isapproved,op_vacationstatus.isrejected,op_vacationstatus.transtype,op_staffinfo.username,op_vacationtype.typemc,op_vacationstatus.applytime,op_vacationstatus.status,op_vacationstatus.transtype")
+		$list=$model->field("op_vacationstatus.id,op_vacationstatus.begindate,op_vacationstatus.uid,op_vacationstatus.enddate,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.isapproved,op_vacationstatus.isrejected,op_vacationstatus.transtype,op_staffinfo.username,op_vacationtype.typemc,op_vacationstatus.applytime,op_vacationstatus.status,op_vacationstatus.transtype")
 		->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid")
 		->join("op_vacationtype on op_vacationstatus.transtype=op_vacationtype.typedm")
 		->where($where)

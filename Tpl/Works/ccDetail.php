@@ -58,13 +58,12 @@
             
 <script>
 	function ccprint(){
+		var oldstr = document.body.innerHTML;
 		var newstr=document.getElementById("cPrint").innerHTML;
-		document.body.innerHTML = newstr; 
-		var oldstr = document.body.innerHTML; 
     	document.body.innerHTML = newstr; 
    		window.print(); 
-    	document.body.innerHTML = oldstr; 
-		return false;
+		document.body.innerHTML = oldstr;
+		history.go(0);
 	}
 
 

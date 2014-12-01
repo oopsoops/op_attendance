@@ -24,7 +24,7 @@
                 <th field="typemc" width="80" align="center">事务类型</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
                 <th field="statusinfo" width="80" align="center" formatter="statusFormatter">状态</th>
-                <th field="print" width="80" align="center" formatter="printFormatter">打印</th>
+                <th field="print" width="80" align="center" formatter="printFormatter">详情</th>
                 
             </tr>  
         </thead>  
@@ -55,7 +55,7 @@
                 <th field="endtime" width="80" align="center">结束时间</th>
                 <th field="typemc" width="80" align="center">事务类型</th>
                 <th field="applytime" width="140" align="center">申请时间</th>
-                <th field="print" width="80" align="center" formatter="printFormatter">打印</th>
+                <th field="print" width="80" align="center" formatter="printFormatter">详情</th>
                 <th field="statusinfo" width="80" align="center" formatter="statusFormatter">状态</th>
             </tr>  
         </thead>  
@@ -75,6 +75,8 @@
 			return '工厂经理审批中';
 		}else if(row.status=="1"&&row.isapproved==0&&row.isrejected==0){
 			return '部门经理审批中';
+		}else if(row.status=="4"&&row.isapproved==0&&row.isrejected==0){
+			return '财务经理审批中';
 		}
 		
 	}
@@ -84,7 +86,7 @@
 		if(row.isapproved==1 && row.transtype=="2"){
 			return '<a href="javascript:void(0)" onclick="printDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
 		}else{
-			return "";
+			return '<a href="javascript:void(0)" onclick="showDetail('+row.id+')"><img src="__TPL__/images/invoice.png" width="16"/></a>';  
 		}
 		
 	}
@@ -97,6 +99,16 @@
 						closable:true
 		});
 	}
+	function showDetail(id){
+		$('#main').tabs('close','申请详情');
+		$('#main').tabs('add',{
+						title:'申请详情',
+						href:'__APP__/works/transitionDetail/vid/'+id,
+						cache:false,
+						closable:true
+		});
+	}
+	
     
 </script>
     
