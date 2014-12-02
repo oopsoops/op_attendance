@@ -50,7 +50,7 @@ class CheckAction extends Action {
                 */
                 
                 //查询排班时间
-                $where = "(teamid=$teamid OR uid='$uid') AND workdate1<='$tt' AND workdate2>='$tt'";
+                $where = "(uid='$uid' OR (teamid=$teamid AND uid IS NULL)) AND workdate1<='$tt' AND workdate2>='$tt'";
                 //echo "where = $where";
                 //查询当天排班情况，如果uid字段有值，则取该条。
                 $worktime = $worktimeModel
@@ -444,8 +444,20 @@ class CheckAction extends Action {
                     //如果有打卡记录
                     if($rs) {
                         $unsualList[$j]['clocktime'] = $rs[0]['clocktime'];
+                    } else {
+                        //查询是否为迟到的情况
+                        $cl_endDatetime_2 = date('Y-m-d H:i:s',(strtotime($cl_endDatetime) + 60*60*1));
+                        $rs = $clockModel
+                        ->where("uid='$uid' AND CONCAT(clockdate,' ',clocktime) BETWEEN '$cl_endDatetime' AND '$cl_endDatetime_2'")
+                        ->order('clockdate desc,clocktime desc')
+                        ->select();
+                        //如果有打卡记录
+                        if($rs) {
+                            //则为迟到
+                            $unsualList[$j]['clocktime'] = $rs[0]['clocktime'];
+                            $unsualList[$j]['static'] = '迟到'; 
+                        }
                     }
-
                 } else {
                     //下班
                     $worktime2_next2hour = date('Y-m-d H:i:s',(strtotime($beginDatetime) + ATIME));
@@ -458,8 +470,20 @@ class CheckAction extends Action {
                     //如果有打卡记录
                     if($rs) {
                         $unsualList[$j]['clocktime'] = $rs[0]['clocktime'];
+                    } else {
+                        //查询是否为早退的情况
+                        $beginDatetime_2 = date('Y-m-d H:i:s',(strtotime($beginDatetime) - 60*60*1));
+                        $rs = $clockModel
+                        ->where("uid='$uid' AND CONCAT(clockdate,' ',clocktime) BETWEEN '$beginDatetime_2' AND '$beginDatetime'")
+                        ->order('clockdate desc,clocktime desc')
+                        ->select();
+                        //如果有打卡记录
+                        if($rs) {
+                            //则为早退
+                            $unsualList[$j]['clocktime'] = $rs[0]['clocktime'];
+                            $unsualList[$j]['static'] = '早退'; 
+                        }
                     }
-
                 }
                 $rs = $unusualModel->save($unsualList[$j]);
                 //print_r($unsualList[$j]);
