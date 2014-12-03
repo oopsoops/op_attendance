@@ -95,6 +95,7 @@
 			$holiday=$this->_post('holiday');
 			$id=$this->_post('uid');
 			$iszm=$this->_post('iszm');
+			$days=$this->_post('days');
 			if($id==""){
 				$uid = $_SESSION['uid'];
 			}else
@@ -216,14 +217,11 @@
 			}
 			if($holiday!=""){
 				$astatus['holiday']=$holiday;
-				$day=$this->getDaysByPb($begindate,$enddate,$begintime,$endtime,$uid,$holiday);
+		//		$day=$this->getDaysByPb($begindate,$enddate,$begintime,$endtime,$uid,$holiday);
 		//		$day=$this->getDaysByPb("2014-09-25","2014-09-25","08:00","17:00","1003");
 			}
-			if($holiday=="婚假"||$holiday=="产假"){
-				$days=30;
-			}
-			if($day!=""){
-				$astatus['days']=$day;
+			if($days!=""){
+				$astatus['days']=$days;
 			//	$astatus['holiday']="333";
 			}
 			if($transdm=="1"&&$iszm=="1"){
@@ -536,6 +534,10 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.transpot as days,op_v
 		$model=M('vacationstatus');
 		$rs=$model->getById($id);
 		$uid=$rs['uid'];
+		$begindate=$rs['begindate'];
+		$enddate=$rs['enddate'];
+		$begintime=$rs['begintime'];
+		$endtime=$rs['endtime'];
 		$flag=$rs['flag'];
 		if($flag==1){
 			$mm=M('worktime');
@@ -1016,7 +1018,7 @@ op_vacationstatus.holiday as holidaytype,op_vacationstatus.transpot as days,op_v
 		}
 		
 		$num=$model->where($where)->count();
-		$list=$model->field("op_vacationstatus.id,op_vacationstatus.begindate,op_vacationstatus.uid,op_vacationstatus.enddate,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.isapproved,op_vacationstatus.isrejected,op_vacationstatus.transtype,op_staffinfo.username,op_vacationtype.typemc,op_vacationstatus.applytime,op_vacationstatus.holiday,op_vacationstatus.status,op_vacationstatus.transtype")
+		$list=$model->field("op_vacationstatus.id,op_vacationstatus.begindate,op_vacationstatus.uid,op_vacationstatus.enddate,op_vacationstatus.begintime,op_vacationstatus.endtime,op_vacationstatus.isapproved,op_vacationstatus.isrejected,op_vacationstatus.transtype,op_staffinfo.username,op_vacationtype.typemc,op_vacationstatus.applytime,op_vacationstatus.holiday,op_vacationstatus.status,op_vacationstatus.transtype,op_vacationstatus.days")
 		->join("op_staffinfo on op_vacationstatus.uid=op_staffinfo.uid")
 		->join("op_vacationtype on op_vacationstatus.transtype=op_vacationtype.typedm")
 		->where($where)
