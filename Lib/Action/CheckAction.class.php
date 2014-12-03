@@ -444,6 +444,7 @@ class CheckAction extends Action {
                     //如果有打卡记录
                     if($rs) {
                         $unsualList[$j]['clocktime'] = $rs[0]['clocktime'];
+                        $unsualList[$j]['static'] = '正常'; 
                     } else {
                         //查询是否为迟到的情况
                         $cl_endDatetime_2 = date('Y-m-d H:i:s',(strtotime($cl_endDatetime) + 60*60*1));
@@ -470,6 +471,7 @@ class CheckAction extends Action {
                     //如果有打卡记录
                     if($rs) {
                         $unsualList[$j]['clocktime'] = $rs[0]['clocktime'];
+                        $unsualList[$j]['static'] = '正常'; 
                     } else {
                         //查询是否为早退的情况
                         $beginDatetime_2 = date('Y-m-d H:i:s',(strtotime($beginDatetime) - 60*60*1));
