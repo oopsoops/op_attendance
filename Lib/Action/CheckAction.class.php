@@ -9,6 +9,7 @@ class CheckAction extends Action {
 
     //打卡检测
     public function checkClock($start,$end) {
+        set_time_limit(0);
         //$start_time = $this->_get('start_time').' 00:00:00';
         //$end_time = $this->_get('end_time').' 00:00:00';
         if(count($start)<1 || count($end)<1) {
