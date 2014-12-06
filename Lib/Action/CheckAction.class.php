@@ -5,11 +5,17 @@ define('STIME',60*5);           //缓冲时间
 
 class CheckAction extends Action {
     //调试输出
-    //private $wingsDebug = 1;
+    private $wingsDebug = 1;
+    private $LOG_DIR = './log/';
+    private $fpLog = null;
 
     //打卡检测
     public function checkClock($start,$end) {
         set_time_limit(0);
+        if(isset($this->wingsDebug)) {
+            //日志
+            $this->initLog();
+        }
         //$start_time = $this->_get('start_time').' 00:00:00';
         //$end_time = $this->_get('end_time').' 00:00:00';
         if(count($start)<1 || count($end)<1) {
@@ -26,7 +32,7 @@ class CheckAction extends Action {
         //删除该时段记录
         
         $unusualModel->where("standarddate BETWEEN '$start' AND '$end'")->delete();
-        //echo $unusualModel->getLastSql();
+        //$this->logToFile($unusualModel->getLastSql());;
         */
         //获取所有员工UID
         $Model = M('staffinfo');
@@ -36,7 +42,7 @@ class CheckAction extends Action {
             $uid = $uids[$i]['uid'];
             $teamid = $uids[$i]['teamid'];
             if(isset($this->wingsDebug)) {
-                echo '<a style="color:red">==============================================</a><br/>uid='.$uid.'<br/>';
+                $this->logToFile('<a style="color:red">==============================================</a><br/>uid='.$uid.'<br/>');
             }
             $worktimeModel = M('worktime');
             //每一天
@@ -44,7 +50,7 @@ class CheckAction extends Action {
                 $tt = date("Y-m-d",$time1 + 86400 * $j);
                 //排除周末
                 /*
-                //echo $tt."星期：".date('w',strtotime($tt.' 12:00:00'))."<br/>";
+                //$this->logToFile($tt."星期：".date('w',strtotime($tt.' 12:00:00'))."<br/>");
                 if(date('w',strtotime($tt.' 12:00:00'))==6 || date('w',strtotime($tt.' 12:00:00'))==0) {
                     continue;
                 }
@@ -52,7 +58,7 @@ class CheckAction extends Action {
                 
                 //查询排班时间
                 $where = "(uid='$uid' OR (teamid=$teamid AND uid IS NULL)) AND workdate1<='$tt' AND workdate2>='$tt'";
-                //echo "where = $where";
+                //$this->logToFile("where = $where");
                 //查询当天排班情况，如果uid字段有值，则取该条。
                 $worktime = $worktimeModel
                 ->where($where)
@@ -60,20 +66,20 @@ class CheckAction extends Action {
                 ->select();
                 if(!$worktime) {
                     if(isset($this->wingsDebug)) {
-                        echo "uid=$uid has no worktime set by the $tt<br/>";
+                        $this->logToFile("uid=$uid has no worktime set by the $tt<br/>");
                     }
                     continue;
                 }
                 $worktime1 = $worktime[0]['worktime1'];
                 $worktime2 = $worktime[0]['worktime2'];
                 if(isset($this->wingsDebug)) {
-                    echo "tt=<a style=\"color:red\">$tt</a>  worktime1=$worktime1   worktime2=$worktime2 <br/>";
+                    $this->logToFile("tt=<a style=\"color:red\">$tt</a>  worktime1=$worktime1   worktime2=$worktime2 <br/>");
                 }
 
                 if(strtotime($worktime1)<strtotime($worktime2)) {
                     /***************************************************正常考勤时段***************************************************/
                     if(isset($this->wingsDebug)) {
-                        echo '---正常考勤时段---<br/>';
+                        $this->logToFile('---正常考勤时段---<br/>');
                     }
                     //计算时间中间点
                     $worktime_mid = date('H:i:s',(strtotime($worktime2)-strtotime($worktime1))/2);
@@ -94,17 +100,17 @@ class CheckAction extends Action {
                     }
 
                     if(isset($this->wingsDebug)) {
-                        echo "worktime_mid=$worktime_mid <br/> worktime1_last2hour=$worktime1_last2hour <br/> worktime2_next2hour=$worktime2_next2hour <br/>";
+                        $this->logToFile("worktime_mid=$worktime_mid <br/> worktime1_last2hour=$worktime1_last2hour <br/> worktime2_next2hour=$worktime2_next2hour <br/>");
                     }
                     //查询当天打卡信息
                     $Model = M('clocktime');
                     $where = "clockdate BETWEEN '$tt' AND '$tt' AND clocktime>='$worktime1_last2hour' AND clocktime<='$worktime2_next2hour' AND uid = '$uid'";
                     $rs = $Model->where($where)->order('clocktime')->select();
-                    //echo $Model->getLastSql()."<br>";
+                    //$this->logToFile($Model->getLastSql()."<br>");
                     if(isset($this->wingsDebug)) {
-                        echo '+++++++++++++++++++++++++++++++++++当天打卡信息++++++++++++++++++++++++++++++++++++++++<br/>';
-                        print_r($rs);
-                        echo '<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>';
+                        $this->logToFile('+++++++++++++++++++++++++++++++++++当天打卡信息++++++++++++++++++++++++++++++++++++++++<br/>');
+                        $this->logToFile(print_r($rs,true));
+                        $this->logToFile('<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>');
                     }
                     $row['type'] = 0;
                     //$row['vacid'] = $rs[0]['id'];
@@ -121,7 +127,7 @@ class CheckAction extends Action {
                     if (!$rs || $rs[0]<=0 || strtotime($rs[0]['clocktime'])>strtotime($worktime_mid)) {
                         //未打卡
                         if(isset($this->wingsDebug)) {
-                            echo $uid.':'."未打卡(上班)"."<br/>";
+                            $this->logToFile($uid.':'."未打卡(上班)"."<br/>");
                         }
                         $row['static'] = '未打卡(上班)';
                         //$row['vacid'] = 0;
@@ -136,8 +142,8 @@ class CheckAction extends Action {
                     } elseif (strtotime($rs[0]['clocktime'])>strtotime($worktime1)+STIME) {
                         //迟到
                         if(isset($this->wingsDebug)) {
-                            echo $uid.':'.$rs[0]['clocktime'].">".$worktime1;
-                            echo "迟到"."<br/>";
+                            $this->logToFile($uid.':'.$rs[0]['clocktime'].">".$worktime1);
+                            $this->logToFile("迟到"."<br/>");
                         }
                         $row['static'] = '迟到';
                         //新增之前删除之前记录
@@ -150,7 +156,7 @@ class CheckAction extends Action {
                     } else {
                         //正常
                         if(isset($this->wingsDebug)) {
-                            echo $uid.':'.$rs[0]['clocktime']."<".$worktime1."正常<br/>";
+                            $this->logToFile($uid.':'.$rs[0]['clocktime']."<".$worktime1."正常<br/>");
                         }
                         $row['static'] = '正常';
                         //新增之前删除之前记录
@@ -172,7 +178,7 @@ class CheckAction extends Action {
                     if (!$rs || $rs[$k]<=0 || strtotime($rs[$k]['clocktime'])<strtotime($worktime_mid)) {
                         //未打卡
                         if(isset($this->wingsDebug)) {
-                            echo $uid.':'."未打卡(下班)"."<br/>";
+                            $this->logToFile($uid.':'."未打卡(下班)"."<br/>");
                         }
                         $row['static'] = '未打卡(下班)';
                         //$row['vacid'] = 0;
@@ -187,8 +193,8 @@ class CheckAction extends Action {
                     } elseif (strtotime($rs[$k]['clocktime'])<strtotime($worktime2)) {
                         //早退
                         if(isset($this->wingsDebug)) {
-                            echo $uid.':'.$rs[$k]['clocktime']."<".$worktime2;
-                            echo "早退"."<br/>";
+                            $this->logToFile($uid.':'.$rs[$k]['clocktime']."<".$worktime2);
+                            $this->logToFile("早退"."<br/>");
                         }
                         $row['static'] = '早退';
                         //新增之前删除之前记录
@@ -201,7 +207,7 @@ class CheckAction extends Action {
                     } else {
                         //正常
                         if(isset($this->wingsDebug)) {
-                            echo $uid.':'.$rs[$k]['clocktime'].">".$worktime2."正常<br/>";
+                            $this->logToFile($uid.':'.$rs[$k]['clocktime'].">".$worktime2."正常<br/>");
                         }
                         $row['static'] = '正常';
                         //新增之前删除之前记录
@@ -215,7 +221,7 @@ class CheckAction extends Action {
                 } else {
                     /***************************************************跨天考勤时段***************************************************/
                     if(isset($this->wingsDebug)) {
-                        echo '---跨天考勤时段---<br/>';
+                        $this->logToFile('---跨天考勤时段---<br/>');
                     }
                     //计算时间中间点
                     $worktime_mid = date('H:i:s',(strtotime($worktime2)+60*60*24+strtotime($worktime1))/2);
@@ -223,7 +229,7 @@ class CheckAction extends Action {
                     $worktime1_last2hour = date('H:i:s',(strtotime($worktime1) - ATIME));
                     $worktime2_next2hour = date('H:i:s',(strtotime($worktime2) + ATIME));
                     if(isset($this->wingsDebug)) {
-                        echo "worktime_mid=$worktime_mid <br/> worktime1_last2hour=$worktime1_last2hour  <br/> worktime2_next2hour=$worktime2_next2hour <br/>";
+                        $this->logToFile("worktime_mid=$worktime_mid <br/> worktime1_last2hour=$worktime1_last2hour  <br/> worktime2_next2hour=$worktime2_next2hour <br/>");
                     }
                     //上班考勤
                     if(strtotime($worktime_mid)>strtotime($worktime1)) {
@@ -239,9 +245,9 @@ class CheckAction extends Action {
                     ->order('clocktime')
                     ->select();
                     if(isset($this->wingsDebug)) {
-                        echo '+++++++++++++++++++++++++++++++++++上班打卡信息++++++++++++++++++++++++++++++++++++++++<br/>';
-                        print_r($rs);
-                        echo '<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>';
+                        $this->logToFile('+++++++++++++++++++++++++++++++++++上班打卡信息++++++++++++++++++++++++++++++++++++++++<br/>');
+                        $this->logToFile(print_r($rs,true));
+                        $this->logToFile('<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>');
                     }
                     $row['type'] = 0;
                     //$row['vacid'] = $rs[0]['id'];
@@ -255,7 +261,7 @@ class CheckAction extends Action {
                         if(strtotime($rs[0]['clocktime'])<=strtotime($worktime1)+STIME) {
                             //正常
                             if(isset($this->wingsDebug)) {
-                                echo $uid.':'.$rs[0]['clocktime']."<".$worktime1."正常<br/>";
+                                $this->logToFile($uid.':'.$rs[0]['clocktime']."<".$worktime1."正常<br/>");
                             }
                             $row['static'] = '正常';
                             //新增之前删除之前记录
@@ -268,8 +274,8 @@ class CheckAction extends Action {
                         } else {
                             //迟到
                             if(isset($this->wingsDebug)) {
-                                echo $uid.':'.$rs[0]['clocktime'].">".$worktime1;
-                                echo "迟到"."<br/>";
+                                $this->logToFile($uid.':'.$rs[0]['clocktime'].">".$worktime1);
+                                $this->logToFile("迟到"."<br/>");
                             }
                             $row['static'] = '迟到';
                             //新增之前删除之前记录
@@ -283,7 +289,7 @@ class CheckAction extends Action {
                     } else {
                         //未打卡
                         if(isset($this->wingsDebug)) {
-                            echo $uid.':'."未打卡(上班)"."<br/>";
+                            $this->logToFile($uid.':'."未打卡(上班)"."<br/>");
                         }
                         $row['static'] = '未打卡(上班)';
                         //$row['vacid'] = 0;
@@ -307,7 +313,7 @@ class CheckAction extends Action {
                         ->union("SELECT * FROM op_clocktime WHERE clockdate BETWEEN '$tt_nextday' AND '$tt_nextday' AND clocktime BETWEEN '00:00:00' AND '$worktime2_next2hour' AND uid='$uid'")
                         //->order('clockdate,clocktime')
                         ->select();
-                        //echo $Model->getLastSql();
+                        //$this->logToFile($Model->getLastSql());
                     } else {
                         //中间时间在第二天
                         $Model = M('clocktime');
@@ -317,9 +323,9 @@ class CheckAction extends Action {
                         ->select();
                     }
                     if(isset($this->wingsDebug)) {
-                        echo '+++++++++++++++++++++++++++++++++++下班打卡信息++++++++++++++++++++++++++++++++++++++++<br/>';
-                        print_r($rs);
-                        echo '<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>';
+                        $this->logToFile('+++++++++++++++++++++++++++++++++++下班打卡信息++++++++++++++++++++++++++++++++++++++++<br/>');
+                        $this->logToFile(print_r($rs,ture));
+                        $this->logToFile('<br/>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++<br/>');
                     }
                     $k = count($rs) - 1;
                     $row['type'] = 1;
@@ -333,7 +339,7 @@ class CheckAction extends Action {
                         if(strtotime($_clockdatetime)>=strtotime($_workdatetime2)) {
                             //正常
                             if(isset($this->wingsDebug)) {
-                                echo $uid.':'.$_clockdatetime.">=".$_workdatetime2."正常<br/>";
+                                $this->logToFile($uid.':'.$_clockdatetime.">=".$_workdatetime2."正常<br/>");
                             }
                             $row['static'] = '正常';
                             $row['clockdate'] = $rs[$k]['clockdate'];
@@ -347,8 +353,8 @@ class CheckAction extends Action {
                         } else {
                             //迟到
                             if(isset($this->wingsDebug)) {
-                                echo $uid.':'.$_clockdatetime."<".$_workdatetime2;
-                                echo "早退"."<br/>";
+                                $this->logToFile($uid.':'.$_clockdatetime."<".$_workdatetime2);
+                                $this->logToFile("早退"."<br/>");
                             }
                             $row['static'] = '早退';
                             $row['clockdate'] = $rs[$k]['clockdate'];
@@ -363,7 +369,7 @@ class CheckAction extends Action {
                     } else {
                         //未打卡
                         if(isset($this->wingsDebug)) {
-                            echo $uid.':'."未打卡(下班)"."<br/>";
+                            $this->logToFile($uid.':'."未打卡(下班)"."<br/>");
                         }
                         $row['static'] = '未打卡(下班)';
                         //$row['vacid'] = 0;
@@ -384,17 +390,18 @@ class CheckAction extends Action {
         }
         $Model = M('clocktime');
         $Model->where("id is not null ")->delete();
+        if(isset($this->wingsDebug)) {
+            //日志结束
+            $this->finishLog();
+        }
     }
 
     public function doCheck() {
-        $Model = M('clocktime');
         $start = $this->_get('start');
         $end = $this->_get('end');
         R('Check/checkClock',array($start,$end));
-        $Model->where("id is not null ")->delete();
         if(isset($this->wingsDebug)) {
-            
-           echo 'ok';
+           $this->logToFile('ok');
         }
     }
 
@@ -411,7 +418,7 @@ class CheckAction extends Action {
             )")
         ->order('applytime')
         ->select();
-        //print_r($vacList);
+        //$this->logToFile(print_r($vacList,true));
         for($i=0;$i<count($vacList);$i++) {
             $unusualModel = M('unusualtime');
             //查询请假时段异常记录
@@ -419,8 +426,8 @@ class CheckAction extends Action {
             $endDatetime = $vacList[$i]['enddate'].' '.$vacList[$i]['endtime'];
             //请了假但是打了卡，不会判定为请假
             $unsualList = $unusualModel->where("uid='$uid' AND CONCAT(clockdate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
-            //echo $unusualModel->getLastSql();
-            //print_r($unsualList);
+            //$this->logToFile($unusualModel->getLastSql());
+            //$this->logToFile(print_r($unsualList,true));
             for($j=0;$j<count($unsualList);$j++) {
                 //$unsualList[$j]['static'] = '正常';
                 if($vacList[$i]['transtype']==3) {
@@ -489,10 +496,10 @@ class CheckAction extends Action {
                     }
                 }
                 $rs = $unusualModel->save($unsualList[$j]);
-                //print_r($unsualList[$j]);
+                //$this->logToFile(print_r($unsualList[$j],true));
                 if(!$rs) {
                     if(isset($this->wingsDebug)) {
-                        echo 'error';
+                        $this->logToFile('error');
                     }
                 }
             }
@@ -506,13 +513,12 @@ class CheckAction extends Action {
         $end = $this->_get('end');
         $uid = $this->_get('uid');
         R('Check/checkVacation',array($start,$end,$uid));
-        //echo 'ok';
     }
    
     //加班条检测
     public function checkOverwork($start,$end,$uid) {
         if(isset($this->wingsDebug)) {
-            echo '<span style="color:orange">加班条检测开始</span><br/>';
+            $this->logToFile('<span style="color:orange">加班条检测开始</span><br/>');
         }
         $vacModel = M('vacationstatus');
         //查询所有加班条
@@ -526,8 +532,8 @@ class CheckAction extends Action {
             )")
         ->order('applytime')
         ->select();
-        //echo $vacModel->getLastSql()."<br/>";
-        //print_r($vacList);
+        //$this->logToFile($vacModel->getLastSql()."<br/>");
+        //$this->logToFile(print_r($vacList,true));
         for($i=0;$i<count($vacList);$i++) {
 
             $_vacBegindate = $vacList[$i]['begindate'];
@@ -535,8 +541,8 @@ class CheckAction extends Action {
             $_vacEnddate = $vacList[$i]['enddate'];
             $_vacEndtime = $vacList[$i]['endtime'];
             if(isset($this->wingsDebug)) {
-                echo "加班开始时间:$_vacBegindate $_vacBegintime<br/>";
-                echo "加班结束时间:$_vacEnddate $_vacEndtime<br/>";
+                $this->logToFile("加班开始时间:$_vacBegindate $_vacBegintime<br/>");
+                $this->logToFile("加班结束时间:$_vacEnddate $_vacEndtime<br/>");
             }
             $unusualModel = M('unusualtime');
             if($vacList[$i]['flag']!=1) {
@@ -547,9 +553,9 @@ class CheckAction extends Action {
                 ->order("clockdate,standardtime")
                 ->select();
                 if(isset($this->wingsDebug)) {
-                    echo "============================考勤记录======================<br/>";
-                    print_r($unsualList);
-                    echo "<br/>===========================================================<br/>";
+                    $this->logToFile("============================考勤记录======================<br/>");
+                    $this->logToFile(print_r($unsualList,true));
+                    $this->logToFile("<br/>===========================================================<br/>");
                 }
                 for($j=0;$j<count($unsualList);$j++) {
                     
@@ -562,10 +568,10 @@ class CheckAction extends Action {
                     ->order('clockdate,clocktime')
                     ->select();
                     if(isset($this->wingsDebug)) {
-                        echo "============================打卡记录======================<br/>";
-                        //echo "SQL:".$clockModel->getLastSql()."<br/>";
-                        print_r($rs);
-                        echo "<br/>===========================================================<br/>";
+                        $this->logToFile("============================打卡记录======================<br/>");
+                        //$this->logToFile("SQL:".$clockModel->getLastSql()."<br/>");
+                        $this->logToFile(print_r($rs,true));
+                        $this->logToFile("<br/>===========================================================<br/>");
                     }
                     if(!$rs) {
                         $unsualList[$j]['static'] = '早退';
@@ -592,7 +598,7 @@ class CheckAction extends Action {
                         $timestamp = strtotime($setdownDatetime) - strtotime($setupDatetime);
                         $days = ceil(($timestamp/3600)*10)/10;
                         if(isset($this->wingsDebug)) {
-                            echo "加班开始：$setupDatetime 加班结束：$setdownDatetime 小时：$days<br/>";
+                            $this->logToFile("加班开始：$setupDatetime 加班结束：$setdownDatetime 小时：$days<br/>");
                         }
                         $staffModel = M('staffinfo');
                         $row = $staffModel->getByUid($uid);
@@ -607,7 +613,7 @@ class CheckAction extends Action {
                         }
                         if(!$rs) {
                             if(isset($this->wingsDebug)) {
-                                echo 'days save error<br/>';
+                                $this->logToFile('days save error<br/>');
                             }
                         }
                         //把isadd（是否以计算调休）置为1
@@ -616,7 +622,7 @@ class CheckAction extends Action {
                         $rs = $unusualModel->save($unsualList[$j]);
                         if(!$rs) {
                             if(isset($this->wingsDebug)) {
-                                echo 'unusual save error<br/>';
+                                $this->logToFile('unusual save error<br/>');
                             }
                         }
                     }
@@ -632,9 +638,9 @@ class CheckAction extends Action {
                 ->order("clockdate,standardtime")
                 ->select();
                 if(isset($this->wingsDebug)) {
-                    echo "============================考勤记录======================<br/>";
-                    print_r($unsualList);
-                    echo "<br/>===========================================================<br/>";
+                    $this->logToFile("============================考勤记录======================<br/>");
+                    $this->logToFile(print_r($unsualList,true));
+                    $this->logToFile("<br/>===========================================================<br/>");
                 }
                 $days = 0;
                 for($j=0;$j<count($unsualList);$j+=2) {
@@ -648,10 +654,16 @@ class CheckAction extends Action {
                     //如果之前没有计算调休
                     if($unsualList[$setdown]['isadd']!=1) {
                         //计算加班小时
-                        $setupDatetime = $unsualList[$setup]['clockdate'].' '.$unsualList[$setup]['clocktime'];
+                        //$setupDatetime = $unsualList[$setup]['clockdate'].' '.$unsualList[$setup]['clocktime'];
+                        $setupDatetime = $unsualList[$setup]['clockdate'].' '.$unsualList[$setup]['standardtime'];
+                        $setupDatetime_real = $unsualList[$setup]['clockdate'].' '.$unsualList[$setup]['clocktime'];
                         $setdownDatetime = $unsualList[$setdown]['clockdate'].' '.$unsualList[$setdown]['standardtime'];
                         $setdownDatetime_real = $unsualList[$setdown]['clockdate'].' '.$unsualList[$setdown]['clocktime'];
-                        //如果实际下班时间比标准下班时间小，则计算为实际下班时间
+                        //如果实际上班时间比标准上班时间大（迟到），则计算为实际上班时间
+                        if(strtotime($setupDatetime_real) > strtotime($setupDatetime)) {
+                            $setupDatetime = $setupDatetime_real;
+                        }
+                        //如果实际下班时间比标准下班时间小（早退），则计算为实际下班时间
                         if(strtotime($setdownDatetime_real) < strtotime($setdownDatetime)) {
                             $setdownDatetime = $setdownDatetime_real;
                         }
@@ -659,7 +671,7 @@ class CheckAction extends Action {
                         $dd = ceil(($timestamp/3600)*10)/10;
                         $days += $dd;
                         if(isset($this->wingsDebug)) {
-                            echo "加班开始：$setupDatetime 加班结束：$setdownDatetime 小时：$dd<br/>";
+                            $this->logToFile("加班开始：$setupDatetime 加班结束：$setdownDatetime 小时：$dd<br/>");
                         }
                         //把isadd（是否以计算调休）置为1
                         $unsualList[$setdown]['isadd']=1;
@@ -667,13 +679,13 @@ class CheckAction extends Action {
                         $rs = $unusualModel->save($unsualList[$setup]);
                         if(!$rs) {
                             if(isset($this->wingsDebug)) {
-                                echo 'sestup unusual save error<br/>';
+                                $this->logToFile('sestup unusual save error<br/>');
                             }
                         }
                         $rs = $unusualModel->save($unsualList[$setdown]);
                         if(!$rs) {
                             if(isset($this->wingsDebug)) {
-                                echo 'setdown unusual save error<br/>';
+                                $this->logToFile('setdown unusual save error<br/>');
                             }
                         }
                     }
@@ -681,16 +693,21 @@ class CheckAction extends Action {
                 }
                 //如果没有计算调休，则不储存
                 if($days!=0) {
-                    //修正加班小时数
-                    $days -= 0.5;
+                    if($days>4) {
+                        //修正加班小时数(减去中午0.5小时)
+                        $days -= 0.5;
+                    }
                     //储存调休
                     $staffModel = M('staffinfo');
                     $row = $staffModel->getByUid($uid);
                     $row['TRest'] += $days;
                     $rs = $staffModel->save($row);
+                    if(isset($this->wingsDebug)) {
+                        $this->logToFile('加班时间修正：$days<br/>');
+                    }
                     if(!$rs) {
                         if(isset($this->wingsDebug)) {
-                            echo 'days save error<br/>';
+                            $this->logToFile('days save error<br/>');
                         }
                     }
                 }
@@ -698,7 +715,7 @@ class CheckAction extends Action {
             
         }
         if(isset($this->wingsDebug)) {
-            echo '<span style="color:orange">==================================</span><br/>';
+            $this->logToFile('<span style="color:orange">==================================</span><br/>');
         }
     }
 
@@ -707,7 +724,6 @@ class CheckAction extends Action {
         $end = $this->_get('end');
         $uid = $this->_get('uid');
         R('Check/checkOverwork',array($start,$end,$uid));
-        //echo 'ok';
     }
 
     public function doCheckAll() {
@@ -719,6 +735,50 @@ class CheckAction extends Action {
             R('Check/checkOverwork',array($start,$end,$staffList[$i]['uid']));
             R('Check/checkVacation',array($start,$end,$staffList[$i]['uid']));
         }
+    }
+
+    function clearDir($dir) {
+        //先删除目录下的文件：
+        $dh=opendir($dir);
+        if (!$dh) {
+            mkdir($this->LOG_DIR);
+        }
+        while ($file=readdir($dh)) {
+            if($file!="." && $file!="..") {
+                $fullpath=$dir."/".$file;
+                if(!is_dir($fullpath)) {
+                    unlink($fullpath);
+                } else {
+                    deldir($fullpath);
+                }
+            }
+        }
+        closedir($dh);
+    }
+
+    //初始化日志
+    public function initLog() {
+        $this->clearDir($this->LOG_DIR);
+        $fileName = date('YmdHig').".html";
+        $filePath = $this->LOG_DIR.$fileName;
+        $this->fpLog = fopen($filePath,'a');
+        if(!$this->fpLog) {
+            $this->logToFile('File Create Failed!');
+        }
+        $this->logToFile('<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />');
+    }
+
+    //写入日志
+    public function logToFile($Message) {
+        //替换br为\r\n
+        //$msg = str_replace('<br/>',"\r\n",$Message);
+        $msg = $Message;
+        fwrite($this->fpLog,$msg);
+    }
+
+    //关闭日志
+    public function finishLog() {
+        fclose($this->fpLog);
     }
 }
 
