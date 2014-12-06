@@ -424,7 +424,7 @@ class CheckAction extends Action {
             //查询请假时段异常记录
             $beginDatetime = $vacList[$i]['begindate'].' '.$vacList[$i]['begintime'];
             $endDatetime = $vacList[$i]['enddate'].' '.$vacList[$i]['endtime'];
-            //请了假但是打了卡，不会判定为请假
+            //
             $unsualList = $unusualModel->where("uid='$uid' AND CONCAT(clockdate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
             //$this->logToFile($unusualModel->getLastSql());
             //$this->logToFile(print_r($unsualList,true));
@@ -443,7 +443,7 @@ class CheckAction extends Action {
                     //上班
                     $worktime1_last2hour = date('Y-m-d H:i:s',(strtotime($endDatetime) - ATIME));
                     $cl_endDatetime = date('Y-m-d H:i:s',(strtotime($endDatetime) + STIME));
-                    //在clocktime表里查询新下班打卡时间段
+                    //在clocktime表里查询新上班打卡时间段
                     $clockModel = M('clocktime');
                     $rs = $clockModel
                     ->where("uid='$uid' AND CONCAT(clockdate,' ',clocktime) BETWEEN '$worktime1_last2hour' AND '$cl_endDatetime'")
