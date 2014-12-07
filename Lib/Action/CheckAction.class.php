@@ -133,8 +133,11 @@ class CheckAction extends Action {
                         //$row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
                         //新增之前删除之前记录
-                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND type=0")->select();
                         if($oldRecord) {
+                            if(isset($this->wingsDebug)) {
+                                $this->logToFile($uid.':'."未打卡(上班)"."<br/>");
+                            }
                             $row['isadd'] = $oldRecord[0]['isadd'];
                             $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
                         }
@@ -147,7 +150,7 @@ class CheckAction extends Action {
                         }
                         $row['static'] = '迟到';
                         //新增之前删除之前记录
-                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND type=0")->select();
                         if($oldRecord) {
                             $row['isadd'] = $oldRecord[0]['isadd'];
                             $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
@@ -160,7 +163,7 @@ class CheckAction extends Action {
                         }
                         $row['static'] = '正常';
                         //新增之前删除之前记录
-                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND type=0")->select();
                         if($oldRecord) {
                             $row['isadd'] = $oldRecord[0]['isadd'];
                             $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
@@ -184,7 +187,7 @@ class CheckAction extends Action {
                         //$row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
                         //新增之前删除之前记录
-                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND type=1")->select();
                         if($oldRecord) {
                             $row['isadd'] = $oldRecord[0]['isadd'];
                             $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
@@ -198,7 +201,7 @@ class CheckAction extends Action {
                         }
                         $row['static'] = '早退';
                         //新增之前删除之前记录
-                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND type=1")->select();
                         if($oldRecord) {
                             $row['isadd'] = $oldRecord[0]['isadd'];
                             $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
@@ -211,7 +214,7 @@ class CheckAction extends Action {
                         }
                         $row['static'] = '正常';
                         //新增之前删除之前记录
-                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND type=1")->select();
                         if($oldRecord) {
                             $row['isadd'] = $oldRecord[0]['isadd'];
                             $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
@@ -265,7 +268,7 @@ class CheckAction extends Action {
                             }
                             $row['static'] = '正常';
                             //新增之前删除之前记录
-                            $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                            $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND type=0")->select();
                             if($oldRecord) {
                                 $row['isadd'] = $oldRecord[0]['isadd'];
                                 $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
@@ -279,7 +282,7 @@ class CheckAction extends Action {
                             }
                             $row['static'] = '迟到';
                             //新增之前删除之前记录
-                            $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                            $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND type=0")->select();
                             if($oldRecord) {
                                 $row['isadd'] = $oldRecord[0]['isadd'];
                                 $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
@@ -295,7 +298,7 @@ class CheckAction extends Action {
                         //$row['vacid'] = 0;
                         $row['clocktime'] = "00:00:00";
                         //新增之前删除之前记录
-                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND type=0")->select();
                         if($oldRecord) {
                             $row['isadd'] = $oldRecord[0]['isadd'];
                             $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
@@ -344,7 +347,7 @@ class CheckAction extends Action {
                             $row['static'] = '正常';
                             $row['clockdate'] = $rs[$k]['clockdate'];
                             //新增之前删除之前记录
-                            $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                            $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND type=1")->select();
                             if($oldRecord) {
                                 $row['isadd'] = $oldRecord[0]['isadd'];
                                 $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
@@ -359,7 +362,7 @@ class CheckAction extends Action {
                             $row['static'] = '早退';
                             $row['clockdate'] = $rs[$k]['clockdate'];
                             //新增之前删除之前记录
-                            $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                            $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND type=1")->select();
                             if($oldRecord) {
                                 $row['isadd'] = $oldRecord[0]['isadd'];
                                 $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
@@ -376,7 +379,7 @@ class CheckAction extends Action {
                         $row['clockdate'] = $tt_nextday;
                         $row['clocktime'] = "00:00:00";
                         //新增之前删除之前记录
-                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND standardtime='".$row['standardtime']."'")->select();
+                        $oldRecord = $unusualModel->where("uid='$uid' AND standarddate='".$row['standarddate']."' AND type=1")->select();
                         if($oldRecord) {
                             $row['isadd'] = $oldRecord[0]['isadd'];
                             $unusualModel->where("id=".$oldRecord[0]['id'])->delete();
@@ -618,6 +621,7 @@ class CheckAction extends Action {
                         }
                         //把isadd（是否以计算调休）置为1
                         $unsualList[$j]['isadd']=1;
+                        $unsualList[$j]['addval']=$days;
                         //储存unusual
                         $rs = $unusualModel->save($unsualList[$j]);
                         if(!$rs) {
@@ -669,12 +673,17 @@ class CheckAction extends Action {
                         }
                         $timestamp = strtotime($setdownDatetime) - strtotime($setupDatetime);
                         $dd = ceil(($timestamp/3600)*10)/10;
+                        if($dd>4) {
+                            //修正加班小时数(减去中午0.5小时)
+                            $dd -= 0.5;
+                        }
                         $days += $dd;
                         if(isset($this->wingsDebug)) {
                             $this->logToFile("加班开始：$setupDatetime 加班结束：$setdownDatetime 小时：$dd<br/>");
                         }
                         //把isadd（是否以计算调休）置为1
                         $unsualList[$setdown]['isadd']=1;
+                        $unsualList[$j]['addval']=$dd;
                         //储存unusual
                         $rs = $unusualModel->save($unsualList[$setup]);
                         if(!$rs) {
@@ -693,17 +702,13 @@ class CheckAction extends Action {
                 }
                 //如果没有计算调休，则不储存
                 if($days!=0) {
-                    if($days>4) {
-                        //修正加班小时数(减去中午0.5小时)
-                        $days -= 0.5;
-                    }
                     //储存调休
                     $staffModel = M('staffinfo');
                     $row = $staffModel->getByUid($uid);
                     $row['TRest'] += $days;
                     $rs = $staffModel->save($row);
                     if(isset($this->wingsDebug)) {
-                        $this->logToFile('加班时间修正：$days<br/>');
+                        $this->logToFile('本次总加班时间：$days<br/>');
                     }
                     if(!$rs) {
                         if(isset($this->wingsDebug)) {
