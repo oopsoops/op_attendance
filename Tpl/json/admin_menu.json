@@ -1,82 +1,77 @@
-[{
-	"text":"工作管理",
-	"iconCls":"icon-docbag",
-	"children":[{
-		"text":"工作站详情",
-		"iconCls":"icon-doccheck",
-		 "attributes":{  
-            "url":"Works/jbAproval"
-        }
-	},{
-		"text":"设备管理",
-		"iconCls":"icon-doccheck",
-		 "attributes":{  
-            "url":"Works/jbAproval"
-        }
-	},{
-		"text":"预警管理",
-		"iconCls":"icon-doccheck",
-		 "attributes":{  
-            "url":"Works/jbAproval"
-        }
-	},{
-		"text":"实时数据",
-		"iconCls":"icon-pass",
-		 "attributes":{  
-			"url":"Works/jbAproval"
-		 }
-	},{
-		"text":"预警通知",
-		"iconCls":"icon-pass",
-		 "attributes":{  
-			"url":"Works/jbAproval"
-		 }
-	},{
-		"text":"权限管理",
-		"iconCls":"icon-pass",
-		 "attributes":{  
-			"url":"Works/ccApproval"
-		 }
-	}]
-},{
-	"text":"信息管理",
+﻿[{
+	"text":"员工管理",
 	"iconCls":"icon-archives",
-	"state":"closed",
+	"state":"open",
 	"children":[{
-		"text":"工作站详情",
+		"text":"创建员工",
 		"iconCls":"icon-client",
 		 "attributes":{  
             "url":"Hr/newStaff"
         }
 	},{
-		"text":"设备管理1",
+		"text":"员工信息管理",
 		"iconCls":"icon-pass",
 		 "attributes":{  
 			"url":"Hr/staffManager"
 		 }
 	},{
-		"text":"预警管理",
+		"text":"考勤导入",
 		"iconCls":"icon-project",
 		 "attributes":{  
             "url":"Hr/record_import"
         }
 	},{
-		"text":"数据统计",
+		"text":"考勤导出",
 		"iconCls":"icon-project",
 		 "attributes":{  
             "url":"Hr/record_export"
         }
 	},{
-		"text":"预警通知",
+"text":"考勤修改",
+		"iconCls":"icon-project",
+		 "attributes":{  
+            "url":"Hr/testChange"
+}
+},{
+		"text":"年假调休导出",
 		"iconCls":"icon-project",
 		 "attributes":{  
             "url":"Hr/vacation"
         }
 	},{
-		"text":"权限管理",
+		"text":"年假调休导入",
 		"iconCls":"icon-project",
 		 "attributes":{  
             "url":"Hr/changevacation"
         }
+	},{
+		"text":"员工批量导入",
+		"iconCls":"icon-project",
+		 "attributes":{  
+			"url":"Hr/staffImport"
+		 }
+	},{
+		"text":"排班设置",
+		"iconCls":"icon-doccheck",
+		 "attributes":{  
+            "url":"Hr/worktimeList"
+        }
+	}]
+},{
+	"text":"信息管理",
+	"iconCls":"icon-archives",
+	"state":"open",
+	"children":[{
+		"text":"我的信息",
+		"iconCls":"icon-client",
+		 "attributes":{  
+            "url":"Search/userinfo_detailshow"
+        }
+	},{
+		"text":"密码管理",
+		"iconCls":"icon-pass",
+		 "attributes":{  
+			"url":"Password/passwordChange"
+		 }
 	}]
 }]
