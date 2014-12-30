@@ -114,9 +114,18 @@ class MonitorAction extends Action {
 
 		$teamid = $this->_post('teamid');
 		$month = $this->_post('month');
+		$year = date('Y');
 		$where = " ";
+		if($month==13) {
+			$month = 1;
+			$year = date('Y') + 1;
+		}
+		if($month==0) {
+			$month = 12;
+			$year = date('Y') - 1;
+		}
 		if($month>0) {
-			$where = " AND workdate1 BETWEEN '".date('Y')."-$month-01' AND '".date('Y')."-$month-31' ";
+			$where = " AND workdate1 BETWEEN '".$year."-$month-01' AND '".$year."-$month-31' ";
 		}
     	$Model = M('worktime');
     	$cc = $Model->where("teamid=$teamid AND uid is NULL".$where)->count();

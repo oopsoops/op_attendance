@@ -156,7 +156,7 @@ class SearchAction extends Action
 		$Model = M('worktime');
 		$rs = $Model
 		->join('op_teaminfo ON op_teaminfo.tid = op_worktime.teamid')
-		->where("teamid = $teamid AND workdate1<='$today' AND workdate2>='$today'")
+		->where("teamid = $teamid AND uid IS NULL AND workdate1<='$today' AND workdate2>='$today'")
 		->select();
 		$this->assign('worktime',$rs[0]);
 		$this->display();

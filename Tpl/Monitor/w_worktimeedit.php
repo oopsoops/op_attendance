@@ -65,7 +65,8 @@ function doWorktimeEdit() {
 			if (data=="ok") {
 				$('#grid_worktimelist').datagrid('loadData',{total:0,rows:[]});
 				$('#grid_worktimelist').datagrid('reload',{
-			        teamid: $('#worktimelist_teamid').val()
+			        teamid: $('#worktimelist_teamid').val(),
+			        month: $('#worktimelist_month').val()
 			    });
 				$('#w_worktimeedit').window('close');
 			} else {

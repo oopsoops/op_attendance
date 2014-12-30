@@ -18,6 +18,7 @@
             <div style="padding-left:160px">
                 <label style="padding-right:10px">月份：</label>
                 <select id="worktimelist_month" onchange="worktimelist_fetchbyteamid()">
+                    <option value="0">去年12月</option>
                     <option value="1">1月</option>
                     <option value="2">2月</option>
                     <option value="3">3月</option>
@@ -30,6 +31,7 @@
                     <option value="10">10月</option>
                     <option value="11">11月</option>
                     <option value="12">12月</option>
+                    <option value="13">明年1月</option>
                 </select>
             </div>
         </div>
@@ -54,7 +56,14 @@
                         },
                         onLoadSuccess: function() {
                             var month = $('#worktimelist_month').val();
-                            var date2 = new Date(date.getFullYear(),month-1,date.getDate());
+                            if(month==13) {
+                                //明年1月
+                                date2 = new Date(date.getFullYear()+1,0,date.getDate());
+                            } else if(month==0) {
+                                date2 = new Date(date.getFullYear()-1,11,date.getDate());
+                            } else {
+                                date2 = new Date(date.getFullYear(),month-1,date.getDate());
+                            }
                             initClndr('worktimelist_win',date2);
                             fetchClndr('worktimelist_win',date2,$('#grid_worktimelist').datagrid('getData'));
                         }"
