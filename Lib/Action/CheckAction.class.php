@@ -437,7 +437,7 @@ class CheckAction extends Action {
             $beginDatetime = $vacList[$i]['begindate'].' '.$vacList[$i]['begintime'];
             $endDatetime = $vacList[$i]['enddate'].' '.$vacList[$i]['endtime'];
             //
-            $unsualList = $unusualModel->where("uid='$uid' AND CONCAT(clockdate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
+            $unsualList = $unusualModel->where("uid='$uid' AND CONCAT(standarddate,' ',standardtime) BETWEEN '$beginDatetime' AND '$endDatetime'")->select();
             //$this->logToFile($unusualModel->getLastSql());
             //$this->logToFile(print_r($unsualList,true));
             for($j=0;$j<count($unsualList);$j++) {
